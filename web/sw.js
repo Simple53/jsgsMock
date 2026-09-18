@@ -1,4 +1,4 @@
-const CACHE_NAME = 'file2quiz-v1';
+const CACHE_NAME = 'file2quiz-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -29,16 +29,37 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 优先缓存，网络备份；离线时完全依靠本地缓存
+// HTML 页面采用网络优先 (Network-First)，断网时回退离线缓存；静态资源缓存优先
 self.addEventListener('fetch', (event) => {
-  // 不缓存外部 AI API 请求
-  if (event.request.url.includes('/chat/completions')) {
+  const url = event.request.url;
+
+  // 外部 AI API 请求直接穿透
+  if (url.includes('/chat/completions') || url.includes('/models') || url.includes('openrouter.ai')) {
     return;
   }
+
+  // HTML 页面请求：网络优先
+  if (event.request.mode === 'navigate' || url.endsWith('.html') || url.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match(event.request).then(cached => cached || caches.match('./index.html'));
+      })
+    );
+    return;
+  }
+
+  // 其他静态资源（JSON、图标）：缓存优先 + 后台更新
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // 后台异步更新缓存
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {

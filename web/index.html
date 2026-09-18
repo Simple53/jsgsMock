@@ -1290,6 +1290,19 @@
         <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
         <path d="M9 9h6v6H9z" fill="none" stroke="currentColor" stroke-width="2"/>
       </g>
+      <!-- OpenRouter 图标 -->
+      <g id="logo-openrouter">
+        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M8 12h8m-3-3l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <!-- 手机网络/连接分享 -->
+      <g id="icon-share">
+        <circle cx="18" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="6" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="18" cy="19" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/>
+      </g>
       <!-- 闪电/一键解析 (AI) -->
       <g id="icon-bolt">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/>
@@ -2269,6 +2282,19 @@
         defaultModel: "Qwen/Qwen2.5-7B-Instruct",
         models: ["Qwen/Qwen2.5-7B-Instruct", "deepseek-ai/DeepSeek-V2.5", "THUDM/glm-4-9b-chat"]
       },
+      openrouter: {
+        name: "OpenRouter",
+        icon: "#logo-openrouter",
+        baseUrl: "https://openrouter.ai/api/v1",
+        defaultModel: "deepseek/deepseek-chat",
+        models: [
+          "deepseek/deepseek-chat",
+          "anthropic/claude-3.5-sonnet",
+          "openai/gpt-4o-mini",
+          "google/gemini-2.0-flash-001",
+          "meta-llama/llama-3.3-70b-instruct"
+        ]
+      },
       custom: {
         name: "自定义",
         icon: "#logo-custom",
@@ -2702,6 +2728,11 @@
       const isExam = (appConfig.quizMode === 'exam');
       const showAnswer = isExam ? isExamSubmitted : (userAnsRec !== undefined);
 
+      const activeProv = userStore.activeProvider || "deepseek";
+      const curProv = PROVIDERS[activeProv] || PROVIDERS["deepseek"];
+      const curCfg = userStore.providersConfig[activeProv] || {};
+      const curModelName = curCfg.model || curProv.defaultModel;
+
       let optionsHtml = "";
       if (q.type === 'judge') {
         let yesClass = "judge-flat-btn";
@@ -2759,12 +2790,30 @@
             <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
           </div>
 
-          <!-- 需求3：一键 AI 解析改为一个按钮 (唤起悬浮助教并多轮对话) -->
-          <div class="ai-trigger-action-bar">
-            <button class="ai-trigger-pill-btn" onclick="triggerAiAssistantForCurrentQuestion()">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-chip"/></svg>
-              <span>一键 AI 深度解析与助教追问</span>
+          <!-- 需求1：保留一键 AI 解析功能 (题目下方直接展示) -->
+          <div class="ai-stream-box" style="margin-top:12px;border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--primary);"><use href="#icon-chip"/></svg>
+                <span style="font-size:13px;font-weight:700;color:var(--text-main);">AI 深度考点精解</span>
+              </div>
+              <span style="font-size:11px;color:var(--primary);font-weight:600;">${curProv.name} · ${curModelName}</span>
+            </div>
+
+            <button class="ai-trigger-pill-btn" onclick="executeInlineAiExplanation()">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-bolt"/></svg>
+              <span id="inlineAiBtnText">${userStore.aiCache[qKey] ? '重新生成 AI 解析' : '一键 AI 深度解析'}</span>
             </button>
+
+            <div id="inlineAiExplanationBox" style="font-size:13px;line-height:1.65;margin-top:10px;padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);color:var(--text-main);white-space:pre-wrap;${userStore.aiCache[qKey] ? '' : 'display:none;'}">${escapeHtml(userStore.aiCache[qKey] || '')}</div>
+
+            <!-- 需求1：有需要在点击弹出对话框，然后对话框保留刚才的一键解析内容历史 -->
+            <div id="askAssistantActionRow" style="margin-top:10px;display:${userStore.aiCache[qKey] ? 'flex' : 'none'};justify-content:flex-end;">
+              <button class="text-name-btn" style="padding:4px 12px;font-size:12px;color:var(--primary);border-color:var(--primary-border);background:var(--card-bg);display:flex;align-items:center;gap:4px;" onclick="openDrawerWithCurrentExplanation()">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><use href="#icon-chat"/></svg>
+                <span>弹出助教对话框深入追问 ›</span>
+              </button>
+            </div>
           </div>
         `;
       }
@@ -3025,24 +3074,28 @@
       return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // 点击题目下方的“一键 AI 深度解析”按钮
-    async function triggerAiAssistantForCurrentQuestion() {
+    // 需求1: 在题目下方直接执行一键 AI 深度解析
+    async function executeInlineAiExplanation() {
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
-
-      // 若被关闭，先临时激活悬浮球并打开抽屉
-      const bubble = document.getElementById("floatingAiBubble");
-      if (bubble) bubble.classList.remove("hide");
-      openFloatingAiDrawer();
+      const qKey = getQKey(q);
 
       const activeProv = userStore.activeProvider || "deepseek";
       const cfg = userStore.providersConfig[activeProv] || {};
 
       if (!cfg.apiKey) {
-        appendChatMessageUI("assistant", `当前【${PROVIDERS[activeProv].name}】尚未配置 API Key。
-请点击顶部设置或下方导航栏【设置】板块填入 Key 后即可使用 AI 深度解析！`);
+        alert(`请先配置【${PROVIDERS[activeProv].name}】的 API Key 密钥，可在顶部工具栏 AI 菜单或设置板块中填写！`);
+        openDrawerWithCurrentExplanation();
         return;
       }
+
+      const box = document.getElementById("inlineAiExplanationBox");
+      const btnTxt = document.getElementById("inlineAiBtnText");
+      const askRow = document.getElementById("askAssistantActionRow");
+
+      box.style.display = "block";
+      box.textContent = `连线 ${PROVIDERS[activeProv].name} (${cfg.model || PROVIDERS[activeProv].defaultModel}) 深度思考中...`;
+      if (btnTxt) btnTxt.textContent = "解析生成中...";
 
       const prompt = `请对本题进行精准考点深度剖析：
 【科目】：${q.subject}
@@ -3051,26 +3104,109 @@
 【官方答案】：${q.answer}
 【官方解析】：${q.analysis || '无'}
 
-请按以下三部分精炼解析：
+请按以下三部分精炼输出：
 1. 【考点本质】：一句话点破核心考点或法理依据。
 2. 【正解与混淆拆解】：讲透为什么选 ${q.answer}，指出干扰选项的陷阱。
 3. 【秒记口诀】：给出一句好记的背诵口诀或记忆联想法。`;
 
-      floatingChatHistory = [
-        { role: "system", content: "你是一位高校教师资格证与教育学权威名师。擅长一针见血解析考点、讲透混淆选项陷阱并给出好记口诀。输出简洁严谨，杜绝任何 Emoji。" },
-        { role: "user", content: prompt }
-      ];
+      try {
+        const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
+        const resp = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${cfg.apiKey}`
+          },
+          body: JSON.stringify({
+            model: cfg.model || PROVIDERS[activeProv].defaultModel,
+            messages: [
+              { role: "system", content: "你是一位高校教师资格证与教育学权威名师。输出直击考点核心，拒绝废话，杜绝任何 Emoji。" },
+              { role: "user", content: prompt }
+            ],
+            stream: true
+          })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP 状态异常: ${resp.status}`);
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let fullResponse = "";
+        box.textContent = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            const tr = line.trim();
+            if (tr.startsWith("data: ") && tr !== "data: [DONE]") {
+              try {
+                const parsed = JSON.parse(tr.slice(6));
+                const delta = parsed.choices?.[0]?.delta?.content || "";
+                fullResponse += delta;
+                box.textContent = fullResponse;
+              } catch (e) {}
+            }
+          }
+        }
+
+        userStore.aiCache[qKey] = fullResponse;
+        saveUserStore();
+        if (btnTxt) btnTxt.textContent = "重新生成 AI 解析";
+        if (askRow) askRow.style.display = "flex";
+      } catch (err) {
+        box.textContent = `解析生成失败: ${err.message}，请检查 API Key 或网络连通性。`;
+        if (btnTxt) btnTxt.textContent = "一键 AI 深度解析";
+      }
+    }
+
+    // 需求1: 弹出对话框，并完整保留刚才的一键解析内容历史
+    function openDrawerWithCurrentExplanation() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      const explanation = userStore.aiCache[qKey];
+
+      const bubble = document.getElementById("floatingAiBubble");
+      if (bubble) bubble.classList.remove("hide");
+
+      openFloatingAiDrawer();
 
       const container = document.getElementById("floatingChatMessages");
-      if (container) {
+      if (!container) return;
+
+      if (explanation) {
+        floatingChatHistory = [
+          {
+            role: "system",
+            content: `你是一位专业教育辅导名师。当前正在解析：[${q.subject}] ${q.typeName}。题干：“${q.question}”，正确答案：“${q.answer}”，官方解析：“${q.analysis || ''}”。输出简洁严谨，杜绝任何 Emoji。`
+          },
+          {
+            role: "user",
+            content: `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`
+          },
+          {
+            role: "assistant",
+            content: explanation
+          }
+        ];
+
         container.innerHTML = `
           <div class="chat-msg user">
             <div class="chat-bubble-body">请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】</div>
           </div>
+          <div class="chat-msg assistant">
+            <div class="chat-bubble-body"><div style="font-weight:700;margin-bottom:4px;color:var(--primary);">【本题一键 AI 考点精解回顾】：</div>${escapeHtml(explanation)}</div>
+          </div>
+          <div class="chat-msg assistant">
+            <div class="chat-bubble-body" style="font-size:12px;color:var(--text-muted);background:var(--card-bg);">已为您保留上述一键解析内容历史。您可以在下方输入框继续自由追问（如为什么不选B、相关真题辨析等）！</div>
+          </div>
         `;
+      } else {
+        initFloatingChatGreeting();
       }
-
-      await executeStreamChatToAssistant();
     }
 
     // 助教输入框追问多轮对话
@@ -3760,7 +3896,57 @@
       if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
+    
+    function openNetworkConnectModal() {
+      document.getElementById("networkConnectModal")?.classList.add("open");
+    }
+    function closeNetworkConnectModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById("networkConnectModal")?.classList.remove("open");
+    }
+
     window.onload = init;
   </script>
+
+  <!-- 需求3：手机局域网与公网访问指引弹窗 -->
+  <div class="modal-mask" id="networkConnectModal" onclick="closeNetworkConnectModal(event)">
+    <div class="modal-card-box" onclick="event.stopPropagation()">
+      <div class="modal-card-header">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-share"/></svg>
+          <span class="modal-main-title">手机端访问与网络连接指引</span>
+        </div>
+        <button class="tool-icon-btn" onclick="closeNetworkConnectModal()" style="width:28px;height:28px;">
+          <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg>
+        </button>
+      </div>
+
+      <div style="font-size:13px;line-height:1.6;color:var(--text-main);display:flex;flex-direction:column;gap:12px;">
+        <div style="padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);">
+          <div style="font-weight:800;color:var(--primary);margin-bottom:4px;">1. 同一 WiFi 局域网访问地址：</div>
+          <div style="font-size:15px;font-weight:900;word-break:break-all;color:var(--text-main);font-family:monospace;">http://10.30.249.139:8080</div>
+          <div style="font-size:11px;color:var(--wrong);margin-top:4px;font-weight:700;">特别注意：请务必输入 http://，严禁输入 https:// (否则浏览器会因证书不匹配报错中断连接)</div>
+        </div>
+
+        <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;">
+          <div style="font-weight:800;margin-bottom:4px;">2. 手机打不开？排查两步秒解决：</div>
+          <div style="font-size:12px;color:var(--text-sub);">
+            <strong>A. 电脑开启【移动热点】</strong>：Windows设置 ➔ 移动热点开启 ➔ 手机WiFi连接电脑热点 ➔ 访问 <code>http://192.168.137.1:8080</code> (纯私有网络，绝无AP隔离拦截)。<br>
+            <strong>B. 刷新/清除手机浏览器缓存</strong>：由于之前手机可能缓存了旧脚本，在手机浏览器中长按刷新按钮或清除该网址缓存即可。
+          </div>
+        </div>
+
+        <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);">
+          <div style="font-weight:800;margin-bottom:4px;color:var(--primary);">3. 终极免电脑方案：GitHub Pages (随时随地秒开)</div>
+          <div style="font-size:12px;color:var(--text-sub);">
+            本项目已开源至 GitHub，支持通过 Pages 生成永久公网链接，手机无需电脑开机、4G/5G 均能秒开，支持离线添加到主屏幕！
+          </div>
+        </div>
+      </div>
+
+      <button class="modal-submit-btn" style="margin-top:14px;" onclick="closeNetworkConnectModal()">我知道了</button>
+    </div>
+  </div>
+
 </body>
 </html>
