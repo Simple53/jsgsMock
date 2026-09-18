@@ -529,91 +529,196 @@
     }
 
     /* =========================================
-       答题模式顶部 AI 配置条 (无 Emoji, 纯扁平)
+       需求2：顶部平铺工具栏 AI 下拉纯文字切换菜单 (不需要icon，只需名称按钮)
        ========================================= */
-    .quiz-top-ai-bar {
+    .top-ai-dropdown {
+      position: absolute;
+      top: 50px;
+      right: 14px;
+      width: 280px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 95;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+    }
+    .top-ai-dropdown.open { display: flex; }
+    .dropdown-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+    }
+    .dropdown-btn-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .text-name-btn {
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .text-name-btn:active {
+      transform: scale(0.96);
+    }
+    .text-name-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* =========================================
+       需求3：悬浮 AI 助教球与多轮对话浮窗
+       ========================================= */
+    .floating-ai-bubble {
+      position: fixed;
+      bottom: 74px;
+      right: 18px;
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 60;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .floating-ai-bubble:active { transform: scale(0.92); }
+    .floating-ai-bubble.hide { display: none !important; }
+
+    .floating-ai-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(105%);
+      width: 100%;
+      max-width: 480px;
+      height: 68vh;
+      max-height: 540px;
+      background: var(--card-bg);
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      border-top: 2px solid var(--primary-border);
+      z-index: 85;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+      box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.12);
+    }
+    .floating-ai-drawer.open {
+      transform: translateX(-50%) translateY(0);
+    }
+    .floating-ai-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: var(--primary-light);
-      border: 1.5px solid var(--primary-border);
-      border-radius: 10px;
-      margin-bottom: 14px;
-      cursor: pointer;
     }
-    .quiz-top-ai-bar:active {
-      background: #dbeafe;
-    }
-    .ai-bar-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .ai-bar-model-badge {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-sub);
-      background: var(--card-bg);
-      padding: 2px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .ai-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    /* 一键 AI 解析模块 */
-    .ai-stream-box {
-      border: 1.5px solid var(--primary-border);
-      border-radius: 14px;
-      padding: 16px;
-      background: var(--card-bg);
-      margin-top: 14px;
+    .chat-messages-scroll {
+      flex: 1;
+      padding: 14px 16px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .ai-stream-header {
+    .chat-msg {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 88%;
     }
-    .ai-stream-title {
-      font-size: 13px;
-      font-weight: 800;
+    .chat-msg.assistant {
+      align-self: flex-start;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+    }
+    .chat-bubble-body {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .chat-msg.assistant .chat-bubble-body {
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
       color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      border-top-left-radius: 2px;
     }
-    .ai-stream-provider-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .ai-actions-row {
-      display: flex;
-      gap: 8px;
-    }
-    .ai-trigger-btn {
-      flex: 1;
-      padding: 11px;
+    .chat-msg.user .chat-bubble-body {
       background: var(--primary);
       color: #ffffff;
+      border-top-right-radius: 2px;
+    }
+    .chat-input-bar {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      background: var(--card-bg);
+      align-items: center;
+    }
+    .chat-input-text {
+      flex: 1;
+      height: 38px;
+      padding: 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    .chat-send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 19px;
       border: none;
-      border-radius: 8px;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* 需求3：一键 AI 解析触发按钮 */
+    .ai-trigger-action-bar {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ai-trigger-pill-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-light);
+      border: 1.5px solid var(--primary-border);
+      border-radius: 10px;
+      color: var(--primary);
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -621,16 +726,10 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: all 0.2s ease;
     }
-    .ai-text-container {
-      font-size: 14px;
-      line-height: 1.75;
-      background: var(--primary-light);
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid var(--primary-border);
-      color: var(--text-main);
-      white-space: pre-wrap;
+    .ai-trigger-pill-btn:active {
+      background: #dbeafe;
     }
 
     /* =========================================
@@ -1216,6 +1315,32 @@
       <g id="icon-right">
         <polyline points="9 18 15 12 9 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
+      <!-- 芯片/AI助手 -->
+      <g id="icon-chip">
+        <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <rect x="9" y="9" width="6" height="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="9" y1="1" x2="9" y2="4" stroke="currentColor" stroke-width="2"/>
+        <line x1="15" y1="1" x2="15" y2="4" stroke="currentColor" stroke-width="2"/>
+        <line x1="9" y1="20" x2="9" y2="23" stroke="currentColor" stroke-width="2"/>
+        <line x1="15" y1="20" x2="15" y2="23" stroke="currentColor" stroke-width="2"/>
+        <line x1="20" y1="9" x2="23" y2="9" stroke="currentColor" stroke-width="2"/>
+        <line x1="20" y1="15" x2="23" y2="15" stroke="currentColor" stroke-width="2"/>
+        <line x1="1" y1="9" x2="4" y2="9" stroke="currentColor" stroke-width="2"/>
+        <line x1="1" y1="15" x2="4" y2="15" stroke="currentColor" stroke-width="2"/>
+      </g>
+      <!-- 对话/助教 -->
+      <g id="icon-chat">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <!-- 发送 -->
+      <g id="icon-send">
+        <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
+      </g>
+      <!-- 最小化/折叠 -->
+      <g id="icon-minus">
+        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
     </defs>
   </svg>
 
@@ -1225,13 +1350,17 @@
          TAB 1: 练习 (首页: 每日动态与金句轮播 Banner + 打卡/搜索)
          ======================================= -->
     <div class="view-content-pane" id="panePractice">
-      <!-- 首页头部：日期状态 + 右侧打卡与搜索图标 (无 Emoji) -->
+      <!-- 首页头部：标题状态 + 右侧更新/打卡/搜索图标 (无 Emoji, 不显过期日期) -->
       <header class="home-top-header" style="padding:14px 20px 8px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">今日时政研学</div>
+          <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">时政研学要点</div>
           <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">最新重要会议与金句动态</div>
         </div>
         <div class="header-icons-row">
+          <!-- 检索更新最新重要金句 -->
+          <button class="header-icon-btn" onclick="searchOnlineLatestMottoAndNews()" title="检索/刷新最新重要会议金句">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
+          </button>
           <!-- 打卡图标 -->
           <button class="header-icon-btn" onclick="handleDailyCheckin()" title="每日打卡">
             <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-calendar"/></svg>
@@ -1375,6 +1504,64 @@
           </div>
         </div>
 
+        <!-- 需求4：设置板块内置完整 AI 配置专区 (无 Emoji, 纯扁平) -->
+        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+          <div style="font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
+              <span>AI 大模型与深度解析配置</span>
+            </div>
+            <span style="font-size:11px;color:var(--primary);font-weight:700;" id="settingsActiveProviderLabel">当前激活：DeepSeek</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin:4px 0 10px;">支持主流大模型自由切换，数据完全保存在手机本地</div>
+
+          <!-- 需求3：悬浮 AI 助教全局开启/关闭 -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--border);">
+            <div>
+              <div style="font-size:13px;font-weight:700;">启用悬浮 AI 助教 (多轮对话)</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">刷题时可在右下角唤起悬浮助教自由追问</div>
+            </div>
+            <input type="checkbox" id="settingEnableFloatingAi" style="width:20px;height:20px;" onchange="toggleFloatingAiSetting(this.checked)">
+          </div>
+
+          <!-- 切换供应商纯文字按钮组 (无复杂icon, 纯文字按钮) -->
+          <div style="margin-top:12px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">选择配置的供应商：</div>
+            <div class="dropdown-btn-grid" id="settingsProviderBtnGrid"></div>
+          </div>
+
+          <!-- API Base URL -->
+          <div style="margin-top:12px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-sub);">API 端点 (Base URL)</label>
+            <input id="settingsProviderBaseUrl" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;">
+          </div>
+
+          <!-- API Key -->
+          <div style="margin-top:10px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-sub);">API 密钥 (API Key)</label>
+            <input id="settingsProviderApiKey" type="password" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 sk-xxxx">
+          </div>
+
+          <!-- 在线获取与搜索模型 -->
+          <div style="margin-top:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">可用模型列表</label>
+              <button class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);" onclick="fetchSettingsProviderModelsOnline()">在线获取模型</button>
+            </div>
+            <input id="settingsModelSearchInput" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;margin-bottom:6px;" placeholder="搜索过滤模型 (如: chat, 4o, qwen...)" oninput="filterSettingsModelList(this.value)">
+            <div id="settingsModelPillPool" style="display:flex;gap:6px;flex-wrap:wrap;max-height:110px;overflow-y:auto;border:1px solid var(--border);padding:6px;border-radius:6px;background:var(--bg);"></div>
+          </div>
+
+          <!-- 当前激活模型 -->
+          <div style="margin-top:10px;">
+            <label style="font-size:12px;font-weight:700;color:var(--text-sub);">当前选定模型</label>
+            <input id="settingsProviderSelectedModel" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:700;color:var(--primary);outline:none;">
+          </div>
+
+          <!-- 保存按钮 -->
+          <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
+        </div>
+
         <!-- 主题是否跟随系统 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
           <div>
@@ -1407,7 +1594,7 @@
     </div>
 
     <!-- =======================================
-         刷题工作台 (顶部平铺图标: 太阳/月亮/护眼)
+         刷题工作台 (顶部平铺图标: AI纯文字切换 / 草稿 / 收藏 / 主题 / 答题卡)
          ======================================= -->
     <div class="quiz-view" id="quizView">
       <header class="quiz-top-nav-flat">
@@ -1418,8 +1605,12 @@
           <div class="quiz-timer" id="quizTimer">00:00</div>
         </div>
 
-        <!-- 需求3：太阳、月亮、护眼图标平铺切换 (严格 viewBox 杜绝裁切) -->
-        <div class="nav-tools-tiled">
+        <!-- 需求2：顶部平铺工具栏 (增加 AI 配置按钮) -->
+        <div class="nav-tools-tiled" style="position:relative;">
+          <!-- AI 配置图标按钮 -->
+          <button class="tool-icon-btn" id="topAiToolBtn" onclick="toggleTopAiDropdown(event)" title="AI配置与模型切换">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-chip"/></svg>
+          </button>
           <button class="tool-icon-btn" onclick="openDraftCanvas()" title="草稿画板">
             <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-pencil"/></svg>
           </button>
@@ -1432,10 +1623,65 @@
           <button class="tool-icon-btn" onclick="openSheetDrawer()" title="答题卡">
             <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-sheet"/></svg>
           </button>
+
+          <!-- 需求2：顶部 AI 下拉纯文字名称按钮菜单 (无 icon, 仅名称) -->
+          <div class="top-ai-dropdown" id="topAiDropdown" onclick="event.stopPropagation()">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="dropdown-section-title">供应商名称</span>
+              <span style="font-size:11px;color:var(--text-muted);" id="dropdownActiveProvName">DeepSeek</span>
+            </div>
+            <div class="dropdown-btn-grid" id="dropdownProviderBtnGrid"></div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <span class="dropdown-section-title">模型名称</span>
+              <span style="font-size:11px;color:var(--primary);font-weight:700;" id="dropdownActiveModelName"></span>
+            </div>
+            <div class="dropdown-btn-grid" id="dropdownModelBtnGrid"></div>
+
+            <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:11px;color:var(--text-muted);">可在下方设置中配置 API Key</span>
+              <button class="text-name-btn" style="padding:2px 8px;font-size:11px;" onclick="goToSettingsAiConfig()">详细设置 ›</button>
+            </div>
+          </div>
         </div>
       </header>
 
       <main class="quiz-scroll-body" id="quizScrollBody"></main>
+
+      <!-- 需求3：悬浮 AI 助教球 (可开启/关闭) -->
+      <div class="floating-ai-bubble" id="floatingAiBubble" onclick="openFloatingAiDrawer()" title="唤起 AI 名师助教">
+        <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:#ffffff;"><use href="#icon-chat"/></svg>
+      </div>
+
+      <!-- 需求3：悬浮 AI 助教多轮对话抽屉 -->
+      <div class="floating-ai-drawer" id="floatingAiDrawer">
+        <div class="floating-ai-header">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
+            <span style="font-size:14px;font-weight:800;">AI 名师助教</span>
+            <span style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:1px 6px;border-radius:4px;font-weight:700;" id="floatingDrawerModelTag">deepseek-chat</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="tool-icon-btn" onclick="clearFloatingChatHistory()" title="清空对话" style="width:28px;height:28px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-refresh"/></svg>
+            </button>
+            <button class="tool-icon-btn" onclick="closeFloatingAiDrawer()" title="收起关闭" style="width:28px;height:28px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-minus"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="chat-messages-scroll" id="floatingChatMessages">
+          <!-- 多轮对话动态气泡 -->
+        </div>
+
+        <div class="chat-input-bar">
+          <input class="chat-input-text" id="floatingChatInput" placeholder="针对本题继续追问，如：为什么不选B？" onkeydown="if(event.key==='Enter') sendFloatingChatMessage()">
+          <button class="chat-send-btn" onclick="sendFloatingChatMessage()" title="发送追问">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:#ffffff;"><use href="#icon-send"/></svg>
+          </button>
+        </div>
+      </div>
 
       <footer class="quiz-bottom-actions">
         <button class="bottom-btn" onclick="navigateQuestion(-1)">上一题</button>
@@ -1672,18 +1918,18 @@
 
   <script>
     // ==========================================
-    // 需求2: 每日动态汇总与重要金句库 (含重要会议、习近平金句等)
+    // 需求1: 每日动态汇总与重要金句库 (不显过期年份，支持联网检索/AI更新)
     // ==========================================
-    const DAILY_BANNER_DATA = [
+    let DAILY_BANNER_DATA = [
       {
         id: "news_1",
         type: "news",
-        typeLabel: "重要会议动态",
-        title: "全国教育大会在京召开 习近平出席并发表重要讲话",
+        typeLabel: "重要会议精神",
+        tag: "教育强国战略",
+        title: "全国教育大会重要讲话精神",
         summary: "紧紧围绕立德树人根本任务，朝着建成教育强国战略目标扎实迈进。坚持把立德树人作为检验学校一切工作的根本标准。",
         source: "新华社 · 全国教育大会",
-        date: "2024-09",
-        content: `全国教育大会在京召开。习近平总书记出席大会并发表重要讲话强调：
+        content: `全国教育大会重要讲话精神指引：
 1. 教育是强国建设、民族复兴之基。我们要建成的教育强国，是中国特色社会主义教育强国，应当具有强大的思政引领力、人才竞争力、科技支撑力、民生保障力、社会协同力、国际影响力。
 2. 紧紧围绕立德树人根本任务，着眼于培养德智体美劳全面发展的社会主义建设者和接班人。坚持把立德树人作为检验学校一切工作的根本标准。
 3. 统筹实施科教兴国战略、人才强国战略、创新驱动发展战略，一体推进教育发展、科技创新、人才培养。
@@ -1696,12 +1942,12 @@
       {
         id: "quote_1",
         type: "quote",
-        typeLabel: "每日重要金句",
-        title: "习近平论“做学生为学、为事、为人的‘大先生’”",
+        typeLabel: "新时代金句",
+        tag: "师德素养",
+        title: "做学生为学、为事、为人的“大先生”",
         summary: "“教师不能只做传授书本知识的教书匠，而要成为塑造学生品格、品行、品味的‘大先生’。”",
-        source: "习近平总书记在中国人民大学考察时的重要讲话",
-        date: "2022-04",
-        content: `习近平总书记在中国人民大学考察时强调：
+        source: "高校教师队伍建设重要论述",
+        content: `重要论述与谆谆嘱托：
 “老师应该有言为士则、行为世范的自觉，不断提高自身道德修养，以模范行为影响和带动学生，做学生为学、为事、为人的大先生，致力于成为具有方向明、主义真、学问高、德行正的‘经师’和‘人师’的统一者。”
 
 “好的学校特色各不过，但有一条是共同的，那就是都有一支优秀教师队伍。对教师来说，想把学生培养成什么样的人，自己首先就应该成为什么样的人。”`,
@@ -1713,13 +1959,13 @@
       {
         id: "news_2",
         type: "news",
-        typeLabel: "重要政策动态",
-        title: "中共中央 国务院印发《关于弘扬教育家精神加强新时代高素质专业化教师队伍建设的意见》",
+        typeLabel: "重要政策文件",
+        tag: "高素质专业化",
+        title: "大力弘扬教育家精神 加强新时代教师队伍建设",
         summary: "将教育家精神融入教师培养全过程，坚持师德师风第一标准，深化教师评价改革，强化教师待遇保障。",
-        source: "新华社受权发布 · 中共中央国务院文件",
-        date: "2024-08",
-        content: `中共中央、国务院印发《关于弘扬教育家精神加强新时代高素质专业化教师队伍建设的意见》：
-1. 总体要求：坚持以习近平新时代中国特色社会主义思想为指导，全面贯彻党的教育方针，把加强教师队伍建设作为建设教育强国最重要的基础工作来抓。
+        source: "权威指导意见 · 教师队伍建设部署",
+        content: `新时代教师队伍建设核心指导意见：
+1. 总体要求：全面贯彻党的教育方针，把加强教师队伍建设作为建设教育强国最重要的基础工作来抓。
 2. 弘扬教育家精神的六大内涵：
    - 心有大我、至诚报国的理想信念；
    - 言为士则、行为世范的道德情操；
@@ -1727,7 +1973,7 @@
    - 勤学笃行、求是创新的躬耕态度；
    - 乐教爱生、甘于奉献的仁爱之心；
    - 胸怀天下、以文化人的弘道追求。
-3. 健全师德师风建设长效机制，强化师德考评与师德失范“零容忍”。`,
+3. 健全师德师风长效机制，强化师德考评与师德失范“零容忍”。`,
         examPoints: `【综合素质与师德高频必背】
 1. 教育家精神六个维度：理想信念、道德情操、育人智慧、躬耕态度、仁爱之心、弘道追求（简答、案例分析必考！）。
 2. 师德评价机制：师德表现为第一标准，实行师德表现一票否决制。`
@@ -1735,12 +1981,12 @@
       {
         id: "quote_2",
         type: "quote",
-        typeLabel: "每日重要金句",
-        title: "习近平论好老师的“四有”标准",
+        typeLabel: "新时代金句",
+        tag: "立德树人",
+        title: "做好老师的“四有”标准与仁爱之心",
         summary: "“一个人遇到好老师是人生的幸运，一个学校拥有好老师是学校的光荣，一个民族源源不断涌现出一批又一批好老师是民族的希望。”",
-        source: "习近平同北京师范大学师生代表座谈时的讲话",
-        date: "2014-09",
-        content: `习近平总书记在同北京师范大学师生代表座谈时，完整提出了做好老师的四条标准：
+        source: "新时代教育思想论述",
+        content: `做好老师的四条标准：
 第一，做好老师，要有理想信念。广大教师要用好课堂讲坛，用好校园阵地，用自己的行动倡导社会主义核心价值观。
 第二，做好老师，要有道德情操。老师的人格力量和人格魅力是成功教育的重要基础。
 第三，做好老师，要有扎实学识。水之积也不厚，则其负大舟也无力。教师必须具备扎实深厚的学识。
@@ -1753,12 +1999,12 @@
       {
         id: "news_3",
         type: "news",
-        typeLabel: "重要会议动态",
-        title: "中共中央政治局第五次集体学习：加快建设教育强国",
+        typeLabel: "重要会议精神",
+        tag: "高等教育龙头",
+        title: "中央政治局会议：加快建设高质量教育体系",
         summary: "建设教育强国，基点在基础教育，龙头是高等教育。把服务高质量发展作为建设教育强国的重要任务。",
-        source: "中共中央政治局集体学习",
-        date: "2023-05",
-        content: `中共中央政治局就建设教育强国进行第五次集体学习。习近平总书记在主持学习时发表重要讲话：
+        source: "权威发布 · 教育战略前沿",
+        content: `加快建设教育强国战略部署：
 1. 建设教育强国，是全面建成社会主义现代化强国的战略先导，是实现高水平科技自立自强的重要支撑，是促进全体人民共同富裕的有效途径。
 2. 建设教育强国，基点在基础教育，龙头是高等教育。要把加快建设中国特色、世界一流的大学和优势学科作为重中之重。
 3. 推进教育数字化，建设全民终身学习的学习型社会、学习型大国。`,
@@ -1791,7 +2037,7 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px;"><use href="${isNews ? '#icon-news' : '#icon-quote'}"/></svg>
               ${item.typeLabel}
             </span>
-            <span class="banner-date">${item.date}</span>
+            <span class="banner-date">${item.tag || '重点研学'}</span>
           </div>
           <div class="banner-title">${item.title}</div>
           <div class="banner-summary">${item.summary}</div>
@@ -1880,7 +2126,7 @@
       }, { passive: true });
     }
 
-    // 查看 Banner 详情模态框
+    // 查看 Banner 详情模态框 (不显示固定过期年份)
     let activeBannerIdx = 0;
     function openBannerDetailModal(idx) {
       stopBannerAutoPlay();
@@ -1893,7 +2139,7 @@
       tagEl.textContent = item.typeLabel;
       tagEl.className = `banner-tag ${isNews ? 'news' : ''}`;
       
-      document.getElementById("modalBannerDate").textContent = item.date;
+      document.getElementById("modalBannerDate").textContent = item.tag || '重点研学';
       document.getElementById("modalBannerTitle").textContent = item.title;
       document.getElementById("modalBannerSource").textContent = `出处：${item.source}`;
       document.getElementById("modalBannerContent").textContent = item.content;
@@ -1910,7 +2156,7 @@
     function copyBannerText() {
       const item = DAILY_BANNER_DATA[activeBannerIdx];
       if (!item) return;
-      const textToCopy = `【${item.title}】\n来源：${item.source} (${item.date})\n\n${item.content}\n\n${item.examPoints}`;
+      const textToCopy = `【${item.title}】\n来源：${item.source}\n\n${item.content}\n\n${item.examPoints}`;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(textToCopy).then(() => {
           alert("已成功复制重要论述与考点解析到剪贴板！");
@@ -1922,8 +2168,63 @@
       }
     }
 
+    // 需求1: 联网检索或使用 AI 提取最新重要会议金句
+    async function searchOnlineLatestMottoAndNews() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+
+      if (cfg.apiKey) {
+        const btn = event?.currentTarget;
+        let origTxt = "";
+        if (btn) {
+          origTxt = btn.innerHTML;
+          btn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-clock"/></svg>`;
+        }
+
+        try {
+          const prompt = `请作为时政与教育学专家，输出1条针对2026年高校教资与新时代教育强国建设最新的重要会议论述或习近平总书记关于教师、立德树人的核心金句。严格按以下 JSON 格式输出，不要输出任何其他文本：
+{"type":"news","typeLabel":"最新时政要点","tag":"2026前沿热点","title":"标题","summary":"2句话核心摘要","source":"权威出处","content":"完整讲话论述","examPoints":"考试关联考点"}`;
+
+          const resp = await fetch(`${cfg.baseUrl.replace(/\/+$/, '')}/chat/completions`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${cfg.apiKey}`
+            },
+            body: JSON.stringify({
+              model: cfg.model,
+              messages: [{ role: "user", content: prompt }],
+              temperature: 0.7
+            })
+          });
+
+          if (resp.ok) {
+            const data = await resp.json();
+            const raw = data.choices?.[0]?.message?.content || "";
+            const cleanJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(cleanJson);
+            if (parsed.title) {
+              DAILY_BANNER_DATA.unshift(parsed);
+              renderBannerCarousel();
+              alert(`已通过 ${PROVIDERS[activeProv].name} 在线检索并更新最新时政金句！`);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn("AI 生成最新金句失败，回退到本地轮换", e);
+        } finally {
+          if (btn) btn.innerHTML = origTxt;
+        }
+      }
+
+      // 本地智能轮换
+      DAILY_BANNER_DATA.push(DAILY_BANNER_DATA.shift());
+      renderBannerCarousel();
+      alert("已更新并置顶最新一条研学论述与重要金句！");
+    }
+
     // ==========================================
-    // 需求1与需求2: 七大 AI 供应商预设配置 (包含自定义)
+    // 需求2: 七大 AI 供应商预设配置 (纯扁平, 纯文字按钮支持)
     // ==========================================
     const PROVIDERS = {
       deepseek: {
@@ -2365,19 +2666,26 @@
       document.getElementById("quizView").style.display = 'flex';
 
       startTimer();
+      const bubble = document.getElementById("floatingAiBubble");
+      if (bubble) {
+        bubble.classList.toggle("hide", appConfig.enableFloatingAi === false);
+      }
       renderCurrentQuestion();
     }
 
     function exitQuizToHome() {
       stopTimer();
       saveUserStore();
+      closeFloatingAiDrawer();
+      const dd = document.getElementById("topAiDropdown");
+      if (dd) dd.classList.remove("open");
       document.getElementById("quizView").style.display = 'none';
       document.getElementById("bottomTabbar").style.display = 'flex';
       switchBottomTab('practice');
     }
 
     // ==========================================
-    // 需求2: 刷题工作台 - AI 供应商面板与交互
+    // 需求2与需求3: 刷题工作台 - 题目渲染、顶部AI纯文字菜单与悬浮助教
     // ==========================================
     function renderCurrentQuestion() {
       const container = document.getElementById("quizScrollBody");
@@ -2437,26 +2745,6 @@
         optionsHtml += `</div>`;
       }
 
-      const activeProv = userStore.activeProvider || "deepseek";
-      const curProv = PROVIDERS[activeProv] || PROVIDERS["deepseek"];
-      const curCfg = userStore.providersConfig[activeProv] || {};
-      const curModelName = curCfg.model || curProv.defaultModel;
-
-      // 需求1：答题模式的 AI 模块配置放在上方，点击即可修改配置
-      const topAiBarHtml = `
-        <div class="quiz-top-ai-bar" onclick="openAiProviderConfigModal('${activeProv}')" title="轻触修改 AI 供应商与模型配置">
-          <div class="ai-bar-left">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="${curProv.icon}"/></svg>
-            <span class="ai-bar-name">${curProv.name}</span>
-            <span class="ai-bar-model-badge">${curModelName}</span>
-          </div>
-          <div class="ai-bar-right">
-            <span class="ai-bar-edit-text">修改配置</span>
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;color:var(--primary);"><use href="#icon-gear"/></svg>
-          </div>
-        </div>
-      `;
-
       let analysisBlock = "";
       if (showAnswer) {
         analysisBlock = `
@@ -2471,30 +2759,17 @@
             <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
           </div>
 
-          <!-- 需求1：保留一键 AI 解析的模块 (杜绝任何 Emoji) -->
-          <div class="ai-stream-box">
-            <div class="ai-stream-header">
-              <div class="ai-stream-title">
-                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--primary);"><use href="#icon-bolt"/></svg>
-                <span>AI 深度考点精解</span>
-              </div>
-              <span class="ai-stream-provider-hint">${curProv.name} · ${curModelName}</span>
-            </div>
-
-            <div class="ai-actions-row">
-              <button class="ai-trigger-btn" onclick="requestAiHelpWithActiveProvider()">
-                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-bolt"/></svg>
-                <span>${userStore.aiCache[qKey] ? '重新解析' : '一键 AI 深度解析'}</span>
-              </button>
-            </div>
-
-            <div class="ai-text-container" id="aiTextContainer" style="${userStore.aiCache[qKey] ? '' : 'display:none;'}">${userStore.aiCache[qKey] || ''}</div>
+          <!-- 需求3：一键 AI 解析改为一个按钮 (唤起悬浮助教并多轮对话) -->
+          <div class="ai-trigger-action-bar">
+            <button class="ai-trigger-pill-btn" onclick="triggerAiAssistantForCurrentQuestion()">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-chip"/></svg>
+              <span>一键 AI 深度解析与助教追问</span>
+            </button>
           </div>
         `;
       }
 
       container.innerHTML = `
-        ${topAiBarHtml}
         <div class="quiz-header-meta">
           <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
@@ -2558,7 +2833,7 @@
       }
     }
 
-    // 左右滑屏
+    // 左右滑屏切题手势
     function initTouchSwipe() {
       let touchStartX = 0, touchStartY = 0;
       const quizView = document.getElementById("quizView");
@@ -2578,7 +2853,7 @@
       }, { passive: true });
     }
 
-    // 需求3: 太阳、月亮、护眼图标动态切换 (严格 viewBox)
+    // 太阳、月亮、护眼图标动态切换 (严格 viewBox)
     function cycleThemeMode() {
       const themes = ['light', 'eye', 'dark'];
       let nextIdx = (themes.indexOf(appConfig.theme) + 1) % themes.length;
@@ -2604,171 +2879,239 @@
     }
 
     // ==========================================
-    // 需求2: AI 供应商切换、在线获取模型与搜索过滤
+    // 需求2: 做题模式最上方一排 AI 配置按钮与纯文字名称菜单
     // ==========================================
-    let editingProviderKey = "deepseek";
+    function toggleTopAiDropdown(e) {
+      if (e) e.stopPropagation();
+      const dd = document.getElementById("topAiDropdown");
+      if (!dd) return;
+      const isOpen = dd.classList.toggle("open");
+      if (isOpen) {
+        renderTopAiDropdown();
+      }
+    }
 
-    function switchActiveAiProvider(pKey) {
+    function renderTopAiDropdown() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const provCfg = userStore.providersConfig[activeProv] || {};
+      const curModel = provCfg.model || PROVIDERS[activeProv]?.defaultModel || "";
+
+      document.getElementById("dropdownActiveProvName").textContent = PROVIDERS[activeProv]?.name || activeProv;
+      document.getElementById("dropdownActiveModelName").textContent = curModel;
+
+      // 渲染供应商纯文字名称按钮 (需求2：不需要显示icon，只需要名称按钮)
+      const provGrid = document.getElementById("dropdownProviderBtnGrid");
+      if (provGrid) {
+        provGrid.innerHTML = "";
+        Object.keys(PROVIDERS).forEach(pKey => {
+          const btn = document.createElement("div");
+          btn.className = `text-name-btn ${pKey === activeProv ? 'active' : ''}`;
+          btn.textContent = PROVIDERS[pKey].name;
+          btn.onclick = () => selectDropdownProvider(pKey);
+          provGrid.appendChild(btn);
+        });
+      }
+
+      // 渲染模型纯文字名称按钮 (需求2：纯文字名称按钮)
+      const modelGrid = document.getElementById("dropdownModelBtnGrid");
+      if (modelGrid) {
+        modelGrid.innerHTML = "";
+        const models = provCfg.customModels || PROVIDERS[activeProv]?.models || [];
+        models.forEach(m => {
+          const btn = document.createElement("div");
+          btn.className = `text-name-btn ${m === curModel ? 'active' : ''}`;
+          btn.textContent = m;
+          btn.onclick = () => selectDropdownModel(m);
+          modelGrid.appendChild(btn);
+        });
+      }
+    }
+
+    function selectDropdownProvider(pKey) {
       userStore.activeProvider = pKey;
       saveUserStore();
-      renderCurrentQuestion();
+      renderTopAiDropdown();
+      updateDrawerModelTag();
     }
 
-    function openAiProviderConfigModal(pKey) {
-      if (!pKey || !PROVIDERS[pKey]) pKey = userStore.activeProvider || "deepseek";
-      editingProviderKey = pKey;
-      const p = PROVIDERS[pKey];
-      const cfg = userStore.providersConfig[pKey] || {};
-
-      document.getElementById("aiConfigModalTitle").textContent = `配置 ${p.name}`;
-      document.getElementById("modalProviderBaseUrl").value = cfg.baseUrl || p.baseUrl;
-      document.getElementById("modalProviderApiKey").value = cfg.apiKey || "";
-      document.getElementById("modalProviderSelectedModel").value = cfg.model || p.defaultModel;
-      document.getElementById("modalModelSearchInput").value = "";
-
-      // 渲染弹窗内顶部供应商快捷切换栏
-      const provScroll = document.getElementById("modalProvidersScroll");
-      if (provScroll) {
-        provScroll.innerHTML = "";
-        Object.keys(PROVIDERS).forEach(k => {
-          const item = PROVIDERS[k];
-          const btn = document.createElement("div");
-          btn.className = `provider-badge-btn ${k === editingProviderKey ? 'active' : ''}`;
-          btn.innerHTML = `
-            <svg class="provider-logo-svg" viewBox="0 0 24 24"><use href="${item.icon}"/></svg>
-            <span>${item.name}</span>
-          `;
-          btn.onclick = () => openAiProviderConfigModal(k);
-          provScroll.appendChild(btn);
-        });
-      }
-
-      renderProviderModelPills(cfg.customModels || p.models);
-      document.getElementById("aiConfigModal").classList.add("open");
-    }
-
-    function closeAiConfigModal() {
-      document.getElementById("aiConfigModal").classList.remove("open");
-    }
-
-    function renderProviderModelPills(modelList) {
-      const container = document.getElementById("modalModelPillPool");
-      container.innerHTML = "";
-      const selected = document.getElementById("modalProviderSelectedModel").value;
-
-      modelList.forEach(m => {
-        const pill = document.createElement("span");
-        pill.className = `count-pill ${m === selected ? 'active' : ''}`;
-        pill.style.cssText = "padding:4px 10px;font-size:12px;margin:2px;";
-        pill.textContent = m;
-        pill.onclick = () => {
-          document.getElementById("modalProviderSelectedModel").value = m;
-          renderProviderModelPills(modelList);
-        };
-        container.appendChild(pill);
-      });
-    }
-
-    function filterModalModelList(query) {
-      query = query.trim().toLowerCase();
-      const p = PROVIDERS[editingProviderKey];
-      const cfg = userStore.providersConfig[editingProviderKey] || {};
-      const all = cfg.customModels || p.models;
-      const filtered = query ? all.filter(m => m.toLowerCase().includes(query)) : all;
-      renderProviderModelPills(filtered);
-    }
-
-    // 在线获取当前供应商可用模型 (GET /models)
-    async function fetchProviderModelsOnline() {
-      const baseUrl = document.getElementById("modalProviderBaseUrl").value.trim().replace(/\/+$/, "");
-      const apiKey = document.getElementById("modalProviderApiKey").value.trim();
-
-      if (!apiKey) {
-        alert("请先填入该供应商的 API Key，以便发起验证并拉取模型！");
-        return;
-      }
-
-      const btn = event.target;
-      const oldTxt = btn.textContent;
-      btn.textContent = "拉取中...";
-      btn.disabled = true;
-
-      try {
-        const endpoint = `${baseUrl}/models`;
-        const resp = await fetch(endpoint, {
-          headers: { "Authorization": `Bearer ${apiKey}` }
-        });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json();
-        let models = [];
-        if (Array.isArray(data.data)) {
-          models = data.data.map(item => item.id).filter(Boolean);
-        }
-        if (models.length === 0) throw new Error("未解析到有效模型ID");
-
-        userStore.providersConfig[editingProviderKey].customModels = models;
-        renderProviderModelPills(models);
-        alert(`成功获取到 ${models.length} 个在线可用模型！已更新在下方列表。`);
-      } catch (err) {
-        alert(`拉取在线模型失败 (${err.message})，将使用供应商默认推荐模型列表。`);
-        const fallback = PROVIDERS[editingProviderKey].models;
-        renderProviderModelPills(fallback);
-      } finally {
-        btn.textContent = oldTxt;
-        btn.disabled = false;
-      }
-    }
-
-    function saveActiveProviderConfig() {
-      const bUrl = document.getElementById("modalProviderBaseUrl").value.trim();
-      const aKey = document.getElementById("modalProviderApiKey").value.trim();
-      const mModel = document.getElementById("modalProviderSelectedModel").value.trim();
-
-      if (!userStore.providersConfig[editingProviderKey]) {
-        userStore.providersConfig[editingProviderKey] = {};
-      }
-      userStore.providersConfig[editingProviderKey].baseUrl = bUrl;
-      userStore.providersConfig[editingProviderKey].apiKey = aKey;
-      userStore.providersConfig[editingProviderKey].model = mModel;
-      userStore.activeProvider = editingProviderKey;
-
+    function selectDropdownModel(mName) {
+      const activeProv = userStore.activeProvider || "deepseek";
+      if (!userStore.providersConfig[activeProv]) userStore.providersConfig[activeProv] = {};
+      userStore.providersConfig[activeProv].model = mName;
       saveUserStore();
-      closeAiConfigModal();
-      renderCurrentQuestion();
-      alert(`已成功配置并激活供应商【${PROVIDERS[editingProviderKey].name}】！`);
+      renderTopAiDropdown();
+      updateDrawerModelTag();
     }
 
-    // 执行当前激活供应商的 AI 流式解析
-    async function requestAiHelpWithActiveProvider() {
+    function goToSettingsAiConfig() {
+      const dd = document.getElementById("topAiDropdown");
+      if (dd) dd.classList.remove("open");
+      exitQuizToHome();
+      switchBottomTab('settings');
+    }
+
+    // 全局点击空白处收起顶部 AI 下拉菜单
+    document.addEventListener('click', (e) => {
+      const dd = document.getElementById("topAiDropdown");
+      const btn = document.getElementById("topAiToolBtn");
+      if (dd && dd.classList.contains("open")) {
+        if (!dd.contains(e.target) && !btn?.contains(e.target)) {
+          dd.classList.remove("open");
+        }
+      }
+    });
+
+    // ==========================================
+    // 需求3: 悬浮 AI 助教与多轮对话核心逻辑 (流式响应，杜绝 Emoji)
+    // ==========================================
+    let floatingChatHistory = [];
+    let isAiResponding = false;
+
+    function updateDrawerModelTag() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+      const tag = document.getElementById("floatingDrawerModelTag");
+      if (tag) tag.textContent = cfg.model || PROVIDERS[activeProv]?.defaultModel || "AI助教";
+    }
+
+    function openFloatingAiDrawer() {
+      updateDrawerModelTag();
+      const drawer = document.getElementById("floatingAiDrawer");
+      if (drawer) drawer.classList.add("open");
+      if (floatingChatHistory.length === 0) {
+        initFloatingChatGreeting();
+      }
+    }
+
+    function closeFloatingAiDrawer() {
+      const drawer = document.getElementById("floatingAiDrawer");
+      if (drawer) drawer.classList.remove("open");
+    }
+
+    function clearFloatingChatHistory() {
+      floatingChatHistory = [];
+      const container = document.getElementById("floatingChatMessages");
+      if (container) container.innerHTML = "";
+      initFloatingChatGreeting();
+    }
+
+    function initFloatingChatGreeting() {
+      const container = document.getElementById("floatingChatMessages");
+      if (!container) return;
+      const q = activeQuestions[currentQuizIndex];
+      const welcomeText = q 
+        ? `你好！我是当前科目的专属 AI 名师助教。正在研习：【${q.subject}】第 ${currentQuizIndex + 1} 题。
+点击题目下方的【一键 AI 深度解析】或在下方直接向我追问（如“为什么不选B？”、“这题的核心概念怎么区分？”）！`
+        : `你好！我是 AI 名师助教，随时为你答疑解惑、解析考点。`;
+      container.innerHTML = `
+        <div class="chat-msg assistant">
+          <div class="chat-bubble-body">${welcomeText}</div>
+        </div>
+      `;
+    }
+
+    function appendChatMessageUI(role, text) {
+      const container = document.getElementById("floatingChatMessages");
+      if (!container) return null;
+      const msgEl = document.createElement("div");
+      msgEl.className = `chat-msg ${role}`;
+      msgEl.innerHTML = `<div class="chat-bubble-body">${escapeHtml(text)}</div>`;
+      container.appendChild(msgEl);
+      container.scrollTop = container.scrollHeight;
+      return msgEl.querySelector(".chat-bubble-body");
+    }
+
+    function escapeHtml(str) {
+      return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // 点击题目下方的“一键 AI 深度解析”按钮
+    async function triggerAiAssistantForCurrentQuestion() {
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
-      const qKey = getQKey(q);
 
-      const activeProvKey = userStore.activeProvider || "deepseek";
-      const cfg = userStore.providersConfig[activeProvKey] || {};
+      // 若被关闭，先临时激活悬浮球并打开抽屉
+      const bubble = document.getElementById("floatingAiBubble");
+      if (bubble) bubble.classList.remove("hide");
+      openFloatingAiDrawer();
+
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
 
       if (!cfg.apiKey) {
-        alert(`请先配置【${PROVIDERS[activeProvKey].name}】的 API Key 密钥`);
-        openAiProviderConfigModal(activeProvKey);
+        appendChatMessageUI("assistant", `当前【${PROVIDERS[activeProv].name}】尚未配置 API Key。
+请点击顶部设置或下方导航栏【设置】板块填入 Key 后即可使用 AI 深度解析！`);
         return;
       }
 
-      const box = document.getElementById("aiTextContainer");
-      box.style.display = "block";
-      box.textContent = `连线 ${PROVIDERS[activeProvKey].name} (${cfg.model}) 深度思考中...`;
-
-      const prompt = `你是一位顶级考试辅导名师。请对本题进行精准考点深度剖析：
+      const prompt = `请对本题进行精准考点深度剖析：
 【科目】：${q.subject}
 【题型】：${q.typeName}
 【题干】：${q.question}
-【官方正确答案】：${q.answer}
-【官方原解析】：${q.analysis || '无'}
+【官方答案】：${q.answer}
+【官方解析】：${q.analysis || '无'}
 
-请按以下三部分精炼输出：
-1. 【考点本质】：一句话点破考查的核心概念与法律/理论背景。
-2. 【正解与混淆项拆解】：精准讲透为什么选 ${q.answer}，指出干扰项的陷阱。
-3. 【秒记口诀】：给出一句好记的记忆口诀或联想背诵技巧。`;
+请按以下三部分精炼解析：
+1. 【考点本质】：一句话点破核心考点或法理依据。
+2. 【正解与混淆拆解】：讲透为什么选 ${q.answer}，指出干扰选项的陷阱。
+3. 【秒记口诀】：给出一句好记的背诵口诀或记忆联想法。`;
 
+      floatingChatHistory = [
+        { role: "system", content: "你是一位高校教师资格证与教育学权威名师。擅长一针见血解析考点、讲透混淆选项陷阱并给出好记口诀。输出简洁严谨，杜绝任何 Emoji。" },
+        { role: "user", content: prompt }
+      ];
+
+      const container = document.getElementById("floatingChatMessages");
+      if (container) {
+        container.innerHTML = `
+          <div class="chat-msg user">
+            <div class="chat-bubble-body">请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】</div>
+          </div>
+        `;
+      }
+
+      await executeStreamChatToAssistant();
+    }
+
+    // 助教输入框追问多轮对话
+    async function sendFloatingChatMessage() {
+      if (isAiResponding) return;
+      const input = document.getElementById("floatingChatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+
+      if (!cfg.apiKey) {
+        appendChatMessageUI("user", text);
+        appendChatMessageUI("assistant", `请先在下方导航【设置】中配置【${PROVIDERS[activeProv].name}】的 API Key！`);
+        return;
+      }
+
+      if (floatingChatHistory.length === 0) {
+        const q = activeQuestions[currentQuizIndex];
+        const ctx = q ? `当前正在练习的题目：[${q.subject}] ${q.typeName}。题干：“${q.question}”，正确答案：“${q.answer}”，官方解析：“${q.analysis || ''}”。` : "";
+        floatingChatHistory.push({
+          role: "system",
+          content: `你是一位专业教育辅导专家。输出直击考点核心，拒绝废话，杜绝任何 Emoji。${ctx}`
+        });
+      }
+
+      appendChatMessageUI("user", text);
+      floatingChatHistory.push({ role: "user", content: text });
+
+      await executeStreamChatToAssistant();
+    }
+
+    // 通用流式对话发送
+    async function executeStreamChatToAssistant() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+      const bodyEl = appendChatMessageUI("assistant", `思考中...`);
+
+      isAiResponding = true;
       try {
         const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
         const resp = await fetch(endpoint, {
@@ -2778,44 +3121,190 @@
             "Authorization": `Bearer ${cfg.apiKey}`
           },
           body: JSON.stringify({
-            model: cfg.model || PROVIDERS[activeProvKey].defaultModel,
-            messages: [
-              { role: "system", content: "你是一位专业教育辅导专家，输出直击考点核心，拒绝废话。" },
-              { role: "user", content: prompt }
-            ],
+            model: cfg.model || PROVIDERS[activeProv].defaultModel,
+            messages: floatingChatHistory,
             stream: true
           })
         });
 
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        if (!resp.ok) throw new Error(`HTTP 状态异常: ${resp.status}`);
 
         const reader = resp.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        let full = "";
-        box.textContent = "";
+        let fullResponse = "";
+        bodyEl.textContent = "";
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
+          const lines = chunk.split("
+");
           for (const line of lines) {
             const tr = line.trim();
             if (tr.startsWith("data: ") && tr !== "data: [DONE]") {
               try {
                 const parsed = JSON.parse(tr.slice(6));
-                const delta = parsed.choices[0]?.delta?.content || "";
-                full += delta;
-                box.textContent = full;
+                const delta = parsed.choices?.[0]?.delta?.content || "";
+                fullResponse += delta;
+                bodyEl.textContent = fullResponse;
+                const container = document.getElementById("floatingChatMessages");
+                if (container) container.scrollTop = container.scrollHeight;
               } catch (e) {}
             }
           }
         }
-        userStore.aiCache[qKey] = full;
-        saveUserStore();
+
+        floatingChatHistory.push({ role: "assistant", content: fullResponse });
       } catch (err) {
-        box.textContent = `AI 解析失败: ${err.message}，请点击“配置参数”检查 API Key 与端点。`;
+        bodyEl.textContent = `回答生成失败: ${err.message}，请在设置中检查该供应商的端点与 Key 配置。`;
+      } finally {
+        isAiResponding = false;
       }
+    }
+
+    // ==========================================
+    // 需求4: 设置板块完整的 AI 配置逻辑
+    // ==========================================
+    let editingSettingsProviderKey = "deepseek";
+
+    function initSettingsAiConfig() {
+      editingSettingsProviderKey = userStore.activeProvider || "deepseek";
+      renderSettingsProviderPills();
+      loadSettingsProviderForm(editingSettingsProviderKey);
+
+      const chk = document.getElementById("settingEnableFloatingAi");
+      if (chk) chk.checked = (appConfig.enableFloatingAi !== false);
+    }
+
+    function renderSettingsProviderPills() {
+      const grid = document.getElementById("settingsProviderBtnGrid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      Object.keys(PROVIDERS).forEach(k => {
+        const btn = document.createElement("div");
+        btn.className = `text-name-btn ${k === editingSettingsProviderKey ? 'active' : ''}`;
+        btn.textContent = PROVIDERS[k].name;
+        btn.onclick = () => {
+          editingSettingsProviderKey = k;
+          renderSettingsProviderPills();
+          loadSettingsProviderForm(k);
+        };
+        grid.appendChild(btn);
+      });
+    }
+
+    function loadSettingsProviderForm(pKey) {
+      const p = PROVIDERS[pKey] || PROVIDERS["deepseek"];
+      const cfg = userStore.providersConfig[pKey] || {};
+
+      const label = document.getElementById("settingsActiveProviderLabel");
+      if (label) {
+        const isCurrentActive = (userStore.activeProvider === pKey);
+        label.textContent = isCurrentActive ? `当前激活：${p.name}` : `编辑中：${p.name} (未激活)`;
+        label.style.color = isCurrentActive ? "var(--primary)" : "var(--text-muted)";
+      }
+
+      document.getElementById("settingsProviderBaseUrl").value = cfg.baseUrl || p.baseUrl;
+      document.getElementById("settingsProviderApiKey").value = cfg.apiKey || "";
+      document.getElementById("settingsProviderSelectedModel").value = cfg.model || p.defaultModel;
+      document.getElementById("settingsModelSearchInput").value = "";
+
+      renderSettingsModelPool(cfg.customModels || p.models);
+    }
+
+    function renderSettingsModelPool(models) {
+      const pool = document.getElementById("settingsModelPillPool");
+      if (!pool) return;
+      pool.innerHTML = "";
+      const curSel = document.getElementById("settingsProviderSelectedModel").value;
+
+      models.forEach(m => {
+        const pill = document.createElement("span");
+        pill.className = `text-name-btn ${m === curSel ? 'active' : ''}`;
+        pill.style.cssText = "padding:3px 8px;font-size:11px;";
+        pill.textContent = m;
+        pill.onclick = () => {
+          document.getElementById("settingsProviderSelectedModel").value = m;
+          renderSettingsModelPool(models);
+        };
+        pool.appendChild(pill);
+      });
+    }
+
+    function filterSettingsModelList(kw) {
+      kw = (kw || "").trim().toLowerCase();
+      const p = PROVIDERS[editingSettingsProviderKey] || PROVIDERS["deepseek"];
+      const cfg = userStore.providersConfig[editingSettingsProviderKey] || {};
+      const all = cfg.customModels || p.models;
+      const filtered = kw ? all.filter(m => m.toLowerCase().includes(kw)) : all;
+      renderSettingsModelPool(filtered);
+    }
+
+    async function fetchSettingsProviderModelsOnline() {
+      const bUrl = document.getElementById("settingsProviderBaseUrl").value.trim().replace(/\/+$/, "");
+      const aKey = document.getElementById("settingsProviderApiKey").value.trim();
+
+      if (!aKey) {
+        alert("请先填写该供应商的 API Key，再尝试拉取在线模型列表！");
+        return;
+      }
+
+      const btn = event?.currentTarget;
+      const origText = btn ? btn.textContent : "";
+      if (btn) btn.textContent = "拉取中...";
+
+      try {
+        const resp = await fetch(`${bUrl}/models`, {
+          headers: { "Authorization": `Bearer ${aKey}` }
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        let models = [];
+        if (Array.isArray(data.data)) {
+          models = data.data.map(i => i.id).filter(Boolean);
+        }
+        if (models.length === 0) throw new Error("未解析到有效模型");
+
+        if (!userStore.providersConfig[editingSettingsProviderKey]) {
+          userStore.providersConfig[editingSettingsProviderKey] = {};
+        }
+        userStore.providersConfig[editingSettingsProviderKey].customModels = models;
+        renderSettingsModelPool(models);
+        alert(`成功获取 ${models.length} 个在线模型！已更新到列表。`);
+      } catch (e) {
+        alert(`获取失败 (${e.message})，使用推荐模型列表。`);
+        renderSettingsModelPool(PROVIDERS[editingSettingsProviderKey].models);
+      } finally {
+        if (btn) btn.textContent = origText;
+      }
+    }
+
+    function saveSettingsProviderConfig() {
+      const bUrl = document.getElementById("settingsProviderBaseUrl").value.trim();
+      const aKey = document.getElementById("settingsProviderApiKey").value.trim();
+      const mModel = document.getElementById("settingsProviderSelectedModel").value.trim();
+
+      if (!userStore.providersConfig[editingSettingsProviderKey]) {
+        userStore.providersConfig[editingSettingsProviderKey] = {};
+      }
+      userStore.providersConfig[editingSettingsProviderKey].baseUrl = bUrl;
+      userStore.providersConfig[editingSettingsProviderKey].apiKey = aKey;
+      userStore.providersConfig[editingSettingsProviderKey].model = mModel;
+
+      userStore.activeProvider = editingSettingsProviderKey;
+      saveUserStore();
+      loadSettingsProviderForm(editingSettingsProviderKey);
+      updateDrawerModelTag();
+      alert(`已成功保存并激活【${PROVIDERS[editingSettingsProviderKey].name}】配置！`);
+    }
+
+    function toggleFloatingAiSetting(checked) {
+      appConfig.enableFloatingAi = checked;
+      saveUserStore();
+      const bubble = document.getElementById("floatingAiBubble");
+      if (bubble) bubble.classList.toggle("hide", !checked);
+      if (!checked) closeFloatingAiDrawer();
     }
 
     // ==========================================
@@ -3049,6 +3538,7 @@
       document.getElementById("settingModeExam").classList.toggle("active", mode === 'exam');
       document.getElementById("settingFollowSystem").checked = !!appConfig.followSystemTheme;
       updateCheckinUI();
+      initSettingsAiConfig();
     }
 
     function setDefaultMode(mode) {
