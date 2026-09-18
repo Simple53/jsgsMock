@@ -1,11 +1,11 @@
 {
-  "name": "考点刷题助手",
-  "short_name": "考点刷题",
-  "description": "专业教育类题库与智能AI解析刷题工具",
+  "name": "笃学题库",
+  "short_name": "笃学题库",
+  "description": "专业考试智能刷题与AI考点解析助手",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0284c7",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "icon.svg",
