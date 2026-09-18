@@ -529,8 +529,53 @@
     }
 
     /* =========================================
-       需求2全新重构：题目内部的 AI 供应商与模型面板
+       答题模式顶部 AI 配置条 (无 Emoji, 纯扁平)
        ========================================= */
+    .quiz-top-ai-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--primary-light);
+      border: 1.5px solid var(--primary-border);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      cursor: pointer;
+    }
+    .quiz-top-ai-bar:active {
+      background: #dbeafe;
+    }
+    .ai-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .ai-bar-model-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sub);
+      background: var(--card-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ai-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* 一键 AI 解析模块 */
     .ai-stream-box {
       border: 1.5px solid var(--primary-border);
       border-radius: 14px;
@@ -541,53 +586,22 @@
       flex-direction: column;
       gap: 12px;
     }
-    .ai-providers-scroll {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-    .ai-providers-scroll::-webkit-scrollbar { display: none; }
-    .provider-badge-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      background: var(--card-bg);
-      color: var(--text-sub);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .provider-badge-btn.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    .provider-logo-svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .ai-active-info-bar {
+    .ai-stream-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
-      color: var(--text-sub);
-      padding: 4px 2px;
     }
-    .ai-model-tag {
-      font-weight: 700;
-      color: var(--primary);
-      background: var(--primary-light);
-      padding: 2px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--primary-border);
+    .ai-stream-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-stream-provider-hint {
+      font-size: 11px;
+      color: var(--text-muted);
     }
     .ai-actions-row {
       display: flex;
@@ -595,7 +609,7 @@
     }
     .ai-trigger-btn {
       flex: 1;
-      padding: 10px;
+      padding: 11px;
       background: var(--primary);
       color: #ffffff;
       border: none;
@@ -608,17 +622,6 @@
       justify-content: center;
       gap: 6px;
     }
-    .ai-config-btn {
-      padding: 10px 14px;
-      background: #ffffff;
-      color: var(--text-sub);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
     .ai-text-container {
       font-size: 14px;
       line-height: 1.75;
@@ -628,6 +631,116 @@
       border: 1px solid var(--primary-border);
       color: var(--text-main);
       white-space: pre-wrap;
+    }
+
+    /* =========================================
+       首页：每日动态汇总与金句左右滑动 Banner
+       ========================================= */
+    .banner-carousel-container {
+      padding: 12px 20px 6px;
+      position: relative;
+    }
+    .banner-viewport {
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      position: relative;
+      touch-action: pan-y;
+    }
+    .banner-track {
+      display: flex;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+    }
+    .banner-slide {
+      min-width: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .banner-slide:active {
+      background: var(--primary-light);
+    }
+    .banner-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .banner-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+    .banner-tag.news {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+    .banner-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .banner-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .banner-summary {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .banner-foot-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .banner-action-link {
+      color: var(--primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .banner-dots-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .banner-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .banner-dot.active {
+      width: 18px;
+      background: var(--primary);
     }
 
     /* 底部操作 */
@@ -1073,20 +1186,50 @@
       <g id="logo-siliconflow">
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
+      <!-- 自定义模型 Custom 图标 -->
+      <g id="logo-custom">
+        <rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M9 9h6v6H9z" fill="none" stroke="currentColor" stroke-width="2"/>
+      </g>
+      <!-- 闪电/一键解析 (AI) -->
+      <g id="icon-bolt">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/>
+      </g>
+      <!-- 时政新闻/会议动态 -->
+      <g id="icon-news">
+        <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="6" y1="8" x2="18" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="6" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="6" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- 金句引用 -->
+      <g id="icon-quote">
+        <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-2 8z" fill="currentColor"/>
+        <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-2 8z" fill="currentColor"/>
+      </g>
+      <!-- 刷新 -->
+      <g id="icon-refresh">
+        <polyline points="23 4 23 10 17 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- 右箭头 -->
+      <g id="icon-right">
+        <polyline points="9 18 15 12 9 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
     </defs>
   </svg>
 
   <div class="app-viewport">
 
     <!-- =======================================
-         TAB 1: 练习 (首页: 每日名言标语 + 打卡图标 + 搜索图标)
+         TAB 1: 练习 (首页: 每日动态与金句轮播 Banner + 打卡/搜索)
          ======================================= -->
     <div class="view-content-pane" id="panePractice">
-      <!-- 需求1：首页头部 - 每日随机鼓励标语 + 右侧打卡与搜索图标 -->
-      <header class="home-top-header">
-        <div class="motto-box" onclick="cycleDailyMotto()" title="轻触切换励志名言">
-          <div class="motto-text" id="dailyMottoText">“博学之，审问之，慎思之，明辨之，笃行之。”</div>
-          <div class="motto-tip">每日研习寄语 ↻</div>
+      <!-- 首页头部：日期状态 + 右侧打卡与搜索图标 (无 Emoji) -->
+      <header class="home-top-header" style="padding:14px 20px 8px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">今日时政研学</div>
+          <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">最新重要会议与金句动态</div>
         </div>
         <div class="header-icons-row">
           <!-- 打卡图标 -->
@@ -1100,6 +1243,16 @@
           </button>
         </div>
       </header>
+
+      <!-- 需求2：每日动态汇总与每日金句左右滑动 Banner -->
+      <div class="banner-carousel-container">
+        <div class="banner-viewport" id="bannerViewport">
+          <div class="banner-track" id="bannerTrack">
+            <!-- 由 JS 渲染轮播卡片 -->
+          </div>
+        </div>
+        <div class="banner-dots-row" id="bannerDotsRow"></div>
+      </div>
 
       <nav class="capsule-nav">
         <span class="capsule-item active" onclick="filterCategory('all', this)">全部科目 (5科)</span>
@@ -1418,7 +1571,42 @@
   </div>
 
   <!-- =======================================
-       需求2全新重构：AI 供应商详细配置与模型搜索抽屉
+       需求2：每日动态汇总与金句详情弹窗
+       ======================================= -->
+  <div class="modal-mask" id="bannerDetailModal" onclick="closeBannerDetailModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()" style="max-height:82vh;overflow-y:auto;">
+      <div class="modal-top-row">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="banner-tag" id="modalBannerTypeTag">重要会议动态</span>
+          <span style="font-size:11px;color:var(--text-muted);" id="modalBannerDate"></span>
+        </div>
+        <button class="modal-close-icon" onclick="closeBannerDetailModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+
+      <div style="font-size:16px;font-weight:900;line-height:1.45;color:var(--text-main);" id="modalBannerTitle"></div>
+      <div style="font-size:12px;color:var(--text-sub);margin:4px 0 10px;" id="modalBannerSource"></div>
+
+      <div style="font-size:12px;font-weight:800;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:4px;">
+        <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--primary);"><use href="#icon-news"/></svg>
+        <span>核心论述与会议内容</span>
+      </div>
+      <div style="font-size:13.5px;line-height:1.75;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px;color:var(--text-main);white-space:pre-wrap;" id="modalBannerContent"></div>
+
+      <div style="font-size:12px;font-weight:800;color:var(--text-main);margin:14px 0 6px;display:flex;align-items:center;gap:4px;">
+        <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--correct);"><use href="#icon-star"/></svg>
+        <span>考试考点结合与备考启示</span>
+      </div>
+      <div style="font-size:13px;line-height:1.7;color:var(--text-sub);background:var(--primary-light);border:1.5px solid var(--primary-border);border-radius:10px;padding:12px;" id="modalBannerExamPoints"></div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="bottom-btn" style="flex:1;font-size:13px;" onclick="copyBannerText()">复制内容</button>
+        <button class="modal-submit-btn" style="flex:1;padding:10px;font-size:13px;" onclick="closeBannerDetailModal()">已学习掌握</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================
+       需求1与需求2：AI 供应商详细配置与模型搜索抽屉 (无 Emoji)
        ======================================= -->
   <div class="modal-mask" id="aiConfigModal" onclick="closeAiConfigModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
@@ -1429,6 +1617,12 @@
         <button class="modal-close-icon" onclick="closeAiConfigModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
 
+      <!-- 供应商快捷切换徽标栏 -->
+      <div style="margin-bottom:6px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">选择当前配置的服务商:</div>
+        <div class="ai-providers-scroll" id="modalProvidersScroll"></div>
+      </div>
+
       <div>
         <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API 端点 (Base URL) - 优先自动填充</label>
         <input id="modalProviderBaseUrl" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
@@ -1436,7 +1630,7 @@
 
       <div>
         <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API Key 密钥</label>
-        <input id="modalProviderApiKey" type="password" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="输入该供应商的 sk-xxxx">
+        <input id="modalProviderApiKey" type="password" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="输入该供应商的 API 密钥 (sk-xxxx)">
       </div>
 
       <!-- 需求2: 获取当前供应商模型与搜索模型 -->
@@ -1478,33 +1672,258 @@
 
   <script>
     // ==========================================
-    // 每日励志名言库 (需求1)
+    // 需求2: 每日动态汇总与重要金句库 (含重要会议、习近平金句等)
     // ==========================================
-    const MOTTO_LIST = [
-      "博学之，审问之，慎思之，明辨之，笃行之。",
-      "日日行，不怕千万里；常常做，不怕千万事。",
-      "不积跬步无以至千里，不积小流无以成江海。",
-      "操千曲而后晓声，观千剑而后识器。",
-      "为学正如撑上水船，一篙不可放缓。",
-      "路虽远，行则将至；事虽难，做则必成。",
-      "知之者不如好之者，好之者不如乐之者。",
-      "业精于勤，荒于嬉；行成于思，毁于随。",
-      "锲而舍之，朽木不折；锲而不舍，金石可镂。"
+    const DAILY_BANNER_DATA = [
+      {
+        id: "news_1",
+        type: "news",
+        typeLabel: "重要会议动态",
+        title: "全国教育大会在京召开 习近平出席并发表重要讲话",
+        summary: "紧紧围绕立德树人根本任务，朝着建成教育强国战略目标扎实迈进。坚持把立德树人作为检验学校一切工作的根本标准。",
+        source: "新华社 · 全国教育大会",
+        date: "2024-09",
+        content: `全国教育大会在京召开。习近平总书记出席大会并发表重要讲话强调：
+1. 教育是强国建设、民族复兴之基。我们要建成的教育强国，是中国特色社会主义教育强国，应当具有强大的思政引领力、人才竞争力、科技支撑力、民生保障力、社会协同力、国际影响力。
+2. 紧紧围绕立德树人根本任务，着眼于培养德智体美劳全面发展的社会主义建设者和接班人。坚持把立德树人作为检验学校一切工作的根本标准。
+3. 统筹实施科教兴国战略、人才强国战略、创新驱动发展战略，一体推进教育发展、科技创新、人才培养。
+4. 实施教育家精神铸魂强师行动，加强师德师风建设，提高教师培养培训质量，培养造就新时代高水平教师队伍。`,
+        examPoints: `【高校教资与综合素质核心考点】
+1. 教育的根本任务：立德树人（单选、辨析高频考点）。
+2. 教育强国六大特质：思政引领力、人才竞争力、科技支撑力、民生保障力、社会协同力、国际影响力。
+3. 教师队伍建设要求：大力弘扬教育家精神，坚持师德师风第一标准。`
+      },
+      {
+        id: "quote_1",
+        type: "quote",
+        typeLabel: "每日重要金句",
+        title: "习近平论“做学生为学、为事、为人的‘大先生’”",
+        summary: "“教师不能只做传授书本知识的教书匠，而要成为塑造学生品格、品行、品味的‘大先生’。”",
+        source: "习近平总书记在中国人民大学考察时的重要讲话",
+        date: "2022-04",
+        content: `习近平总书记在中国人民大学考察时强调：
+“老师应该有言为士则、行为世范的自觉，不断提高自身道德修养，以模范行为影响和带动学生，做学生为学、为事、为人的大先生，致力于成为具有方向明、主义真、学问高、德行正的‘经师’和‘人师’的统一者。”
+
+“好的学校特色各不过，但有一条是共同的，那就是都有一支优秀教师队伍。对教师来说，想把学生培养成什么样的人，自己首先就应该成为什么样的人。”`,
+        examPoints: `【高校教师职业道德高频考点】
+1. 教师角色的升华：从“教书匠”到“大先生”、“经师”与“人师”相统一。
+2. 示范性与榜样力量：言为士则、行为世范，为人师表，以身作则。
+3. 主观题踩分词：道德修养、言传身教、为人师表、立德树人。`
+      },
+      {
+        id: "news_2",
+        type: "news",
+        typeLabel: "重要政策动态",
+        title: "中共中央 国务院印发《关于弘扬教育家精神加强新时代高素质专业化教师队伍建设的意见》",
+        summary: "将教育家精神融入教师培养全过程，坚持师德师风第一标准，深化教师评价改革，强化教师待遇保障。",
+        source: "新华社受权发布 · 中共中央国务院文件",
+        date: "2024-08",
+        content: `中共中央、国务院印发《关于弘扬教育家精神加强新时代高素质专业化教师队伍建设的意见》：
+1. 总体要求：坚持以习近平新时代中国特色社会主义思想为指导，全面贯彻党的教育方针，把加强教师队伍建设作为建设教育强国最重要的基础工作来抓。
+2. 弘扬教育家精神的六大内涵：
+   - 心有大我、至诚报国的理想信念；
+   - 言为士则、行为世范的道德情操；
+   - 启智润心、因材施教的育人智慧；
+   - 勤学笃行、求是创新的躬耕态度；
+   - 乐教爱生、甘于奉献的仁爱之心；
+   - 胸怀天下、以文化人的弘道追求。
+3. 健全师德师风建设长效机制，强化师德考评与师德失范“零容忍”。`,
+        examPoints: `【综合素质与师德高频必背】
+1. 教育家精神六个维度：理想信念、道德情操、育人智慧、躬耕态度、仁爱之心、弘道追求（简答、案例分析必考！）。
+2. 师德评价机制：师德表现为第一标准，实行师德表现一票否决制。`
+      },
+      {
+        id: "quote_2",
+        type: "quote",
+        typeLabel: "每日重要金句",
+        title: "习近平论好老师的“四有”标准",
+        summary: "“一个人遇到好老师是人生的幸运，一个学校拥有好老师是学校的光荣，一个民族源源不断涌现出一批又一批好老师是民族的希望。”",
+        source: "习近平同北京师范大学师生代表座谈时的讲话",
+        date: "2014-09",
+        content: `习近平总书记在同北京师范大学师生代表座谈时，完整提出了做好老师的四条标准：
+第一，做好老师，要有理想信念。广大教师要用好课堂讲坛，用好校园阵地，用自己的行动倡导社会主义核心价值观。
+第二，做好老师，要有道德情操。老师的人格力量和人格魅力是成功教育的重要基础。
+第三，做好老师，要有扎实学识。水之积也不厚，则其负大舟也无力。教师必须具备扎实深厚的学识。
+第四，做好老师，要有仁爱之心。爱是教育的灵魂，没有爱就没有教育。好老师应该是仁师，用爱培育爱、激发爱、传播爱。`,
+        examPoints: `【高校教资《教师职业道德规范》核心考点】
+1. 四有好老师标准：有理想信念、有道德情操、有扎实学识、有仁爱之心。
+2. “爱是教育的灵魂”：对应“关爱学生”职业道德规范。
+3. 综合素质作文与材料分析题万能金句。`
+      },
+      {
+        id: "news_3",
+        type: "news",
+        typeLabel: "重要会议动态",
+        title: "中共中央政治局第五次集体学习：加快建设教育强国",
+        summary: "建设教育强国，基点在基础教育，龙头是高等教育。把服务高质量发展作为建设教育强国的重要任务。",
+        source: "中共中央政治局集体学习",
+        date: "2023-05",
+        content: `中共中央政治局就建设教育强国进行第五次集体学习。习近平总书记在主持学习时发表重要讲话：
+1. 建设教育强国，是全面建成社会主义现代化强国的战略先导，是实现高水平科技自立自强的重要支撑，是促进全体人民共同富裕的有效途径。
+2. 建设教育强国，基点在基础教育，龙头是高等教育。要把加快建设中国特色、世界一流的大学和优势学科作为重中之重。
+3. 推进教育数字化，建设全民终身学习的学习型社会、学习型大国。`,
+        examPoints: `【高等教育学与教育政策考点】
+1. 教育强国的“基点”与“龙头”：基点在基础教育，龙头在高等教育（单选核心考点）。
+2. 高等教育的核心任务：服务国家战略需求与高质量发展，建设中国特色、世界一流大学和优势学科（双一流）。`
+      }
     ];
 
-    function getTodayMotto() {
-      const day = new Date().getDate();
-      return MOTTO_LIST[day % MOTTO_LIST.length];
+    let currentBannerIndex = 0;
+    let bannerTimer = null;
+
+    function renderBannerCarousel() {
+      const track = document.getElementById("bannerTrack");
+      const dotsRow = document.getElementById("bannerDotsRow");
+      if (!track || !dotsRow) return;
+
+      track.innerHTML = "";
+      dotsRow.innerHTML = "";
+
+      DAILY_BANNER_DATA.forEach((item, idx) => {
+        const slide = document.createElement("div");
+        slide.className = "banner-slide";
+        slide.onclick = () => openBannerDetailModal(idx);
+
+        const isNews = (item.type === "news");
+        slide.innerHTML = `
+          <div class="banner-badge-row">
+            <span class="banner-tag ${isNews ? 'news' : ''}">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px;"><use href="${isNews ? '#icon-news' : '#icon-quote'}"/></svg>
+              ${item.typeLabel}
+            </span>
+            <span class="banner-date">${item.date}</span>
+          </div>
+          <div class="banner-title">${item.title}</div>
+          <div class="banner-summary">${item.summary}</div>
+          <div class="banner-foot-row">
+            <span>${item.source}</span>
+            <span class="banner-action-link">研读详情 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg></span>
+          </div>
+        `;
+        track.appendChild(slide);
+
+        const dot = document.createElement("div");
+        dot.className = `banner-dot ${idx === currentBannerIndex ? 'active' : ''}`;
+        dot.onclick = (e) => {
+          e.stopPropagation();
+          goToBannerSlide(idx);
+        };
+        dotsRow.appendChild(dot);
+      });
+
+      updateBannerPosition();
+      initBannerSwiper();
+      startBannerAutoPlay();
     }
 
-    let mottoIdx = 0;
-    function cycleDailyMotto() {
-      mottoIdx = (mottoIdx + 1) % MOTTO_LIST.length;
-      document.getElementById("dailyMottoText").textContent = `“${MOTTO_LIST[mottoIdx]}”`;
+    function updateBannerPosition() {
+      const track = document.getElementById("bannerTrack");
+      if (track) {
+        track.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+      }
+      const dots = document.querySelectorAll(".banner-dot");
+      dots.forEach((d, i) => d.classList.toggle("active", i === currentBannerIndex));
+    }
+
+    function goToBannerSlide(idx) {
+      currentBannerIndex = (idx + DAILY_BANNER_DATA.length) % DAILY_BANNER_DATA.length;
+      updateBannerPosition();
+    }
+
+    function startBannerAutoPlay() {
+      if (bannerTimer) clearInterval(bannerTimer);
+      bannerTimer = setInterval(() => {
+        goToBannerSlide(currentBannerIndex + 1);
+      }, 6000);
+    }
+
+    function stopBannerAutoPlay() {
+      if (bannerTimer) {
+        clearInterval(bannerTimer);
+        bannerTimer = null;
+      }
+    }
+
+    // Banner 左右触摸滑动手势
+    function initBannerSwiper() {
+      const viewport = document.getElementById("bannerViewport");
+      if (!viewport || viewport.dataset.swipeBound) return;
+      viewport.dataset.swipeBound = "1";
+
+      let startX = 0, startY = 0, currentX = 0, isTouching = false;
+
+      viewport.addEventListener("touchstart", (e) => {
+        isTouching = true;
+        stopBannerAutoPlay();
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      }, { passive: true });
+
+      viewport.addEventListener("touchmove", (e) => {
+        if (!isTouching) return;
+        currentX = e.touches[0].clientX;
+      }, { passive: true });
+
+      viewport.addEventListener("touchend", (e) => {
+        if (!isTouching) return;
+        isTouching = false;
+        const diffX = currentX - startX;
+        const diffY = (e.changedTouches[0].clientY) - startY;
+        if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX < 0) {
+            goToBannerSlide(currentBannerIndex + 1);
+          } else {
+            goToBannerSlide(currentBannerIndex - 1);
+          }
+        }
+        startBannerAutoPlay();
+      }, { passive: true });
+    }
+
+    // 查看 Banner 详情模态框
+    let activeBannerIdx = 0;
+    function openBannerDetailModal(idx) {
+      stopBannerAutoPlay();
+      activeBannerIdx = idx;
+      const item = DAILY_BANNER_DATA[idx];
+      if (!item) return;
+
+      const isNews = (item.type === "news");
+      const tagEl = document.getElementById("modalBannerTypeTag");
+      tagEl.textContent = item.typeLabel;
+      tagEl.className = `banner-tag ${isNews ? 'news' : ''}`;
+      
+      document.getElementById("modalBannerDate").textContent = item.date;
+      document.getElementById("modalBannerTitle").textContent = item.title;
+      document.getElementById("modalBannerSource").textContent = `出处：${item.source}`;
+      document.getElementById("modalBannerContent").textContent = item.content;
+      document.getElementById("modalBannerExamPoints").textContent = item.examPoints;
+
+      document.getElementById("bannerDetailModal").classList.add("open");
+    }
+
+    function closeBannerDetailModal() {
+      document.getElementById("bannerDetailModal").classList.remove("open");
+      startBannerAutoPlay();
+    }
+
+    function copyBannerText() {
+      const item = DAILY_BANNER_DATA[activeBannerIdx];
+      if (!item) return;
+      const textToCopy = `【${item.title}】\n来源：${item.source} (${item.date})\n\n${item.content}\n\n${item.examPoints}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert("已成功复制重要论述与考点解析到剪贴板！");
+        }).catch(() => {
+          alert("复制成功！");
+        });
+      } else {
+        alert("已选取内容！");
+      }
     }
 
     // ==========================================
-    // 需求2: 六大 AI 供应商预设配置
+    // 需求1与需求2: 七大 AI 供应商预设配置 (包含自定义)
     // ==========================================
     const PROVIDERS = {
       deepseek: {
@@ -1548,6 +1967,13 @@
         baseUrl: "https://api.siliconflow.cn/v1",
         defaultModel: "Qwen/Qwen2.5-7B-Instruct",
         models: ["Qwen/Qwen2.5-7B-Instruct", "deepseek-ai/DeepSeek-V2.5", "THUDM/glm-4-9b-chat"]
+      },
+      custom: {
+        name: "自定义",
+        icon: "#logo-custom",
+        baseUrl: "https://api.openai.com/v1",
+        defaultModel: "gpt-4o-mini",
+        models: ["gpt-4o-mini", "deepseek-chat", "custom-model"]
       }
     };
 
@@ -1657,7 +2083,13 @@
         Object.assign(allSubjectsData, userStore.customSubjects);
       }
 
-      document.getElementById("dailyMottoText").textContent = `“${getTodayMotto()}”`;
+      // 初始化日期与研学副标题
+      const now = new Date();
+      const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
+      const subEl = document.getElementById("homeDateSub");
+      if (subEl) subEl.textContent = `${dateStr} · 左右滑动浏览最新会议动态与金句`;
+
+      renderBannerCarousel();
       renderSubjectList();
       updateCheckinUI();
       initDraftCanvasWithUndo();
@@ -1681,7 +2113,7 @@
         summaryEl.textContent = `连续打卡 ${totalDays} 天 · 累计坚持 ${userStore.checkin.history?.length || totalDays} 天`;
       }
 
-      // 渲染最近 7 天打卡点阵
+      // 渲染最近 7 天打卡点阵 (纯矢量 SVG 对勾，杜绝 Emoji)
       const weekContainer = document.getElementById("settingsWeekDots");
       if (weekContainer) {
         weekContainer.innerHTML = "";
@@ -1692,7 +2124,9 @@
           const col = document.createElement("div");
           col.className = "checkin-dot-col";
           col.innerHTML = `
-            <div class="checkin-dot-circle ${isCheck ? 'active' : ''}">${isCheck ? '✓' : ''}</div>
+            <div class="checkin-dot-circle ${isCheck ? 'active' : ''}">
+              ${isCheck ? '<svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:#ffffff;"><use href="#icon-check"/></svg>' : ''}
+            </div>
             <span>周${daysLabel[i]}</span>
           `;
           weekContainer.appendChild(col);
@@ -2003,49 +2437,54 @@
         optionsHtml += `</div>`;
       }
 
+      const activeProv = userStore.activeProvider || "deepseek";
+      const curProv = PROVIDERS[activeProv] || PROVIDERS["deepseek"];
+      const curCfg = userStore.providersConfig[activeProv] || {};
+      const curModelName = curCfg.model || curProv.defaultModel;
+
+      // 需求1：答题模式的 AI 模块配置放在上方，点击即可修改配置
+      const topAiBarHtml = `
+        <div class="quiz-top-ai-bar" onclick="openAiProviderConfigModal('${activeProv}')" title="轻触修改 AI 供应商与模型配置">
+          <div class="ai-bar-left">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="${curProv.icon}"/></svg>
+            <span class="ai-bar-name">${curProv.name}</span>
+            <span class="ai-bar-model-badge">${curModelName}</span>
+          </div>
+          <div class="ai-bar-right">
+            <span class="ai-bar-edit-text">修改配置</span>
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;color:var(--primary);"><use href="#icon-gear"/></svg>
+          </div>
+        </div>
+      `;
+
       let analysisBlock = "";
       if (showAnswer) {
-        // 渲染 6 大 AI 供应商徽标栏
-        const activeProv = userStore.activeProvider || "deepseek";
-        let providerBadgesHtml = "";
-        Object.keys(PROVIDERS).forEach(pKey => {
-          const p = PROVIDERS[pKey];
-          const isActive = (pKey === activeProv);
-          providerBadgesHtml += `
-            <div class="provider-badge-btn ${isActive ? 'active' : ''}" onclick="switchActiveAiProvider('${pKey}')">
-              <svg class="provider-logo-svg" viewBox="0 0 24 24"><use href="${p.icon}"/></svg>
-              <span>${p.name}</span>
-            </div>
-          `;
-        });
-
-        const curCfg = userStore.providersConfig[activeProv] || {};
-        const curModelName = curCfg.model || PROVIDERS[activeProv].defaultModel;
-
         analysisBlock = `
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
               <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
-              <span style="font-size:12px;color:var(--primary);">官方考点精解 ▾</span>
+              <span style="font-size:12px;color:var(--primary);display:flex;align-items:center;gap:2px;">
+                官方考点精解
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
+              </span>
             </div>
             <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
           </div>
 
-          <!-- 需求2：全新 AI 供应商与模型面板 -->
+          <!-- 需求1：保留一键 AI 解析的模块 (杜绝任何 Emoji) -->
           <div class="ai-stream-box">
-            <div style="font-size:12px;font-weight:700;color:var(--text-sub);">选择 AI 解析供应商:</div>
-            <div class="ai-providers-scroll">
-              ${providerBadgesHtml}
-            </div>
-
-            <div class="ai-active-info-bar">
-              <div>当前模型: <span class="ai-model-tag">${curModelName}</span></div>
-              <button class="ai-config-btn" style="padding:4px 10px;font-size:11px;" onclick="openAiProviderConfigModal('${activeProv}')">配置参数 / 换模型 ⚙</button>
+            <div class="ai-stream-header">
+              <div class="ai-stream-title">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--primary);"><use href="#icon-bolt"/></svg>
+                <span>AI 深度考点精解</span>
+              </div>
+              <span class="ai-stream-provider-hint">${curProv.name} · ${curModelName}</span>
             </div>
 
             <div class="ai-actions-row">
               <button class="ai-trigger-btn" onclick="requestAiHelpWithActiveProvider()">
-                ${userStore.aiCache[qKey] ? '重新精讲' : '🤖 AI 名师一键深度精讲'}
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-bolt"/></svg>
+                <span>${userStore.aiCache[qKey] ? '重新解析' : '一键 AI 深度解析'}</span>
               </button>
             </div>
 
@@ -2055,6 +2494,7 @@
       }
 
       container.innerHTML = `
+        ${topAiBarHtml}
         <div class="quiz-header-meta">
           <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
@@ -2175,6 +2615,7 @@
     }
 
     function openAiProviderConfigModal(pKey) {
+      if (!pKey || !PROVIDERS[pKey]) pKey = userStore.activeProvider || "deepseek";
       editingProviderKey = pKey;
       const p = PROVIDERS[pKey];
       const cfg = userStore.providersConfig[pKey] || {};
@@ -2184,6 +2625,23 @@
       document.getElementById("modalProviderApiKey").value = cfg.apiKey || "";
       document.getElementById("modalProviderSelectedModel").value = cfg.model || p.defaultModel;
       document.getElementById("modalModelSearchInput").value = "";
+
+      // 渲染弹窗内顶部供应商快捷切换栏
+      const provScroll = document.getElementById("modalProvidersScroll");
+      if (provScroll) {
+        provScroll.innerHTML = "";
+        Object.keys(PROVIDERS).forEach(k => {
+          const item = PROVIDERS[k];
+          const btn = document.createElement("div");
+          btn.className = `provider-badge-btn ${k === editingProviderKey ? 'active' : ''}`;
+          btn.innerHTML = `
+            <svg class="provider-logo-svg" viewBox="0 0 24 24"><use href="${item.icon}"/></svg>
+            <span>${item.name}</span>
+          `;
+          btn.onclick = () => openAiProviderConfigModal(k);
+          provScroll.appendChild(btn);
+        });
+      }
 
       renderProviderModelPills(cfg.customModels || p.models);
       document.getElementById("aiConfigModal").classList.add("open");
