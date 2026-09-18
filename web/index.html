@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>笃学题库 - 考点智能刷题与AI解析</title>
+  <title>file2quiz - 智能刷题与AI解析</title>
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
   <style>
     /* =========================================
-       粉笔风格·纯扁平·无阴影·无渐变·无Emoji设计体系
+       file2quiz 扁平化设计规范 (No Shadow, No Gradient, No Emoji)
        ========================================= */
     :root {
-      --primary: #2563eb;         /* 粉笔蓝 */
+      --primary: #2563eb;         /* 品牌经典蓝 */
       --primary-dark: #1d4ed8;
       --primary-light: #eff6ff;
       --primary-border: #bfdbfe;
@@ -23,16 +23,15 @@
       --text-sub: #64748b;
       --text-muted: #94a3b8;
       --border: #e2e8f0;
-      --correct: #10b981;         /* 纯扁平翡翠绿 */
+      --correct: #10b981;         /* 翡翠绿 */
       --correct-bg: #ecfdf5;
-      --wrong: #ef4444;           /* 纯扁平珊瑚红 */
+      --wrong: #ef4444;           /* 珊瑚红 */
       --wrong-bg: #fef2f2;
-      --star-active: #f59e0b;     /* 星级明黄 */
+      --star-active: #f59e0b;     /* 明黄星标 */
       --star-inactive: #e2e8f0;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
-    /* 护眼模式主题 */
     body.theme-eye {
       --bg: #eef7ee;
       --card-bg: #f7fcf7;
@@ -44,7 +43,6 @@
       --primary-border: #a5d6a7;
     }
 
-    /* 深色模式主题 */
     body.theme-dark {
       --bg: #0b1120;
       --card-bg: #1e293b;
@@ -96,32 +94,24 @@
       flex-shrink: 0;
     }
 
-    /* =========================================
-       视图 1: 课程列表首页 (参考图 2)
-       ========================================= */
-    .home-view {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 72px;
-    }
-    .home-header {
+    /* 顶部统一 Header */
+    .top-brand-header {
       padding: 16px 20px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
     }
-    .home-title {
-      font-size: 22px;
+    .brand-title {
+      font-size: 20px;
       font-weight: 800;
-      color: var(--text-main);
+      color: var(--primary);
       letter-spacing: -0.5px;
     }
-    .home-header-icons {
+    .brand-actions {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       color: var(--text-sub);
     }
     .header-icon-btn {
@@ -135,23 +125,30 @@
       padding: 4px;
     }
 
-    /* 顶部科目胶囊导航 */
+    /* 主视图容器 */
+    .view-content-pane {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 70px;
+    }
+
+    /* 科目胶囊条 */
     .capsule-nav {
       display: flex;
       gap: 12px;
-      padding: 6px 20px 14px;
+      padding: 12px 20px;
       overflow-x: auto;
       white-space: nowrap;
       border-bottom: 1px solid var(--border);
     }
-    .capsule-nav::-webkit-scrollbar {
-      display: none;
-    }
+    .capsule-nav::-webkit-scrollbar { display: none; }
     .capsule-item {
       font-size: 14px;
       color: var(--text-sub);
       cursor: pointer;
-      padding-bottom: 6px;
+      padding-bottom: 4px;
       font-weight: 500;
     }
     .capsule-item.active {
@@ -160,18 +157,18 @@
       border-bottom: 2.5px solid var(--primary);
     }
 
-    /* 科目卡片列表 */
+    /* 科目卡片列表 (Tab 1) */
     .subject-list {
-      padding: 16px 20px;
+      padding: 12px 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
     .subject-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 0;
+      padding: 14px 0;
       border-bottom: 1px solid var(--border);
       cursor: pointer;
     }
@@ -193,10 +190,7 @@
       margin-top: 2px;
       flex-shrink: 0;
     }
-    .sub-bullet-circle svg {
-      width: 12px;
-      height: 12px;
-    }
+    .sub-bullet-circle svg { width: 12px; height: 12px; }
     .sub-info-col {
       display: flex;
       flex-direction: column;
@@ -239,7 +233,7 @@
       padding-left: 8px;
     }
 
-    /* 底部悬浮自定义刷题按钮 */
+    /* 悬浮自定义刷题入口 */
     .custom-fab-wrap {
       padding: 20px;
       display: flex;
@@ -264,7 +258,7 @@
       color: var(--primary);
     }
 
-    /* 底部导航栏 */
+    /* 底部 4 栏导航 (练习 | 错题本 | 模拟考试 | 做题历史) */
     .bottom-tabbar {
       position: fixed;
       bottom: 0;
@@ -289,17 +283,15 @@
       font-weight: 600;
       background: none;
       border: none;
+      flex: 1;
     }
     .tabbar-item.active {
       color: var(--primary);
     }
-    .tabbar-item svg {
-      width: 20px;
-      height: 20px;
-    }
+    .tabbar-item svg { width: 20px; height: 20px; }
 
     /* =========================================
-       视图 2: 刷题界面 (参考图 1)
+       刷题界面 (包含平铺工具栏与滑动手势)
        ========================================= */
     .quiz-view {
       display: none;
@@ -307,23 +299,35 @@
       flex: 1;
       height: 100vh;
       overflow-y: hidden;
+      touch-action: pan-y; /* 允许纵向滚动同时捕捉横向滑动 */
     }
-    .quiz-top-nav {
+    .quiz-top-nav-flat {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       background: var(--card-bg);
-      position: relative;
       z-index: 25;
     }
-    .nav-left-group {
+    .nav-left-flat {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
-    .nav-icon-btn {
+    .quiz-timer {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      font-variant-numeric: tabular-nums;
+    }
+    .nav-tools-tiled {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-main);
+    }
+    .tool-icon-btn {
       background: none;
       border: none;
       color: var(--text-main);
@@ -333,56 +337,10 @@
       justify-content: center;
       padding: 4px;
     }
-    .quiz-timer {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      letter-spacing: 0.5px;
-      font-variant-numeric: tabular-nums;
-    }
-    .nav-right-tools {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      color: var(--text-main);
+    .tool-icon-btn.active {
+      color: var(--star-active);
     }
 
-    /* 更多选项下拉菜单 (纯扁平无阴影) */
-    .more-dropdown {
-      position: absolute;
-      top: 50px;
-      right: 16px;
-      background: var(--card-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      display: none;
-      flex-direction: column;
-      z-index: 40;
-      min-width: 140px;
-    }
-    .more-dropdown.open {
-      display: flex;
-    }
-    .dropdown-item {
-      padding: 12px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .dropdown-item:last-child {
-      border-bottom: none;
-    }
-    .dropdown-item:active {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    /* 题目题干区域 */
     .quiz-scroll-body {
       flex: 1;
       overflow-y: auto;
@@ -391,6 +349,7 @@
       flex-direction: column;
       gap: 16px;
       padding-bottom: 76px;
+      user-select: none;
     }
     .quiz-header-meta {
       display: flex;
@@ -401,11 +360,11 @@
       font-weight: 500;
     }
     .meta-subject-tag {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-sub);
     }
     .meta-index-counter {
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-sub);
     }
     .q-text-body {
@@ -416,7 +375,7 @@
       word-break: break-word;
     }
 
-    /* 选项列表 (参考图 1 圆形按钮) */
+    /* 圆形字母选项行 */
     .quiz-options-col {
       display: flex;
       flex-direction: column;
@@ -455,7 +414,6 @@
       flex: 1;
     }
 
-    /* 选项状态 (做题模式 vs 背题模式) */
     .option-row.exam-selected {
       border-color: var(--primary);
       background: var(--primary-light);
@@ -488,7 +446,7 @@
       color: #ffffff;
     }
 
-    /* 判断题操作组 */
+    /* 判断题选项 */
     .judge-btn-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -510,7 +468,7 @@
       gap: 8px;
     }
 
-    /* 官方解析展开折叠框 */
+    /* 官方解析 */
     .fenbi-analysis-box {
       border: 1.5px solid var(--border);
       border-radius: 12px;
@@ -541,7 +499,7 @@
       white-space: pre-wrap;
     }
 
-    /* AI 深度考点解析模块 */
+    /* AI 深度剖析模块 */
     .ai-stream-box {
       border: 1.5px solid var(--primary-border);
       border-radius: 12px;
@@ -586,7 +544,7 @@
       white-space: pre-wrap;
     }
 
-    /* 底部刷题切换栏 */
+    /* 底部上一题/下一题 */
     .quiz-bottom-actions {
       position: fixed;
       bottom: 0;
@@ -622,204 +580,7 @@
     }
 
     /* =========================================
-       模态弹窗: 自定义刷题 (参考图 3)
-       ========================================= */
-    .modal-mask {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.45);
-      z-index: 100;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-    }
-    .modal-mask.open {
-      display: flex;
-    }
-    .modal-panel {
-      width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      padding: 24px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    .modal-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-    .modal-title-col {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      align-items: center;
-      width: 100%;
-    }
-    .modal-main-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-    .modal-sub-tip {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .modal-close-icon {
-      position: absolute;
-      right: 0;
-      top: 0;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    /* 选项组区块 */
-    .setting-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .setting-card-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .mode-select-card {
-      padding: 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: var(--card-bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .mode-select-card.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-    .card-corner-triangle {
-      display: none;
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-top: 24px solid var(--primary);
-      border-left: 24px solid transparent;
-    }
-    .card-corner-check {
-      display: none;
-      position: absolute;
-      top: 1px;
-      right: 2px;
-      width: 10px;
-      height: 10px;
-      fill: #ffffff;
-    }
-    .mode-select-card.active .card-corner-triangle,
-    .mode-select-card.active .card-corner-check {
-      display: block;
-    }
-    .mode-card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .mode-select-card.active .mode-card-title {
-      color: var(--primary);
-    }
-    .mode-card-desc {
-      font-size: 11px;
-      color: var(--text-sub);
-    }
-
-    /* 题量选择胶囊组 */
-    .count-pills-row {
-      display: flex;
-      gap: 10px;
-    }
-    .count-pill {
-      flex: 1;
-      padding: 10px 0;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 600;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: var(--card-bg);
-      color: var(--text-sub);
-      cursor: pointer;
-    }
-    .count-pill.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      color: var(--primary);
-      font-weight: 700;
-    }
-
-    /* 遗忘曲线强化勾选 */
-    .ebbinghaus-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .ebbinghaus-toggle-row.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-    .toggle-info-col {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .toggle-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .toggle-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .modal-submit-btn {
-      padding: 14px;
-      background: var(--primary);
-      color: #ffffff;
-      border: none;
-      border-radius: 24px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      margin-top: 6px;
-    }
-
-    /* =========================================
-       草稿画板全屏浮层
+       草稿画板 (支持撤销一步 Undo)
        ========================================= */
     .draft-canvas-mask {
       position: fixed;
@@ -829,17 +590,11 @@
       height: 100%;
       z-index: 120;
       display: none;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       touch-action: none;
     }
-    .draft-canvas-mask.open {
-      display: block;
-    }
-    #draftCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    .draft-canvas-mask.open { display: block; }
+    #draftCanvas { width: 100%; height: 100%; display: block; }
     .draft-bar-float {
       position: absolute;
       top: 20px;
@@ -863,13 +618,142 @@
       align-items: center;
       gap: 4px;
     }
-    .draft-action-btn.danger {
-      color: var(--wrong);
-    }
+    .draft-action-btn.danger { color: var(--wrong); }
 
     /* =========================================
-       答题卡网格抽屉
+       模态弹窗基础
        ========================================= */
+    .modal-mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-mask.open { display: flex; }
+    .modal-panel {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modal-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-main-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .modal-close-icon {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .modal-submit-btn {
+      padding: 14px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    /* 选项卡切换头 (错题本 & 历史记录) */
+    .inner-tab-header {
+      display: flex;
+      border-bottom: 1.5px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .inner-tab-btn {
+      flex: 1;
+      padding: 12px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-sub);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .inner-tab-btn.active {
+      color: var(--primary);
+      border-bottom: 2.5px solid var(--primary);
+      margin-bottom: -1.5px;
+    }
+
+    /* 艾宾浩斯复习指示卡 */
+    .ebbinghaus-banner {
+      background: var(--primary-light);
+      border: 1.5px solid var(--primary-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .ebbinghaus-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .ebbinghaus-cycle-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      text-align: center;
+      font-size: 11px;
+    }
+    .cycle-pill {
+      background: #ffffff;
+      border: 1px solid var(--primary-border);
+      padding: 6px 2px;
+      border-radius: 6px;
+      color: var(--text-sub);
+    }
+
+    /* 试卷卡片 (模拟考试) */
+    .exam-paper-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .exam-paper-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .exam-paper-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* 答题卡网格 */
     .sheet-drawer-mask {
       position: fixed;
       top: 0;
@@ -882,9 +766,7 @@
       align-items: flex-end;
       justify-content: center;
     }
-    .sheet-drawer-mask.open {
-      display: flex;
-    }
+    .sheet-drawer-mask.open { display: flex; }
     .sheet-drawer-content {
       width: 100%;
       max-width: 480px;
@@ -937,33 +819,6 @@
       border-color: var(--wrong);
       color: #ffffff;
     }
-
-    /* 交卷成绩卡片 */
-    .score-summary-box {
-      border: 1.5px solid var(--primary-border);
-      border-radius: 12px;
-      padding: 16px;
-      background: var(--primary-light);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-    .score-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .score-num {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .score-label {
-      font-size: 12px;
-      color: var(--text-sub);
-    }
   </style>
 </head>
 <body>
@@ -975,166 +830,199 @@
       <g id="icon-close"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
       <!-- 时钟 -->
       <g id="icon-clock"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
-      <!-- 图钉/固定 -->
-      <g id="icon-pin"><path d="M16 3l1 1-2 5 3 3-5 1-4 7-1-1 7-4 1-5 3-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></g>
-      <!-- 下载/缓存 -->
-      <g id="icon-download"><path d="M12 4v11m0 0l4-4m-4 4l-4-4M4 17v3h16v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
       <!-- 草稿笔 -->
       <g id="icon-pencil"><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L7 20l-4 1 1-4 14.5-14.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
       <!-- 答题卡 -->
       <g id="icon-sheet"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="16" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="16" cy="16" r="1.5" fill="currentColor"/></g>
-      <!-- 更多 -->
-      <g id="icon-more"><circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/></g>
       <!-- 星星 -->
       <g id="icon-star"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" /></g>
       <!-- 对勾 -->
       <g id="icon-check"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
-      <!-- 日历 -->
-      <g id="icon-calendar"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></g>
-      <!-- 放大镜搜索 -->
-      <g id="icon-search"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
-      <!-- 四宫格 -->
-      <g id="icon-grid"><rect x="3" y="3" width="7" height="7" fill="currentColor"/><rect x="14" y="3" width="7" height="7" fill="currentColor"/><rect x="3" y="14" width="7" height="7" fill="currentColor"/><rect x="14" y="14" width="7" height="7" fill="currentColor"/></g>
       <!-- 练习书本 -->
       <g id="icon-book"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2"/></g>
-      <!-- 课程播放 -->
-      <g id="icon-play"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/></g>
-      <!-- 循环复习 -->
-      <g id="icon-repeat"><polyline points="23 4 23 10 17 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
-      <!-- 用户头像 -->
-      <g id="icon-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/></g>
-      <!-- 齿轮设置 -->
-      <g id="icon-gear"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none" stroke="currentColor" stroke-width="2"/></g>
+      <!-- 错题本 -->
+      <g id="icon-wrong-book"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/><line x1="9" y1="13" x2="15" y2="17" stroke="currentColor" stroke-width="2"/><line x1="15" y1="13" x2="9" y2="17" stroke="currentColor" stroke-width="2"/></g>
+      <!-- 模拟考试试卷 -->
+      <g id="icon-exam"><rect x="4" y="2" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="7" x2="16" y2="7" stroke="currentColor" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="2"/><line x1="8" y1="17" x2="12" y2="17" stroke="currentColor" stroke-width="2"/></g>
+      <!-- 历史记录时钟 -->
+      <g id="icon-history"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 12a9 9 0 1 0 2-5.7L3 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+      <!-- 主题调色板 -->
+      <g id="icon-palette"><circle cx="13.5" cy="6.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="1.5" fill="currentColor"/><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10a2.5 2.5 0 0 0 2.5-2.5c0-.61-.23-1.2-.64-1.67-.43-.49-.64-.99-.64-1.58 0-1.24 1.01-2.25 2.25-2.25H18c2.21 0 4-1.79 4-4 0-5.51-4.49-10-10-10z" fill="none" stroke="currentColor" stroke-width="2"/></g>
+      <!-- AI 机器人头 -->
+      <g id="icon-bot"><rect x="4" y="6" width="16" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><line x1="12" y1="2" x2="12" y2="6" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="2" r="1" fill="currentColor"/></g>
+      <!-- 撤销 Undo -->
+      <g id="icon-undo"><path d="M9 14L4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
     </defs>
   </svg>
 
   <div class="app-viewport">
 
     <!-- =======================================
-         页面 1: 课程列表首页 (参考图 2)
+         TAB 1: 练习 (课程列表首页)
          ======================================= -->
-    <div class="home-view" id="homeView">
-      <header class="home-header">
-        <h1 class="home-title">查漏补缺 专项提升</h1>
-        <div class="home-header-icons">
-          <button class="header-icon-btn" title="日历打卡"><svg class="svg-icon"><use href="#icon-calendar"/></svg></button>
-          <button class="header-icon-btn" title="搜索题目"><svg class="svg-icon"><use href="#icon-search"/></svg></button>
-          <button class="header-icon-btn" title="分类"><svg class="svg-icon"><use href="#icon-grid"/></svg></button>
+    <div class="view-content-pane" id="panePractice">
+      <header class="top-brand-header">
+        <div class="brand-title">file2quiz</div>
+        <div class="brand-actions">
+          <button class="header-icon-btn" onclick="openSettingsModal()" title="AI与模型配置">
+            <svg class="svg-icon"><use href="#icon-bot"/></svg>
+          </button>
         </div>
       </header>
 
       <nav class="capsule-nav">
         <span class="capsule-item active" onclick="filterCategory('all', this)">全部真题 (5科)</span>
         <span class="capsule-item" onclick="filterCategory('theory', this)">教育理论</span>
-        <span class="capsule-item" onclick="filterCategory('law', this)">法律法规与师德</span>
+        <span class="capsule-item" onclick="filterCategory('law', this)">法律法规与伦理</span>
       </nav>
 
-      <!-- 科目列表 -->
-      <div class="subject-list" id="subjectListContainer">
-        <!-- JS 动态注入 -->
-      </div>
+      <div class="subject-list" id="subjectListContainer"></div>
 
-      <!-- 自定义刷题悬浮入口 -->
       <div class="custom-fab-wrap">
         <button class="custom-fab-btn" onclick="openCustomModal()">
-          <svg class="svg-icon" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-gear"/></svg>
+          <svg class="svg-icon" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-bot"/></svg>
           <span>自定义刷题</span>
           <span style="color:var(--text-muted);font-size:12px;">›</span>
-        </button>
-      </div>
-
-      <!-- 底部导航栏 -->
-      <div class="bottom-tabbar">
-        <button class="tabbar-item active">
-          <svg><use href="#icon-book"/></svg>
-          <span>练习</span>
-        </button>
-        <button class="tabbar-item" onclick="openCustomModal()">
-          <svg><use href="#icon-play"/></svg>
-          <span>自定义</span>
-        </button>
-        <button class="tabbar-item" onclick="startEbbinghausReview()">
-          <svg><use href="#icon-repeat"/></svg>
-          <span>遗忘曲线</span>
-        </button>
-        <button class="tabbar-item" onclick="openSettingsModal()">
-          <svg><use href="#icon-user"/></svg>
-          <span>设置</span>
         </button>
       </div>
     </div>
 
     <!-- =======================================
-         页面 2: 刷题界面 (参考图 1)
+         TAB 2: 错题本 (含艾宾浩斯复习)
+         ======================================= -->
+    <div class="view-content-pane" id="paneWrong" style="display:none;">
+      <header class="top-brand-header">
+        <div class="brand-title">错题本与艾宾浩斯</div>
+      </header>
+      <div style="padding:16px 20px;">
+        <div class="inner-tab-header">
+          <button class="inner-tab-btn active" id="btnTabAllWrong" onclick="switchWrongTab('all')">全部错题</button>
+          <button class="inner-tab-btn" id="btnTabEbbinghaus" onclick="switchWrongTab('ebbinghaus')">艾宾浩斯复习</button>
+        </div>
+
+        <div id="ebbinghausBannerArea" style="display:none;">
+          <div class="ebbinghaus-banner">
+            <div class="ebbinghaus-title">艾宾浩斯抗遗忘科学周期</div>
+            <div style="font-size:12px;color:var(--text-sub);">系统按 1/2/4/7/15 天智能筛选进入临界期的错题</div>
+            <div class="ebbinghaus-cycle-grid">
+              <div class="cycle-pill">1天 (24h)</div>
+              <div class="cycle-pill">2天 (48h)</div>
+              <div class="cycle-pill">4天 (96h)</div>
+              <div class="cycle-pill">7天</div>
+              <div class="cycle-pill">15天</div>
+            </div>
+            <button class="modal-submit-btn" style="margin-top:4px;padding:10px;" onclick="startEbbinghausQuizDirect()">开始今日艾宾浩斯攻坚</button>
+          </div>
+        </div>
+
+        <div id="wrongListContent" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- =======================================
+         TAB 3: 模拟考试 (随机组卷 & 保存试卷)
+         ======================================= -->
+    <div class="view-content-pane" id="paneExam" style="display:none;">
+      <header class="top-brand-header">
+        <div class="brand-title">全真模拟考试</div>
+        <button class="custom-fab-btn" style="padding:6px 14px;font-size:12px;" onclick="openNewExamModal()">+ 组合新试卷</button>
+      </header>
+      <div style="padding:16px 20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:12px;">已保存试卷库</div>
+        <div id="savedExamList"></div>
+      </div>
+    </div>
+
+    <!-- =======================================
+         TAB 4: 做题历史 (练习 & 考试历史)
+         ======================================= -->
+    <div class="view-content-pane" id="paneHistory" style="display:none;">
+      <header class="top-brand-header">
+        <div class="brand-title">做题历史</div>
+      </header>
+      <div style="padding:16px 20px;">
+        <div class="inner-tab-header">
+          <button class="inner-tab-btn active" id="btnHistPractice" onclick="switchHistoryTab('practice')">练习历史</button>
+          <button class="inner-tab-btn" id="btnHistExam" onclick="switchHistoryTab('exam')">考试历史</button>
+        </div>
+        <div id="historyListContent" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- =======================================
+         刷题工作台 (平铺导航与左右滑动手势)
          ======================================= -->
     <div class="quiz-view" id="quizView">
-      <!-- 顶部粉笔风格工具条 -->
-      <header class="quiz-top-nav">
-        <div class="nav-left-group">
-          <button class="nav-icon-btn" onclick="exitQuizToHome()" title="返回课程列表">
+      <header class="quiz-top-nav-flat">
+        <div class="nav-left-flat">
+          <button class="tool-icon-btn" onclick="exitQuizToHome()" title="返回退出">
             <svg class="svg-icon"><use href="#icon-close"/></svg>
           </button>
           <div class="quiz-timer" id="quizTimer">00:00</div>
         </div>
 
-        <div class="nav-right-tools">
-          <button class="nav-icon-btn" title="固定模式" onclick="togglePinMode()">
-            <svg class="svg-icon" id="pinIcon"><use href="#icon-pin"/></svg>
-          </button>
-          <button class="nav-icon-btn" title="离线状态" onclick="alert('当前所有题库已完整离线保存在本地')">
-            <svg class="svg-icon" style="color:var(--correct);"><use href="#icon-download"/></svg>
-          </button>
-          <button class="nav-icon-btn" title="草稿模式" onclick="openDraftCanvas()">
+        <!-- 平铺工具栏 (移除固定/离线，平铺草稿、收藏、主题、AI配置、答题卡) -->
+        <div class="nav-tools-tiled">
+          <button class="tool-icon-btn" onclick="openDraftCanvas()" title="草稿画板">
             <svg class="svg-icon"><use href="#icon-pencil"/></svg>
           </button>
-          <button class="nav-icon-btn" title="答题卡" onclick="openSheetDrawer()">
+          <button class="tool-icon-btn" id="favStarBtn" onclick="toggleFavoriteCurrent()" title="收藏本题">
+            <svg class="svg-icon"><use href="#icon-star"/></svg>
+          </button>
+          <button class="tool-icon-btn" onclick="cycleThemeMode()" title="切换主题">
+            <svg class="svg-icon"><use href="#icon-palette"/></svg>
+          </button>
+          <button class="tool-icon-btn" onclick="openSettingsModal()" title="AI模型设置">
+            <svg class="svg-icon"><use href="#icon-bot"/></svg>
+          </button>
+          <button class="tool-icon-btn" onclick="openSheetDrawer()" title="答题卡">
             <svg class="svg-icon"><use href="#icon-sheet"/></svg>
           </button>
-          <button class="nav-icon-btn" title="更多" onclick="toggleMoreDropdown(event)">
-            <svg class="svg-icon"><use href="#icon-more"/></svg>
-          </button>
-        </div>
-
-        <!-- 更多下拉选项 -->
-        <div class="more-dropdown" id="moreDropdown">
-          <div class="dropdown-item" onclick="toggleFavoriteCurrent()">
-            <svg class="svg-icon" style="width:16px;height:16px;fill:var(--star-active);"><use href="#icon-star"/></svg>
-            <span id="favMenuText">收藏此题</span>
-          </div>
-          <div class="dropdown-item" onclick="cycleThemeMode()">
-            <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-grid"/></svg>
-            <span>切换主题模式</span>
-          </div>
-          <div class="dropdown-item" onclick="openSettingsModal()">
-            <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-gear"/></svg>
-            <span>AI 解析配置</span>
-          </div>
-          <div class="dropdown-item" onclick="resetCurrentQuestionAnswer()">
-            <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-repeat"/></svg>
-            <span>重新作答</span>
-          </div>
         </div>
       </header>
 
-      <!-- 题目与选项滚动区 -->
       <main class="quiz-scroll-body" id="quizScrollBody">
-        <!-- 动态注入题目内容 -->
+        <!-- 题目动态填充 -->
       </main>
 
-      <!-- 底部切换导航 -->
       <footer class="quiz-bottom-actions">
         <button class="bottom-btn" onclick="navigateQuestion(-1)">上一题</button>
+        <div style="font-size:11px;color:var(--text-muted);">可左右滑屏切题</div>
         <button class="bottom-btn primary" id="nextActionBtn" onclick="navigateQuestion(1)">下一题</button>
       </footer>
+    </div>
+
+    <!-- 底部 4 栏 TabBar -->
+    <div class="bottom-tabbar" id="bottomTabbar">
+      <button class="tabbar-item active" id="tabBtnPractice" onclick="switchBottomTab('practice')">
+        <svg><use href="#icon-book"/></svg>
+        <span>练习</span>
+      </button>
+      <button class="tabbar-item" id="tabBtnWrong" onclick="switchBottomTab('wrong')">
+        <svg><use href="#icon-wrong-book"/></svg>
+        <span>错题本</span>
+      </button>
+      <button class="tabbar-item" id="tabBtnExam" onclick="switchBottomTab('exam')">
+        <svg><use href="#icon-exam"/></svg>
+        <span>模拟考试</span>
+      </button>
+      <button class="tabbar-item" id="tabBtnHistory" onclick="switchBottomTab('history')">
+        <svg><use href="#icon-history"/></svg>
+        <span>做题历史</span>
+      </button>
     </div>
 
   </div>
 
   <!-- =======================================
-       全屏草稿画板 (涂鸦便签)
+       草稿画板 (带撤销一步 Undo)
        ======================================= -->
   <div class="draft-canvas-mask" id="draftCanvasMask">
     <div class="draft-bar-float">
+      <button class="draft-action-btn" onclick="undoDraftStroke()">
+        <svg class="svg-icon" style="width:14px;height:14px;"><use href="#icon-undo"/></svg>
+        <span>撤销</span>
+      </button>
       <button class="draft-action-btn danger" onclick="clearDraft()">清屏</button>
       <button class="draft-action-btn" onclick="closeDraftCanvas()">完成收起</button>
     </div>
@@ -1142,43 +1030,55 @@
   </div>
 
   <!-- =======================================
-       自定义刷题模态框 (参考图 3)
+       新建模拟考试试卷弹窗
+       ======================================= -->
+  <div class="modal-mask" id="newExamModal" onclick="closeNewExamModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <div class="modal-top-row">
+        <span class="modal-main-title">组合全真模拟试卷</span>
+        <button class="modal-close-icon" onclick="closeNewExamModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+      </div>
+      <div>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">试卷名称</label>
+        <input id="examPaperName" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="如：高校教资全真模考卷一">
+      </div>
+      <div>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">选择题量</label>
+        <div style="display:flex;gap:10px;margin-top:6px;">
+          <div class="cycle-pill active" id="examCnt20" style="flex:1;cursor:pointer;padding:8px 0;" onclick="selectExamCount(20, this)">20题</div>
+          <div class="cycle-pill" style="flex:1;cursor:pointer;padding:8px 0;" onclick="selectExamCount(50, this)">50题</div>
+          <div class="cycle-pill" style="flex:1;cursor:pointer;padding:8px 0;" onclick="selectExamCount(100, this)">100题</div>
+        </div>
+      </div>
+      <button class="modal-submit-btn" onclick="createAndSaveExamPaper()">生成并保存试卷</button>
+    </div>
+  </div>
+
+  <!-- =======================================
+       自定义刷题模态框
        ======================================= -->
   <div class="modal-mask" id="customModal" onclick="closeCustomModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
       <div class="modal-top-row">
-        <div class="modal-title-col">
-          <span class="modal-main-title">自定义刷题</span>
-          <span class="modal-sub-tip">上次未完成的题组不受此设置影响</span>
-        </div>
-        <button class="modal-close-icon" onclick="closeCustomModal()">
-          <svg class="svg-icon"><use href="#icon-close"/></svg>
-        </button>
+        <span class="modal-main-title">自定义刷题设置</span>
+        <button class="modal-close-icon" onclick="closeCustomModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
       </div>
-
-      <!-- 设置出题模式 -->
       <div>
-        <div class="setting-section-title">设置出题模式</div>
-        <div class="setting-card-grid">
-          <div class="mode-select-card" id="cardModeExam" onclick="selectQuizMode('exam')">
-            <div class="card-corner-triangle"></div>
-            <svg class="card-corner-check"><use href="#icon-check"/></svg>
-            <div class="mode-card-title">做题模式</div>
-            <div class="mode-card-desc">交卷后查看对错与解析</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">设置出题模式</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="mode-select-card" id="cardModeExam" style="padding:14px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;" onclick="selectQuizMode('exam')">
+            <div style="font-weight:700;">做题模式</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:2px;">交卷后统一看答案</div>
           </div>
-          <div class="mode-select-card active" id="cardModeStudy" onclick="selectQuizMode('study')">
-            <div class="card-corner-triangle"></div>
-            <svg class="card-corner-check"><use href="#icon-check"/></svg>
-            <div class="mode-card-title">背题模式</div>
-            <div class="mode-card-desc">作答即刻显示答案解析</div>
+          <div class="mode-select-card active" id="cardModeStudy" style="padding:14px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;" onclick="selectQuizMode('study')">
+            <div style="font-weight:700;">背题模式</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:2px;">点击选项立见解析</div>
           </div>
         </div>
       </div>
-
-      <!-- 设置每组题的数量 -->
       <div>
-        <div class="setting-section-title">设置每组题的数量</div>
-        <div class="count-pills-row">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">每组题量</div>
+        <div style="display:flex;gap:8px;">
           <div class="count-pill" onclick="selectBatchSize(5, this)">5题</div>
           <div class="count-pill" onclick="selectBatchSize(10, this)">10题</div>
           <div class="count-pill active" onclick="selectBatchSize(15, this)">15题</div>
@@ -1186,105 +1086,99 @@
           <div class="count-pill" onclick="selectBatchSize(0, this)">不限</div>
         </div>
       </div>
-
-      <!-- 遗忘曲线错题专练 -->
-      <div>
-        <div class="setting-section-title">艾宾浩斯强化</div>
-        <div class="ebbinghaus-toggle-row" id="ebbinghausRow" onclick="toggleEbbinghausReview()">
-          <div class="toggle-info-col">
-            <span class="toggle-title">仅抽取遗忘临界期错题</span>
-            <span class="toggle-desc">依据 1/2/4/7/15 天抗遗忘周期智能筛选</span>
-          </div>
-          <svg class="svg-icon" id="ebbinghausCheck" style="display:none;color:var(--primary);"><use href="#icon-check"/></svg>
-        </div>
-      </div>
-
-      <button class="modal-submit-btn" onclick="confirmStartCustomQuiz()">确定开始刷题</button>
+      <button class="modal-submit-btn" onclick="confirmStartCustomQuiz()">确定开始</button>
     </div>
   </div>
 
   <!-- =======================================
-       答题卡网格抽屉
-       ======================================= -->
-  <div class="sheet-drawer-mask" id="sheetDrawer" onclick="closeSheetDrawer(event)">
-    <div class="sheet-drawer-content" onclick="event.stopPropagation()">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:17px;font-weight:800;" id="sheetTitleText">答题卡</span>
-        <button class="modal-close-icon" onclick="closeSheetDrawer()">
-          <svg class="svg-icon"><use href="#icon-close"/></svg>
-        </button>
-      </div>
-
-      <div id="scoreSummaryArea" style="display:none;margin-top:14px;"></div>
-
-      <div class="sheet-num-grid" id="sheetNumGrid"></div>
-
-      <div id="sheetBottomBtnWrap" style="margin-top:10px;">
-        <button class="modal-submit-btn" id="submitExamBtn" style="display:none;width:100%;" onclick="submitExamPaper()">交卷并查看解析</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =======================================
-       系统设置与 AI 配置弹窗
+       AI 接口与模型配置 (多提供商 & 切换模型)
        ======================================= -->
   <div class="modal-mask" id="settingsModal" onclick="closeSettingsModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
       <div class="modal-top-row">
-        <span class="modal-main-title">系统与 AI 解析设置</span>
-        <button class="modal-close-icon" onclick="closeSettingsModal()">
-          <svg class="svg-icon"><use href="#icon-close"/></svg>
-        </button>
+        <span class="modal-main-title">AI 服务与模型配置</span>
+        <button class="modal-close-icon" onclick="closeSettingsModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
       </div>
+
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">AI 接口地址 (Base URL)</label>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">AI 服务提供商预设</label>
+        <select id="cfgProvider" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" onchange="handleProviderChange(this.value)">
+          <option value="deepseek">DeepSeek (官方推荐，高性价比)</option>
+          <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
+          <option value="kimi">月之暗面 Kimi (Moonshot)</option>
+          <option value="siliconflow">硅基流动 SiliconFlow (Qwen/DeepSeek)</option>
+          <option value="custom">自定义 (兼容 OpenAI 规范)</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API 接口地址 (Base URL)</label>
         <input id="cfgBaseUrl" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="https://api.deepseek.com/v1">
       </div>
+
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API Key (如 DeepSeek 密钥)</label>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API Key 密钥</label>
         <input id="cfgApiKey" type="password" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="sk-xxxxxxxx">
       </div>
+
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">模型代号</label>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">选择或输入模型名称</label>
         <input id="cfgModel" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="deepseek-chat">
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;" id="quickModelPills"></div>
       </div>
+
       <button class="modal-submit-btn" onclick="saveSettingsForm()">保存配置</button>
+    </div>
+  </div>
+
+  <!-- =======================================
+       答题卡抽屉
+       ======================================= -->
+  <div class="sheet-drawer-mask" id="sheetDrawer" onclick="closeSheetDrawer(event)">
+    <div class="sheet-drawer-content" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:17px;font-weight:800;">答题卡大纲</span>
+        <button class="modal-close-icon" onclick="closeSheetDrawer()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+      </div>
+      <div class="sheet-num-grid" id="sheetNumGrid"></div>
+      <button class="modal-submit-btn" id="submitExamBtn" style="display:none;margin-top:10px;" onclick="submitExamPaper()">交卷并查看解析</button>
     </div>
   </div>
 
   <script>
     // ==========================================
-    // 全局状态管理 (LocalStorage 本地持久化)
+    // 全局数据结构与持久化
     // ==========================================
     let allSubjectsData = {};
     let currentSubject = "";
     let activeQuestions = [];
     let currentQuizIndex = 0;
+    let currentExamId = null; // 当前是否在模拟考试
 
-    // 自定义配置状态
     let appConfig = {
-      quizMode: 'study', // 'study' (背题) | 'exam' (做题)
-      batchSize: 15,     // 5, 10, 15, 20, 0(不限)
-      useEbbinghaus: false,
-      theme: 'light'     // 'light' | 'eye' | 'dark'
+      quizMode: 'study', // 'study' | 'exam'
+      batchSize: 15,
+      theme: 'light'
     };
 
-    // 用户进度数据与艾宾浩斯复习记录
     let userStore = {
       lastSubject: "",
-      progress: {},      // { [subject]: lastIndex }
-      answers: {},       // { [qKey]: { chosen: 'A', isCorrect: true, time: timestamp } }
-      favorites: [],     // [qKey, ...]
-      ebbinghausWrong: {}, // { [qKey]: { firstWrongAt, lastReviewAt, reviewCount } }
-      aiCache: {},       // { [qKey]: text }
+      progress: {},
+      answers: {},        // { [qKey]: { chosen, isCorrect, time } }
+      favorites: [],
+      ebbinghausWrong: {},// { [qKey]: { firstWrongAt, lastReviewAt, reviewCount } }
+      savedExams: [],     // [ { id, title, questionKeys, createdAt, completedAt, score } ]
+      practiceHistory: [],// [ { subject, count, correctCount, time } ]
+      aiCache: {},
       settings: {
+        provider: "deepseek",
         baseUrl: "https://api.deepseek.com/v1",
         apiKey: "",
         model: "deepseek-chat"
       }
     };
 
-    let isExamSubmitted = false; // 做题模式是否已交卷
+    let isExamSubmitted = false;
     let timerSeconds = 0;
     let timerInterval = null;
 
@@ -1293,28 +1187,24 @@
     }
 
     function loadUserStore() {
-      const saved = localStorage.getItem("duxue_quiz_store");
+      const saved = localStorage.getItem("file2quiz_core_store");
       if (saved) {
-        try {
-          userStore = { ...userStore, ...JSON.parse(saved) };
-        } catch (e) {}
+        try { userStore = { ...userStore, ...JSON.parse(saved) }; } catch (e) {}
       }
-      const savedCfg = localStorage.getItem("duxue_quiz_cfg");
+      const savedCfg = localStorage.getItem("file2quiz_core_cfg");
       if (savedCfg) {
-        try {
-          appConfig = { ...appConfig, ...JSON.parse(savedCfg) };
-        } catch (e) {}
+        try { appConfig = { ...appConfig, ...JSON.parse(savedCfg) }; } catch (e) {}
       }
       applyTheme(appConfig.theme);
     }
 
     function saveUserStore() {
-      localStorage.setItem("duxue_quiz_store", JSON.stringify(userStore));
-      localStorage.setItem("duxue_quiz_cfg", JSON.stringify(appConfig));
+      localStorage.setItem("file2quiz_core_store", JSON.stringify(userStore));
+      localStorage.setItem("file2quiz_core_cfg", JSON.stringify(appConfig));
     }
 
     // ==========================================
-    // 初始化应用与数据
+    // 初始化应用
     // ==========================================
     async function init() {
       loadUserStore();
@@ -1327,15 +1217,47 @@
         const resp = await fetch("quiz_data.json");
         allSubjectsData = await resp.json();
       } catch (e) {
-        console.error("加载数据失败", e);
+        console.error("加载题库失败", e);
       }
 
       renderSubjectList();
-      initDraftCanvas();
+      initDraftCanvasWithUndo();
+      initTouchSwipe();
+      renderSavedExams();
     }
 
     // ==========================================
-    // 视图 1: 渲染课程列表 (掌握度星级计算)
+    // 底部 4 栏切换逻辑
+    // ==========================================
+    function switchBottomTab(tab) {
+      ['panePractice', 'paneWrong', 'paneExam', 'paneHistory'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      ['tabBtnPractice', 'tabBtnWrong', 'tabBtnExam', 'tabBtnHistory'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+      });
+
+      if (tab === 'practice') {
+        document.getElementById('panePractice').style.display = 'flex';
+        document.getElementById('tabBtnPractice').classList.add('active');
+        renderSubjectList();
+      } else if (tab === 'wrong') {
+        document.getElementById('paneWrong').style.display = 'flex';
+        document.getElementById('tabBtnWrong').classList.add('active');
+        renderWrongPane('all');
+      } else if (tab === 'exam') {
+        document.getElementById('paneExam').style.display = 'flex';
+        document.getElementById('tabBtnExam').classList.add('active');
+        renderSavedExams();
+      } else if (tab === 'history') {
+        document.getElementById('paneHistory').style.display = 'flex';
+        document.getElementById('tabBtnHistory').classList.add('active');
+        renderHistoryPane('practice');
+      }
+    }
+
+    // ==========================================
+    // TAB 1: 练习 (科目列表)
     // ==========================================
     function renderSubjectList(filter = 'all') {
       const container = document.getElementById("subjectListContainer");
@@ -1349,7 +1271,6 @@
         const qList = allSubjectsData[sub] || [];
         const total = qList.length;
 
-        // 计算用户已做数与正确率（计算星级）
         let answeredCount = 0;
         let correctCount = 0;
         qList.forEach(q => {
@@ -1360,7 +1281,6 @@
           }
         });
 
-        // 星级计算逻辑 (0~5 星)
         let starLevel = 0;
         if (answeredCount > 0) {
           const rate = correctCount / answeredCount;
@@ -1380,9 +1300,7 @@
         card.className = "subject-card";
         card.innerHTML = `
           <div class="sub-left">
-            <div class="sub-bullet-circle">
-              <svg><use href="#icon-check"/></svg>
-            </div>
+            <div class="sub-bullet-circle"><svg><use href="#icon-check"/></svg></div>
             <div class="sub-info-col">
               <div class="sub-name">${sub}</div>
               <div class="sub-meta-row">
@@ -1408,47 +1326,279 @@
     }
 
     // ==========================================
-    // 启动刷题 (做题 / 背题 / 艾宾浩斯抽取)
+    // TAB 2: 错题本与艾宾浩斯复习
+    // ==========================================
+    let currentWrongTab = 'all';
+
+    function switchWrongTab(tab) {
+      currentWrongTab = tab;
+      document.getElementById('btnTabAllWrong').classList.toggle('active', tab === 'all');
+      document.getElementById('btnTabEbbinghaus').classList.toggle('active', tab === 'ebbinghaus');
+      document.getElementById('ebbinghausBannerArea').style.display = (tab === 'ebbinghaus') ? 'block' : 'none';
+      renderWrongPane(tab);
+    }
+
+    function renderWrongPane(tab) {
+      const container = document.getElementById("wrongListContent");
+      container.innerHTML = "";
+
+      const wrongKeys = Object.keys(userStore.ebbinghausWrong);
+      if (wrongKeys.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无错题记录，保持优秀！</div>`;
+        return;
+      }
+
+      // 汇总各科目的具体题目对象
+      let wrongQs = [];
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => {
+          if (wrongKeys.includes(getQKey(q))) {
+            wrongQs.push(q);
+          }
+        });
+      });
+
+      if (tab === 'ebbinghaus') {
+        const now = Date.now();
+        wrongQs = wrongQs.filter(q => {
+          const eb = userStore.ebbinghausWrong[getQKey(q)];
+          return (now - eb.lastReviewAt) >= 12 * 3600 * 1000;
+        });
+        if (wrongQs.length === 0) {
+          container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--correct);font-weight:700;">今日所有艾宾浩斯遗忘点错题均已复习完毕！</div>`;
+          return;
+        }
+      }
+
+      wrongQs.forEach((q, idx) => {
+        const qKey = getQKey(q);
+        const card = document.createElement("div");
+        card.className = "exam-paper-card";
+        card.innerHTML = `
+          <div>
+            <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${q.question.slice(0, 32)}...</div>
+            <div class="exam-paper-desc">正确答案: ${q.answer} | 题型: ${q.typeName}</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="removeSingleWrong('${qKey}', event)">移出</button>
+            <button class="bottom-btn primary" style="padding:4px 12px;font-size:12px;" onclick="startSingleWrongQuiz('${qKey}')">复练</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function removeSingleWrong(qKey, evt) {
+      evt.stopPropagation();
+      delete userStore.ebbinghausWrong[qKey];
+      saveUserStore();
+      renderWrongPane(currentWrongTab);
+    }
+
+    function startSingleWrongQuiz(qKey) {
+      let targetQ = null;
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { if (getQKey(q) === qKey) targetQ = q; });
+      });
+      if (!targetQ) return;
+      activeQuestions = [targetQ];
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      openQuizView();
+    }
+
+    function startEbbinghausQuizDirect() {
+      const now = Date.now();
+      let dueQs = [];
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => {
+          const eb = userStore.ebbinghausWrong[getQKey(q)];
+          if (eb && (now - eb.lastReviewAt) >= 12 * 3600 * 1000) {
+            dueQs.push(q);
+          }
+        });
+      });
+      if (dueQs.length === 0) {
+        alert("暂无需要复习的艾宾浩斯错题！");
+        return;
+      }
+      activeQuestions = dueQs;
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      openQuizView();
+    }
+
+    // ==========================================
+    // TAB 3: 模拟考试 (全真组卷 & 保存试卷)
+    // ==========================================
+    let chosenExamCount = 20;
+
+    function renderSavedExams() {
+      const container = document.getElementById("savedExamList");
+      container.innerHTML = "";
+
+      if (!userStore.savedExams || userStore.savedExams.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted);">暂无已保存试卷，点击右上角【+ 组合新试卷】创建</div>`;
+        return;
+      }
+
+      userStore.savedExams.forEach((exam, idx) => {
+        const card = document.createElement("div");
+        card.className = "exam-paper-card";
+        const isDone = exam.score !== undefined;
+        card.innerHTML = `
+          <div>
+            <div class="exam-paper-title">${exam.title}</div>
+            <div class="exam-paper-desc">共 ${exam.questionKeys.length} 题 | 创建于 ${new Date(exam.createdAt).toLocaleDateString()} ${isDone ? `| 得分: <strong style="color:var(--primary);">${exam.score}分</strong>` : '| 未交卷'}</div>
+          </div>
+          <button class="bottom-btn primary" style="padding:6px 14px;font-size:12px;">${isDone ? '查看/重考' : '进入考试'}</button>
+        `;
+        card.onclick = () => startSavedExam(exam.id);
+        container.appendChild(card);
+      });
+    }
+
+    function openNewExamModal() {
+      document.getElementById("examPaperName").value = `高校教资全真模考卷 (${new Date().getMonth()+1}月${new Date().getDate()}日)`;
+      document.getElementById("newExamModal").classList.add("open");
+    }
+    function closeNewExamModal() {
+      document.getElementById("newExamModal").classList.remove("open");
+    }
+    function selectExamCount(cnt, elem) {
+      chosenExamCount = cnt;
+      document.querySelectorAll(".cycle-pill").forEach(el => el.classList.remove("active"));
+      elem.classList.add("active");
+    }
+
+    function createAndSaveExamPaper() {
+      const title = document.getElementById("examPaperName").value.trim() || "模拟考卷";
+      // 从全部科目随机抽取题量
+      let all = [];
+      Object.values(allSubjectsData).forEach(qs => all.push(...qs));
+      all.sort(() => Math.random() - 0.5);
+
+      const sampled = all.slice(0, chosenExamCount);
+      const examId = "exam_" + Date.now();
+      const newExam = {
+        id: examId,
+        title: title,
+        questionKeys: sampled.map(q => getQKey(q)),
+        createdAt: Date.now()
+      };
+
+      if (!userStore.savedExams) userStore.savedExams = [];
+      userStore.savedExams.unshift(newExam);
+      saveUserStore();
+      closeNewExamModal();
+      renderSavedExams();
+      startSavedExam(examId);
+    }
+
+    function startSavedExam(examId) {
+      const exam = userStore.savedExams.find(e => e.id === examId);
+      if (!exam) return;
+      currentExamId = examId;
+
+      let qMap = {};
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { qMap[getQKey(q)] = q; });
+      });
+
+      activeQuestions = exam.questionKeys.map(k => qMap[k]).filter(Boolean);
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'exam';
+      isExamSubmitted = (exam.score !== undefined);
+
+      openQuizView();
+    }
+
+    // ==========================================
+    // TAB 4: 做题历史 (练习 & 考试)
+    // ==========================================
+    let currentHistoryTab = 'practice';
+
+    function switchHistoryTab(tab) {
+      currentHistoryTab = tab;
+      document.getElementById('btnHistPractice').classList.toggle('active', tab === 'practice');
+      document.getElementById('btnHistExam').classList.toggle('active', tab === 'exam');
+      renderHistoryPane(tab);
+    }
+
+    function renderHistoryPane(tab) {
+      const container = document.getElementById("historyListContent");
+      container.innerHTML = "";
+
+      if (tab === 'practice') {
+        const subjects = Object.keys(allSubjectsData);
+        subjects.forEach(sub => {
+          const qs = allSubjectsData[sub] || [];
+          let ansCount = 0, corCount = 0;
+          qs.forEach(q => {
+            const r = userStore.answers[getQKey(q)];
+            if (r) { ansCount++; if (r.isCorrect) corCount++; }
+          });
+          const card = document.createElement("div");
+          card.className = "exam-paper-card";
+          card.innerHTML = `
+            <div>
+              <div class="exam-paper-title">${sub}</div>
+              <div class="exam-paper-desc">累计已练: ${ansCount}/${qs.length} 题 | 正确率: ${ansCount > 0 ? Math.round((corCount/ansCount)*100) : 0}%</div>
+            </div>
+            <button class="bottom-btn" style="padding:4px 12px;font-size:12px;" onclick="startQuizSubject('${sub}')">继续练</button>
+          `;
+          container.appendChild(card);
+        });
+      } else {
+        const exams = (userStore.savedExams || []).filter(e => e.score !== undefined);
+        if (exams.length === 0) {
+          container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted);">暂无已完成的模拟考试记录</div>`;
+          return;
+        }
+        exams.forEach(ex => {
+          const card = document.createElement("div");
+          card.className = "exam-paper-card";
+          card.innerHTML = `
+            <div>
+              <div class="exam-paper-title">${ex.title}</div>
+              <div class="exam-paper-desc">最终得分: <strong style="color:var(--primary);">${ex.score}分</strong> | 题量: ${ex.questionKeys.length} 题</div>
+            </div>
+            <button class="bottom-btn primary" style="padding:4px 12px;font-size:12px;" onclick="startSavedExam('${ex.id}')">查看答卷</button>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
+
+    // ==========================================
+    // 刷题工作台启动与渲染
     // ==========================================
     function startQuizSubject(sub, evt) {
       if (evt) evt.stopPropagation();
       currentSubject = sub;
       userStore.lastSubject = sub;
+      currentExamId = null;
 
       const fullList = allSubjectsData[sub] || [];
-      let pool = [...fullList];
-
-      // 若启用了艾宾浩斯强化：按遗忘曲线筛选出待复习错题
-      if (appConfig.useEbbinghaus) {
-        const now = Date.now();
-        pool = pool.filter(q => {
-          const eb = userStore.ebbinghausWrong[getQKey(q)];
-          if (!eb) return false;
-          const hours = (now - eb.lastReviewAt) / (3600 * 1000);
-          return hours >= 12; // 超过 12 小时即进入艾宾浩斯复习窗口
-        });
-        if (pool.length === 0) {
-          alert("太棒了！该科目暂无需要复习的艾宾浩斯错题，为你调入正常题组。");
-          pool = [...fullList];
-        }
-      }
-
-      // 按 batchSize 截取题目
-      if (appConfig.batchSize > 0 && pool.length > appConfig.batchSize) {
+      if (appConfig.batchSize > 0 && fullList.length > appConfig.batchSize) {
         const lastIdx = userStore.progress[sub] || 0;
-        let start = lastIdx;
-        if (start + appConfig.batchSize > pool.length) start = 0;
-        activeQuestions = pool.slice(start, start + appConfig.batchSize);
+        let start = (lastIdx + appConfig.batchSize <= fullList.length) ? lastIdx : 0;
+        activeQuestions = fullList.slice(start, start + appConfig.batchSize);
       } else {
-        activeQuestions = pool;
+        activeQuestions = fullList;
       }
 
       currentQuizIndex = 0;
       isExamSubmitted = false;
+      openQuizView();
+    }
 
-      // 切换视图
-      document.getElementById("homeView").style.display = "none";
-      document.getElementById("quizView").style.display = "flex";
+    function openQuizView() {
+      ['panePractice', 'paneWrong', 'paneExam', 'paneHistory'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      document.getElementById("bottomTabbar").style.display = 'none';
+      document.getElementById("quizView").style.display = 'flex';
 
       startTimer();
       renderCurrentQuestion();
@@ -1457,20 +1607,11 @@
     function exitQuizToHome() {
       stopTimer();
       saveUserStore();
-      document.getElementById("quizView").style.display = "none";
-      document.getElementById("homeView").style.display = "flex";
-      renderSubjectList();
+      document.getElementById("quizView").style.display = 'none';
+      document.getElementById("bottomTabbar").style.display = 'flex';
+      switchBottomTab('practice');
     }
 
-    // 艾宾浩斯错题专练快速入口
-    function startEbbinghausReview() {
-      appConfig.useEbbinghaus = true;
-      openCustomModal();
-    }
-
-    // ==========================================
-    // 视图 2: 渲染当前做题卡片 (单选/多选/判断)
-    // ==========================================
     function renderCurrentQuestion() {
       const container = document.getElementById("quizScrollBody");
       const q = activeQuestions[currentQuizIndex];
@@ -1484,11 +1625,9 @@
       const qKey = getQKey(q);
       const userAnsRec = userStore.answers[qKey];
       const isExam = (appConfig.quizMode === 'exam');
-      // 是否展示答案解析：背题模式答题后展示，做题模式仅交卷后展示
       const showAnswer = isExam ? isExamSubmitted : (userAnsRec !== undefined);
 
       let optionsHtml = "";
-
       if (q.type === 'judge') {
         let yesClass = "judge-flat-btn";
         let noClass = "judge-flat-btn";
@@ -1496,7 +1635,6 @@
           if (showAnswer) {
             if (q.answer === '对') yesClass += " status-correct";
             else if (userAnsRec.chosen === '对') yesClass += " status-wrong";
-
             if (q.answer === '错') noClass += " status-correct";
             else if (userAnsRec.chosen === '错') noClass += " status-wrong";
           } else {
@@ -1506,14 +1644,8 @@
         }
         optionsHtml = `
           <div class="judge-btn-grid">
-            <button class="${yesClass}" onclick="handleAnswerSelect('对')">
-              <svg class="svg-icon"><use href="#icon-check"/></svg>
-              <span>正确</span>
-            </button>
-            <button class="${noClass}" onclick="handleAnswerSelect('错')">
-              <svg class="svg-icon"><use href="#icon-close"/></svg>
-              <span>错误</span>
-            </button>
+            <button class="${yesClass}" onclick="handleAnswerSelect('对')"><svg class="svg-icon"><use href="#icon-check"/></svg> 正确</button>
+            <button class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon"><use href="#icon-close"/></svg> 错误</button>
           </div>
         `;
       } else {
@@ -1522,15 +1654,10 @@
           let rowClass = "option-row";
           if (userAnsRec) {
             if (showAnswer) {
-              if (q.answer.includes(letter)) {
-                rowClass += " status-correct";
-              } else if (userAnsRec.chosen.includes(letter)) {
-                rowClass += " status-wrong";
-              }
+              if (q.answer.includes(letter)) rowClass += " status-correct";
+              else if (userAnsRec.chosen.includes(letter)) rowClass += " status-wrong";
             } else {
-              if (userAnsRec.chosen.includes(letter)) {
-                rowClass += " exam-selected";
-              }
+              if (userAnsRec.chosen.includes(letter)) rowClass += " exam-selected";
             }
           }
           optionsHtml += `
@@ -1543,37 +1670,26 @@
         optionsHtml += `</div>`;
       }
 
-      // 官方解析块 (带折叠)
       let analysisBlock = "";
       if (showAnswer) {
         analysisBlock = `
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
-              <div>
-                <span>正确答案</span>
-                <span class="ans-badge-text">${q.answer}</span>
-              </div>
+              <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
               <span style="font-size:12px;color:var(--primary);">官方考点精解 ▾</span>
             </div>
-            <div class="analysis-detail-body" id="analysisDetail_${qKey}">
-              ${q.analysis || '本题暂无拓展官方考点解析'}
-            </div>
+            <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
           </div>
 
-          <!-- AI 深度剖析组件 -->
           <div class="ai-stream-box">
             <div class="ai-header-bar">
               <div class="ai-label-title">
-                <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-gear"/></svg>
-                <span>AI 名师深度剖析</span>
+                <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-bot"/></svg>
+                <span>AI 名师深度剖析 (${userStore.settings.model || 'AI'})</span>
               </div>
-              <button class="ai-trigger-btn" onclick="requestAiHelp()">
-                ${userStore.aiCache[qKey] ? '重新精讲' : '一键精讲'}
-              </button>
+              <button class="ai-trigger-btn" onclick="requestAiHelp()">${userStore.aiCache[qKey] ? '重新精讲' : '一键精讲'}</button>
             </div>
-            <div class="ai-text-container" id="aiTextContainer" style="${userStore.aiCache[qKey] ? '' : 'display:none;'}">
-              ${userStore.aiCache[qKey] || ''}
-            </div>
+            <div class="ai-text-container" id="aiTextContainer" style="${userStore.aiCache[qKey] ? '' : 'display:none;'}">${userStore.aiCache[qKey] || ''}</div>
           </div>
         `;
       }
@@ -1587,12 +1703,11 @@
         ${optionsHtml}
         ${analysisBlock}
       `;
-
       container.scrollTop = 0;
 
-      // 更新收藏与下一题按钮文字
+      // 顶部收藏星标状态
       const isFav = userStore.favorites.includes(qKey);
-      document.getElementById("favMenuText").textContent = isFav ? "取消收藏" : "收藏此题";
+      document.getElementById("favStarBtn").classList.toggle("active", isFav);
 
       const nextBtn = document.getElementById("nextActionBtn");
       if (currentQuizIndex === total - 1) {
@@ -1602,32 +1717,19 @@
       }
     }
 
-    // ==========================================
-    // 答题判定与艾宾浩斯更新
-    // ==========================================
     function handleAnswerSelect(ans) {
       const q = activeQuestions[currentQuizIndex];
       const qKey = getQKey(q);
 
-      // 做题模式允许修改；背题模式做完后锁定
       if (appConfig.quizMode === 'study' && userStore.answers[qKey]) return;
 
       const isCorrect = (ans === q.answer);
-      userStore.answers[qKey] = {
-        chosen: ans,
-        isCorrect: isCorrect,
-        time: Date.now()
-      };
+      userStore.answers[qKey] = { chosen: ans, isCorrect, time: Date.now() };
 
-      // 维护艾宾浩斯遗忘曲线记录
       if (!isCorrect) {
         const now = Date.now();
         if (!userStore.ebbinghausWrong[qKey]) {
-          userStore.ebbinghausWrong[qKey] = {
-            firstWrongAt: now,
-            lastReviewAt: now,
-            reviewCount: 0
-          };
+          userStore.ebbinghausWrong[qKey] = { firstWrongAt: now, lastReviewAt: now, reviewCount: 0 };
         } else {
           userStore.ebbinghausWrong[qKey].lastReviewAt = now;
           userStore.ebbinghausWrong[qKey].reviewCount += 1;
@@ -1641,7 +1743,6 @@
     function navigateQuestion(step) {
       const total = activeQuestions.length;
       const target = currentQuizIndex + step;
-
       if (target >= total) {
         if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
           submitExamPaper();
@@ -1650,145 +1751,88 @@
         }
         return;
       }
-
       if (target >= 0 && target < total) {
         currentQuizIndex = target;
-        userStore.progress[currentSubject] = currentQuizIndex;
+        if (currentSubject) userStore.progress[currentSubject] = currentQuizIndex;
         saveUserStore();
         renderCurrentQuestion();
       }
     }
 
-    function toggleAnalysisDetails(qKey) {
-      const el = document.getElementById(`analysisDetail_${qKey}`);
-      if (el) {
-        el.style.display = el.style.display === 'none' ? 'block' : 'none';
-      }
-    }
-
-    function resetCurrentQuestionAnswer() {
-      const q = activeQuestions[currentQuizIndex];
-      if (!q) return;
-      delete userStore.answers[getQKey(q)];
-      saveUserStore();
-      renderCurrentQuestion();
-      closeMoreDropdown();
-    }
-
     // ==========================================
-    // 做题模式交卷结算
+    // 左右滑动手势支持 (Touch Swipe)
     // ==========================================
-    function submitExamPaper() {
-      isExamSubmitted = true;
-      closeSheetDrawer();
-      renderCurrentQuestion();
+    function initTouchSwipe() {
+      let touchStartX = 0, touchStartY = 0;
+      const quizView = document.getElementById("quizView");
 
-      // 计算得分
-      let correct = 0;
-      activeQuestions.forEach(q => {
-        const rec = userStore.answers[getQKey(q)];
-        if (rec && rec.isCorrect) correct++;
-      });
-      const total = activeQuestions.length;
-      const score = Math.round((correct / total) * 100);
+      quizView.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
 
-      alert(`交卷成功！\n共 ${total} 题，答对 ${correct} 题，得分：${score} 分。\n已为您切换为全卷解析模式！`);
-    }
+      quizView.addEventListener("touchend", (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
 
-    // ==========================================
-    // 答题卡抽屉
-    // ==========================================
-    function openSheetDrawer() {
-      const grid = document.getElementById("sheetNumGrid");
-      grid.innerHTML = "";
-
-      let correct = 0;
-      let answered = 0;
-
-      activeQuestions.forEach((q, idx) => {
-        const qKey = getQKey(q);
-        const rec = userStore.answers[qKey];
-        const cell = document.createElement("div");
-        cell.className = "sheet-cell";
-        cell.textContent = idx + 1;
-
-        if (idx === currentQuizIndex) cell.classList.add("current");
-
-        if (rec) {
-          answered++;
-          if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
-            cell.classList.add("done");
-          } else {
-            if (rec.isCorrect) {
-              cell.classList.add("correct");
-              correct++;
-            } else {
-              cell.classList.add("wrong");
-            }
-          }
+        // 横向位移大于50且横向幅度大于纵向幅度
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) navigateQuestion(1);  // 向左滑 -> 下一题
+          else navigateQuestion(-1);       // 向右滑 -> 上一题
         }
-
-        cell.onclick = () => {
-          currentQuizIndex = idx;
-          closeSheetDrawer();
-          renderCurrentQuestion();
-        };
-        grid.appendChild(cell);
-      });
-
-      // 做题模式显示交卷按钮
-      const submitBtn = document.getElementById("submitExamBtn");
-      if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
-        submitBtn.style.display = "block";
-      } else {
-        submitBtn.style.display = "none";
-      }
-
-      document.getElementById("sheetDrawer").classList.add("open");
-    }
-
-    function closeSheetDrawer() {
-      document.getElementById("sheetDrawer").classList.remove("open");
+      }, { passive: true });
     }
 
     // ==========================================
-    // 草稿纸功能 (Canvas 手写涂鸦)
+    // 草稿画板 (带撤销一步 Undo 笔画栈)
     // ==========================================
     let draftCanvas, draftCtx, isDrawing = false;
+    let strokes = []; // 笔画数组 [ [ {x, y}, ... ], ... ]
+    let currentStroke = [];
 
-    function initDraftCanvas() {
+    function initDraftCanvasWithUndo() {
       draftCanvas = document.getElementById("draftCanvas");
       draftCtx = draftCanvas.getContext("2d");
 
       function resize() {
         draftCanvas.width = window.innerWidth;
         draftCanvas.height = window.innerHeight;
+        redrawStrokes();
       }
       window.addEventListener("resize", resize);
       resize();
 
       function getPos(e) {
         const rect = draftCanvas.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+        const t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX - rect.left, y: t.clientY - rect.top };
       }
 
       function start(e) {
         isDrawing = true;
+        currentStroke = [];
         const p = getPos(e);
+        currentStroke.push(p);
         draftCtx.beginPath();
         draftCtx.moveTo(p.x, p.y);
       }
       function draw(e) {
         if (!isDrawing) return;
         const p = getPos(e);
+        currentStroke.push(p);
         draftCtx.lineWidth = 2.5;
         draftCtx.lineCap = 'round';
         draftCtx.strokeStyle = '#2563eb';
         draftCtx.lineTo(p.x, p.y);
         draftCtx.stroke();
       }
-      function stop() { isDrawing = false; }
+      function stop() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        if (currentStroke.length > 0) strokes.push(currentStroke);
+      }
 
       draftCanvas.addEventListener("mousedown", start);
       draftCanvas.addEventListener("mousemove", draw);
@@ -1799,19 +1843,65 @@
       draftCanvas.addEventListener("touchend", stop);
     }
 
-    function openDraftCanvas() {
-      document.getElementById("draftCanvasMask").classList.add("open");
-    }
-    function closeDraftCanvas() {
-      document.getElementById("draftCanvasMask").classList.remove("open");
-    }
-    function clearDraft() {
+    function redrawStrokes() {
+      if (!draftCtx) return;
       draftCtx.clearRect(0, 0, draftCanvas.width, draftCanvas.height);
+      strokes.forEach(strk => {
+        if (strk.length < 2) return;
+        draftCtx.beginPath();
+        draftCtx.lineWidth = 2.5;
+        draftCtx.lineCap = 'round';
+        draftCtx.strokeStyle = '#2563eb';
+        draftCtx.moveTo(strk[0].x, strk[0].y);
+        for (let i = 1; i < strk.length; i++) {
+          draftCtx.lineTo(strk[i].x, strk[i].y);
+        }
+        draftCtx.stroke();
+      });
     }
 
+    function undoDraftStroke() {
+      if (strokes.length > 0) {
+        strokes.pop();
+        redrawStrokes();
+      }
+    }
+
+    function clearDraft() {
+      strokes = [];
+      redrawStrokes();
+    }
+    function openDraftCanvas() { document.getElementById("draftCanvasMask").classList.add("open"); }
+    function closeDraftCanvas() { document.getElementById("draftCanvasMask").classList.remove("open"); }
+
     // ==========================================
-    // 计时器控制
+    // 平铺导航操作 (收藏 / 主题 / 答题卡)
     // ==========================================
+    function toggleFavoriteCurrent() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      const idx = userStore.favorites.indexOf(qKey);
+      if (idx >= 0) userStore.favorites.splice(idx, 1);
+      else userStore.favorites.push(qKey);
+      saveUserStore();
+      renderCurrentQuestion();
+    }
+
+    function cycleThemeMode() {
+      const themes = ['light', 'eye', 'dark'];
+      let nextIdx = (themes.indexOf(appConfig.theme) + 1) % themes.length;
+      appConfig.theme = themes[nextIdx];
+      applyTheme(appConfig.theme);
+      saveUserStore();
+    }
+
+    function applyTheme(theme) {
+      document.body.className = '';
+      if (theme === 'eye') document.body.classList.add('theme-eye');
+      if (theme === 'dark') document.body.classList.add('theme-dark');
+    }
+
     function startTimer() {
       stopTimer();
       timerSeconds = 0;
@@ -1822,137 +1912,153 @@
         document.getElementById("quizTimer").textContent = `${mins}:${secs}`;
       }, 1000);
     }
+    function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
 
-    function stopTimer() {
-      if (timerInterval) clearInterval(timerInterval);
+    function openSheetDrawer() {
+      const grid = document.getElementById("sheetNumGrid");
+      grid.innerHTML = "";
+      activeQuestions.forEach((q, idx) => {
+        const qKey = getQKey(q);
+        const rec = userStore.answers[qKey];
+        const cell = document.createElement("div");
+        cell.className = "sheet-cell";
+        cell.textContent = idx + 1;
+        if (idx === currentQuizIndex) cell.classList.add("current");
+        if (rec) {
+          if (appConfig.quizMode === 'exam' && !isExamSubmitted) cell.classList.add("done");
+          else cell.classList.add(rec.isCorrect ? "correct" : "wrong");
+        }
+        cell.onclick = () => { currentQuizIndex = idx; closeSheetDrawer(); renderCurrentQuestion(); };
+        grid.appendChild(cell);
+      });
+      document.getElementById("submitExamBtn").style.display = (appConfig.quizMode === 'exam' && !isExamSubmitted) ? "block" : "none";
+      document.getElementById("sheetDrawer").classList.add("open");
     }
+    function closeSheetDrawer() { document.getElementById("sheetDrawer").classList.remove("open"); }
 
-    // ==========================================
-    // 更多菜单与主题切换
-    // ==========================================
-    function toggleMoreDropdown(e) {
-      e.stopPropagation();
-      document.getElementById("moreDropdown").classList.toggle("open");
-    }
-    function closeMoreDropdown() {
-      document.getElementById("moreDropdown").classList.remove("open");
-    }
-    window.addEventListener("click", () => closeMoreDropdown());
+    function submitExamPaper() {
+      isExamSubmitted = true;
+      closeSheetDrawer();
+      let correct = 0;
+      activeQuestions.forEach(q => {
+        const rec = userStore.answers[getQKey(q)];
+        if (rec && rec.isCorrect) correct++;
+      });
+      const total = activeQuestions.length;
+      const score = Math.round((correct / total) * 100);
 
-    function toggleFavoriteCurrent() {
-      const q = activeQuestions[currentQuizIndex];
-      if (!q) return;
-      const qKey = getQKey(q);
-      const idx = userStore.favorites.indexOf(qKey);
-      if (idx >= 0) {
-        userStore.favorites.splice(idx, 1);
-      } else {
-        userStore.favorites.push(qKey);
+      // 保存至试卷记录
+      if (currentExamId) {
+        const ex = userStore.savedExams.find(e => e.id === currentExamId);
+        if (ex) ex.score = score;
       }
       saveUserStore();
       renderCurrentQuestion();
-      closeMoreDropdown();
-    }
-
-    function cycleThemeMode() {
-      const themes = ['light', 'eye', 'dark'];
-      let nextIdx = (themes.indexOf(appConfig.theme) + 1) % themes.length;
-      appConfig.theme = themes[nextIdx];
-      applyTheme(appConfig.theme);
-      saveUserStore();
-      closeMoreDropdown();
-    }
-
-    function applyTheme(theme) {
-      document.body.className = '';
-      if (theme === 'eye') document.body.classList.add('theme-eye');
-      if (theme === 'dark') document.body.classList.add('theme-dark');
-    }
-
-    function togglePinMode() {
-      const icon = document.getElementById("pinIcon");
-      const isPinned = icon.style.color === "var(--primary)";
-      icon.style.color = isPinned ? "inherit" : "var(--primary)";
-      alert(isPinned ? "已取消固定题号" : "已固定当前做题进度");
+      alert(`交卷成功！\n共 ${total} 题，答对 ${correct} 题，得分：${score} 分！\n已切换至全卷答案解析模式。`);
     }
 
     // ==========================================
-    // 自定义模态框操作 (参考图 3)
+    // AI 配置 (多提供商预设 & 自由切换模型)
     // ==========================================
-    function openCustomModal() {
-      selectQuizMode(appConfig.quizMode);
-      document.querySelectorAll(".count-pill").forEach(p => {
-        const val = parseInt(p.textContent) || 0;
-        p.classList.toggle("active", val === appConfig.batchSize);
+    const PROVIDER_PRESETS = {
+      deepseek: {
+        baseUrl: "https://api.deepseek.com/v1",
+        model: "deepseek-chat",
+        models: ["deepseek-chat", "deepseek-reasoner"]
+      },
+      openai: {
+        baseUrl: "https://api.openai.com/v1",
+        model: "gpt-4o-mini",
+        models: ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"]
+      },
+      kimi: {
+        baseUrl: "https://api.moonshot.cn/v1",
+        model: "moonshot-v1-8k",
+        models: ["moonshot-v1-8k", "moonshot-v1-32k"]
+      },
+      siliconflow: {
+        baseUrl: "https://api.siliconflow.cn/v1",
+        model: "Qwen/Qwen2.5-7B-Instruct",
+        models: ["Qwen/Qwen2.5-7B-Instruct", "deepseek-ai/DeepSeek-V2.5"]
+      },
+      custom: {
+        baseUrl: "",
+        model: "",
+        models: []
+      }
+    };
+
+    function openSettingsModal() {
+      const p = userStore.settings.provider || "deepseek";
+      document.getElementById("cfgProvider").value = p;
+      document.getElementById("cfgBaseUrl").value = userStore.settings.baseUrl || "";
+      document.getElementById("cfgApiKey").value = userStore.settings.apiKey || "";
+      document.getElementById("cfgModel").value = userStore.settings.model || "";
+      renderQuickModelPills(p);
+      document.getElementById("settingsModal").classList.add("open");
+    }
+    function closeSettingsModal() { document.getElementById("settingsModal").classList.remove("open"); }
+
+    function handleProviderChange(providerKey) {
+      const preset = PROVIDER_PRESETS[providerKey];
+      if (preset && providerKey !== 'custom') {
+        document.getElementById("cfgBaseUrl").value = preset.baseUrl;
+        document.getElementById("cfgModel").value = preset.model;
+      }
+      renderQuickModelPills(providerKey);
+    }
+
+    function renderQuickModelPills(providerKey) {
+      const container = document.getElementById("quickModelPills");
+      container.innerHTML = "";
+      const models = PROVIDER_PRESETS[providerKey]?.models || [];
+      models.forEach(m => {
+        const pill = document.createElement("span");
+        pill.className = "cycle-pill";
+        pill.style.cursor = "pointer";
+        pill.textContent = m;
+        pill.onclick = () => { document.getElementById("cfgModel").value = m; };
+        container.appendChild(pill);
       });
-      updateEbbinghausUI();
-      document.getElementById("customModal").classList.add("open");
     }
 
-    function closeCustomModal() {
-      document.getElementById("customModal").classList.remove("open");
-    }
-
-    function selectQuizMode(mode) {
-      appConfig.quizMode = mode;
-      document.getElementById("cardModeExam").classList.toggle("active", mode === 'exam');
-      document.getElementById("cardModeStudy").classList.toggle("active", mode === 'study');
-    }
-
-    function selectBatchSize(size, elem) {
-      appConfig.batchSize = size;
-      document.querySelectorAll(".count-pill").forEach(p => p.classList.remove("active"));
-      elem.classList.add("active");
-    }
-
-    function toggleEbbinghausReview() {
-      appConfig.useEbbinghaus = !appConfig.useEbbinghaus;
-      updateEbbinghausUI();
-    }
-
-    function updateEbbinghausUI() {
-      const row = document.getElementById("ebbinghausRow");
-      const chk = document.getElementById("ebbinghausCheck");
-      row.classList.toggle("active", appConfig.useEbbinghaus);
-      chk.style.display = appConfig.useEbbinghaus ? "block" : "none";
-    }
-
-    function confirmStartCustomQuiz() {
+    function saveSettingsForm() {
+      userStore.settings.provider = document.getElementById("cfgProvider").value;
+      userStore.settings.baseUrl = document.getElementById("cfgBaseUrl").value.trim();
+      userStore.settings.apiKey = document.getElementById("cfgApiKey").value.trim();
+      userStore.settings.model = document.getElementById("cfgModel").value.trim();
       saveUserStore();
-      closeCustomModal();
-      const firstSub = currentSubject || Object.keys(allSubjectsData)[0];
-      startQuizSubject(firstSub);
+      closeSettingsModal();
+      alert("AI 接口与模型配置已更新！");
     }
 
-    // ==========================================
-    // AI 深度考点解析 (调用大模型流式输出)
-    // ==========================================
+    // AI 流式解析调用
     async function requestAiHelp() {
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
       const qKey = getQKey(q);
-
       const cfg = userStore.settings;
+
       if (!cfg.apiKey) {
-        alert("请先配置您的 API Key (如 DeepSeek 密钥)");
+        alert("请先配置您的 API Key 密钥");
         openSettingsModal();
         return;
       }
 
       const box = document.getElementById("aiTextContainer");
       box.style.display = "block";
-      box.textContent = "正在连线名师 AI 梳理考点逻辑...";
+      box.textContent = "连线大模型梳理考点中...";
 
-      const prompt = `你是一位顶级教育学与公考名师。请对本题进行深度考点解析：
+      const prompt = `你是一位高水平的考试辅导专家。请对以下题目进行深入剖析：
 【科目】：${q.subject}
 【题型】：${q.typeName}
 【题干】：${q.question}
 【官方正确答案】：${q.answer}
 【官方原解析】：${q.analysis || '无'}
 
-请严格按三部分简短输出：
-1. 【考点本质】：直接点出考查的核心考点。
-2. 【正解与混淆项排除】：精准说明为什么选 ${q.answer}，排除干扰项的关键点。
+请按三点输出：
+1. 【核心考点】：一句话点破考查的核心概念。
+2. 【正解与混淆项拆解】：为什么选 ${q.answer}，以及其他选项的陷阱。
 3. 【秒记口诀】：给出一句押韵或便于记忆的口诀。`;
 
       try {
@@ -1973,7 +2079,7 @@
           })
         });
 
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        if (!resp.ok) throw new Error(`HTTP 错误码 ${resp.status}`);
 
         const reader = resp.body.getReader();
         const decoder = new TextDecoder("utf-8");
@@ -2000,30 +2106,32 @@
         userStore.aiCache[qKey] = full;
         saveUserStore();
       } catch (err) {
-        box.textContent = `AI 解析失败: ${err.message}，请在设置中检查 API Key 与网络连接。`;
+        box.textContent = `AI 解析失败: ${err.message}，请在右上角 AI 配置中检查 Key 与地址。`;
       }
     }
 
-    // ==========================================
-    // 系统配置模态框
-    // ==========================================
-    function openSettingsModal() {
-      document.getElementById("cfgBaseUrl").value = userStore.settings.baseUrl || "";
-      document.getElementById("cfgApiKey").value = userStore.settings.apiKey || "";
-      document.getElementById("cfgModel").value = userStore.settings.model || "";
-      document.getElementById("settingsModal").classList.add("open");
-      closeMoreDropdown();
+    // 自定义弹窗
+    function openCustomModal() { document.getElementById("customModal").classList.add("open"); }
+    function closeCustomModal() { document.getElementById("customModal").classList.remove("open"); }
+    function selectQuizMode(m) {
+      appConfig.quizMode = m;
+      document.getElementById("cardModeExam").classList.toggle("active", m === 'exam');
+      document.getElementById("cardModeStudy").classList.toggle("active", m === 'study');
     }
-    function closeSettingsModal() {
-      document.getElementById("settingsModal").classList.remove("open");
+    function selectBatchSize(s, el) {
+      appConfig.batchSize = s;
+      document.querySelectorAll(".count-pill").forEach(p => p.classList.remove("active"));
+      el.classList.add("active");
     }
-    function saveSettingsForm() {
-      userStore.settings.baseUrl = document.getElementById("cfgBaseUrl").value.trim();
-      userStore.settings.apiKey = document.getElementById("cfgApiKey").value.trim();
-      userStore.settings.model = document.getElementById("cfgModel").value.trim();
+    function confirmStartCustomQuiz() {
       saveUserStore();
-      closeSettingsModal();
-      alert("配置保存成功！");
+      closeCustomModal();
+      const firstSub = currentSubject || Object.keys(allSubjectsData)[0];
+      startQuizSubject(firstSub);
+    }
+    function toggleAnalysisDetails(qKey) {
+      const el = document.getElementById(`analysisDetail_${qKey}`);
+      if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
     window.onload = init;

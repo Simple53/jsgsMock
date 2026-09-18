@@ -1,7 +1,7 @@
 {
-  "name": "笃学题库",
-  "short_name": "笃学题库",
-  "description": "专业考试智能刷题与AI考点解析助手",
+  "name": "file2quiz",
+  "short_name": "file2quiz",
+  "description": "文件智能转化题库与刷题助手",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
