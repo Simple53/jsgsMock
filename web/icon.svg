@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="100" fill="#0284c7" />
+  <!-- 书本/答卷图标 (纯扁平无渐变无阴影) -->
+  <path d="M128 140 C128 140, 200 120, 256 160 C312 120, 384 140, 384 140 L384 372 C384 372, 312 352, 256 392 C200 352, 128 372, 128 372 Z" fill="#ffffff" />
+  <line x1="256" y1="160" x2="256" y2="392" stroke="#0284c7" stroke-width="12" stroke-linecap="round" />
+  <!-- 对勾标识 -->
+  <path d="M220 250 L245 275 L305 210" fill="none" stroke="#16a34a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
