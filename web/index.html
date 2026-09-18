@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <style>
     /* =========================================
-       file2quiz 纯扁平·无阴影·无渐变·无Emoji设计规范
+       file2quiz 纯扁平设计体系 (No Shadow, No Gradient, No Emoji)
        ========================================= */
     :root {
       --primary: #2563eb;         /* 品牌蓝 */
@@ -32,7 +32,6 @@
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
-    /* 护眼模式 */
     body.theme-eye {
       --bg: #eef7ee;
       --card-bg: #f7fcf7;
@@ -44,7 +43,6 @@
       --primary-border: #a5d6a7;
     }
 
-    /* 深色暗黑模式 */
     body.theme-dark {
       --bg: #0b1120;
       --card-bg: #1e293b;
@@ -87,6 +85,7 @@
       border-right: 1px solid var(--border);
     }
 
+    /* 需求3修复：彻底解决图标右侧和下方显示不全问题 */
     .svg-icon {
       width: 20px;
       height: 20px;
@@ -94,15 +93,45 @@
       display: inline-block;
       vertical-align: middle;
       flex-shrink: 0;
+      overflow: visible; /* 保证描边绝不被裁切 */
     }
 
-    /* 主页顶栏：根据要求主页不写 file2quiz，直接空白留出清爽空间 */
-    .top-empty-header {
-      padding: 10px 20px;
+    /* 需求1：首页头部 - 每日随机鼓励标语 + 右侧打卡/搜索图标 */
+    .home-top-header {
+      padding: 14px 20px 10px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .motto-box {
+      flex: 1;
+      padding-right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+    }
+    .motto-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .motto-tip {
+      font-size: 10px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .header-icons-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .header-icon-btn {
       background: none;
@@ -113,9 +142,22 @@
       align-items: center;
       justify-content: center;
       padding: 6px;
+      position: relative;
+    }
+    .header-icon-btn:active {
+      color: var(--primary);
+    }
+    .badge-dot {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--wrong);
     }
 
-    /* 主题视图内容容器 */
+    /* 视图容器 */
     .view-content-pane {
       display: flex;
       flex-direction: column;
@@ -124,114 +166,11 @@
       padding-bottom: 70px;
     }
 
-    /* 每日打卡横幅组件 */
-    .checkin-banner-card {
-      margin: 4px 20px 12px;
-      padding: 14px 16px;
-      background: var(--primary-light);
-      border: 1.5px solid var(--primary-border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .checkin-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .checkin-icon-wrap {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background: #ffffff;
-      border: 1px solid var(--primary-border);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .checkin-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .checkin-desc {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
-    .checkin-btn {
-      padding: 6px 14px;
-      background: var(--primary);
-      color: #ffffff;
-      border: none;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .checkin-btn.done {
-      background: var(--correct);
-    }
-
-    /* 题目搜索输入框 */
-    .search-input-wrap {
-      margin: 0 20px 12px;
-      position: relative;
-    }
-    .search-input-box {
-      width: 100%;
-      padding: 10px 14px 10px 38px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      background: var(--bg);
-      color: var(--text-main);
-      font-size: 14px;
-      outline: none;
-    }
-    .search-input-box:focus {
-      border-color: var(--primary);
-      background: var(--card-bg);
-    }
-    .search-icon-pos {
-      position: absolute;
-      left: 12px;
-      top: 10px;
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-    .search-results-dropdown {
-      position: absolute;
-      top: 46px;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      max-height: 280px;
-      overflow-y: auto;
-      z-index: 50;
-      display: none;
-    }
-    .search-result-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-    .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:hover, .search-result-item:active {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
     /* 科目胶囊条 */
     .capsule-nav {
       display: flex;
       gap: 12px;
-      padding: 6px 20px 12px;
+      padding: 10px 20px;
       overflow-x: auto;
       white-space: nowrap;
       border-bottom: 1px solid var(--border);
@@ -272,8 +211,8 @@
       flex: 1;
     }
     .sub-bullet-circle {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: var(--primary);
       color: #ffffff;
@@ -304,8 +243,8 @@
       gap: 3px;
     }
     .star-icon {
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
       fill: var(--star-inactive);
     }
     .star-icon.active {
@@ -326,7 +265,7 @@
       padding-left: 8px;
     }
 
-    /* 悬浮自定义刷题入口 */
+    /* 自定义刷题按钮 */
     .custom-fab-wrap {
       padding: 16px 20px;
       display: flex;
@@ -351,7 +290,7 @@
       color: var(--primary);
     }
 
-    /* 底部 5 栏导航 (练习 | 错题本 | 模拟考试 | 数据统计 | 设置) */
+    /* 底部 5 栏导航 */
     .bottom-tabbar {
       position: fixed;
       bottom: 0;
@@ -384,7 +323,7 @@
     .tabbar-item svg { width: 19px; height: 19px; }
 
     /* =========================================
-       刷题界面 (顶部平铺图标: 太阳/月亮/护眼)
+       刷题工作台 (顶部平铺图标: 太阳/月亮/护眼)
        ========================================= */
     .quiz-view {
       display: none;
@@ -468,7 +407,7 @@
       word-break: break-word;
     }
 
-    /* 选项按钮 */
+    /* 选项 */
     .quiz-options-col {
       display: flex;
       flex-direction: column;
@@ -589,46 +528,103 @@
       white-space: pre-wrap;
     }
 
-    /* AI 深度考点解析 */
+    /* =========================================
+       需求2全新重构：题目内部的 AI 供应商与模型面板
+       ========================================= */
     .ai-stream-box {
       border: 1.5px solid var(--primary-border);
-      border-radius: 12px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 16px;
       background: var(--card-bg);
-      margin-top: 12px;
+      margin-top: 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
-    .ai-header-bar {
+    .ai-providers-scroll {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
-    .ai-label-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--primary);
+    .ai-providers-scroll::-webkit-scrollbar { display: none; }
+    .provider-badge-btn {
       display: flex;
       align-items: center;
       gap: 6px;
+      padding: 6px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: var(--card-bg);
+      color: var(--text-sub);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .provider-badge-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .provider-logo-svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .ai-active-info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-sub);
+      padding: 4px 2px;
+    }
+    .ai-model-tag {
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--primary-border);
+    }
+    .ai-actions-row {
+      display: flex;
+      gap: 8px;
     }
     .ai-trigger-btn {
-      padding: 6px 14px;
+      flex: 1;
+      padding: 10px;
       background: var(--primary);
       color: #ffffff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .ai-config-btn {
+      padding: 10px 14px;
+      background: #ffffff;
+      color: var(--text-sub);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
     }
+
     .ai-text-container {
       font-size: 14px;
-      line-height: 1.7;
+      line-height: 1.75;
       background: var(--primary-light);
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 10px;
       border: 1px solid var(--primary-border);
       color: var(--text-main);
       white-space: pre-wrap;
@@ -711,7 +707,7 @@
     .draft-action-btn.danger { color: var(--wrong); }
 
     /* =========================================
-       模态弹窗公共规范
+       模态弹窗规范
        ========================================= */
     .modal-mask {
       position: fixed;
@@ -735,7 +731,7 @@
       padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       max-height: 85vh;
       overflow-y: auto;
     }
@@ -765,6 +761,25 @@
       font-weight: 700;
       cursor: pointer;
       text-align: center;
+    }
+
+    .count-pill {
+      flex: 1;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+    .count-pill.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
     }
 
     /* 选项卡 */
@@ -811,7 +826,7 @@
       margin-top: 4px;
     }
 
-    /* 数据统计看板图表 */
+    /* 数据统计看板 */
     .stats-score-card {
       background: var(--primary-light);
       border: 1.5px solid var(--primary-border);
@@ -862,8 +877,6 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
-
-    /* 进度条 */
     .progress-bar-linear {
       height: 8px;
       background: var(--border);
@@ -944,32 +957,48 @@
       color: #ffffff;
     }
 
-    .count-pill {
-      flex: 1;
-      padding: 8px 0;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: var(--card-bg);
-      color: var(--text-sub);
-      cursor: pointer;
+    /* 需求1：个人中心打卡网格小点 */
+    .checkin-dot-grid {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      margin-top: 8px;
     }
-    .count-pill.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      color: var(--primary);
+    .checkin-dot-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .checkin-dot-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
       font-weight: 700;
+    }
+    .checkin-dot-circle.active {
+      background: var(--correct);
+      border-color: var(--correct);
+      color: #ffffff;
     }
   </style>
 </head>
 <body>
 
-  <!-- SVG 图标库声明 (严禁 Emoji) -->
+  <!-- =========================================
+       统一 SVG 矢量图标库 (viewBox 全部严格限制在安全区域，杜绝裁剪)
+       ========================================= -->
   <svg style="display: none;">
     <defs>
-      <!-- 太阳/日间 -->
+      <!-- 太阳/日间 (安全边界 2~22) -->
       <g id="icon-sun">
         <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
         <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m14.14-14.14l-1.41 1.41" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -980,7 +1009,7 @@
       </g>
       <!-- 护眼/眼睛 -->
       <g id="icon-eye">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="2"/>
         <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
       </g>
       <!-- 叉号 -->
@@ -996,9 +1025,9 @@
       <!-- 对勾 -->
       <g id="icon-check"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
       <!-- 日历打卡 -->
-      <g id="icon-calendar"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></g>
+      <g id="icon-calendar"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></g>
       <!-- 搜索 -->
-      <g id="icon-search"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
+      <g id="icon-search"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="16" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></g>
       <!-- 练习书本 -->
       <g id="icon-book"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="none" stroke="currentColor" stroke-width="2"/></g>
       <!-- 错题本 -->
@@ -1013,37 +1042,64 @@
       <g id="icon-undo"><path d="M9 14L4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
       <!-- 导入上传 -->
       <g id="icon-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="17 8 12 3 7 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+      
+      <!-- 供应商 LOGO 矢量图标 (viewBox 0 0 24 24) -->
+      <!-- DeepSeek 鲸鱼求索图标 -->
+      <g id="logo-deepseek">
+        <path d="M12 3C7 3 3 6.5 3 11c0 2.5 1.2 4.7 3.2 6.2L5 21l4.2-1.4c.9.3 1.8.4 2.8.4 5 0 9-3.5 9-8s-4-9-9-9z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="9" cy="10" r="1.2" fill="currentColor"/>
+        <path d="M13 13c1-.6 2.2-.6 3 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <!-- Kimi 月之暗面图标 -->
+      <g id="logo-kimi">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 3a9 9 0 0 1 0 18 6 6 0 0 0 0-18z" fill="currentColor"/>
+      </g>
+      <!-- Qwen 通义千问图标 -->
+      <g id="logo-qwen">
+        <path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </g>
+      <!-- 智谱清言 Zhipu 图标 -->
+      <g id="logo-zhipu">
+        <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M7 8h10L7 16h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <!-- OpenAI / ChatGPT 图标 -->
+      <g id="logo-openai">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 7v5l4 2.5M12 7l-4 2.5M12 17l4-2.5M12 17l-4-2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </g>
+      <!-- 硅基流动 SiliconFlow 图标 -->
+      <g id="logo-siliconflow">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
     </defs>
   </svg>
 
   <div class="app-viewport">
 
     <!-- =======================================
-         TAB 1: 练习 (主页)
+         TAB 1: 练习 (首页: 每日名言标语 + 打卡图标 + 搜索图标)
          ======================================= -->
     <div class="view-content-pane" id="panePractice">
-      <!-- 需求1：主页不要写 file2quiz，直接空着 -->
-      <header class="top-empty-header"></header>
-
-      <!-- 需求2：主页上方增加每日打卡与题目搜索 -->
-      <div class="checkin-banner-card">
-        <div class="checkin-left">
-          <div class="checkin-icon-wrap">
-            <svg class="svg-icon"><use href="#icon-calendar"/></svg>
-          </div>
-          <div>
-            <div class="checkin-title" id="checkinStatusTitle">每日打卡学习</div>
-            <div class="checkin-desc" id="checkinDaysText">已连续打卡 0 天</div>
-          </div>
+      <!-- 需求1：首页头部 - 每日随机鼓励标语 + 右侧打卡与搜索图标 -->
+      <header class="home-top-header">
+        <div class="motto-box" onclick="cycleDailyMotto()" title="轻触切换励志名言">
+          <div class="motto-text" id="dailyMottoText">“博学之，审问之，慎思之，明辨之，笃行之。”</div>
+          <div class="motto-tip">每日研习寄语 ↻</div>
         </div>
-        <button class="checkin-btn" id="checkinActionBtn" onclick="handleDailyCheckin()">打卡</button>
-      </div>
-
-      <div class="search-input-wrap">
-        <svg class="svg-icon search-icon-pos" style="width:16px;height:16px;"><use href="#icon-search"/></svg>
-        <input class="search-input-box" id="globalSearchInput" placeholder="搜索题目、考点关键词..." oninput="handleGlobalSearch(this.value)">
-        <div class="search-results-dropdown" id="searchResultsBox"></div>
-      </div>
+        <div class="header-icons-row">
+          <!-- 打卡图标 -->
+          <button class="header-icon-btn" onclick="handleDailyCheckin()" title="每日打卡">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-calendar"/></svg>
+            <span class="badge-dot" id="checkinRedDot"></span>
+          </button>
+          <!-- 搜索图标 -->
+          <button class="header-icon-btn" onclick="openSearchModal()" title="搜索题目">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-search"/></svg>
+          </button>
+        </div>
+      </header>
 
       <nav class="capsule-nav">
         <span class="capsule-item active" onclick="filterCategory('all', this)">全部科目 (5科)</span>
@@ -1055,7 +1111,7 @@
 
       <div class="custom-fab-wrap">
         <button class="custom-fab-btn" onclick="openStartQuizModal(null)">
-          <svg class="svg-icon" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-gear"/></svg>
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-gear"/></svg>
           <span>自定义刷题设置</span>
           <span style="color:var(--text-muted);font-size:12px;">›</span>
         </button>
@@ -1066,7 +1122,7 @@
          TAB 2: 错题本 (含艾宾浩斯复习)
          ======================================= -->
     <div class="view-content-pane" id="paneWrong" style="display:none;">
-      <header class="top-brand-header" style="padding:14px 20px;">
+      <header class="home-top-header" style="padding:14px 20px;">
         <span style="font-size:18px;font-weight:800;">错题本与抗遗忘</span>
       </header>
       <div style="padding:16px 20px;">
@@ -1091,7 +1147,7 @@
          TAB 3: 模拟考试 (组卷与试卷库)
          ======================================= -->
     <div class="view-content-pane" id="paneExam" style="display:none;">
-      <header class="top-brand-header" style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
+      <header class="home-top-header" style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:18px;font-weight:800;">全真模拟考试</span>
         <button class="custom-fab-btn" style="padding:6px 14px;font-size:12px;" onclick="openNewExamModal()">+ 组合新试卷</button>
       </header>
@@ -1102,14 +1158,13 @@
     </div>
 
     <!-- =======================================
-         TAB 4: 数据统计板块 (需求6: 统计做题情况与预估分)
+         TAB 4: 数据统计板块 (学情与预估分)
          ======================================= -->
     <div class="view-content-pane" id="paneStats" style="display:none;">
-      <header class="top-brand-header" style="padding:14px 20px;">
+      <header class="home-top-header" style="padding:14px 20px;">
         <span style="font-size:18px;font-weight:800;">学情与考分预测</span>
       </header>
       <div style="padding:16px 20px;">
-        <!-- 智能预估考分卡 -->
         <div class="stats-score-card">
           <div style="font-size:13px;font-weight:700;color:var(--text-sub);">AI 综合学情预测得分</div>
           <div class="score-big-num" id="predictedScoreNum">0.0</div>
@@ -1117,7 +1172,6 @@
           <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" id="predictedScoreAdvise">持续完成真题练习以提升考分预测</div>
         </div>
 
-        <!-- 3 个数据快照 -->
         <div class="stats-grid-row">
           <div class="stats-mini-box">
             <div class="mini-box-num" id="statsTotalDone">0</div>
@@ -1133,20 +1187,31 @@
           </div>
         </div>
 
-        <!-- 科目掌握度进度分析 -->
         <div style="font-size:14px;font-weight:800;margin-bottom:10px;">各板块掌握度详情</div>
         <div id="statsSubjectBars" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
     </div>
 
     <!-- =======================================
-         TAB 5: 个人设置板块 (需求5: 默认模式/跟随系统/导入题库)
+         TAB 5: 个人设置板块 (需求1: 包含打卡统计数据)
          ======================================= -->
     <div class="view-content-pane" id="paneSettings" style="display:none;">
-      <header class="top-brand-header" style="padding:14px 20px;">
+      <header class="home-top-header" style="padding:14px 20px;">
         <span style="font-size:18px;font-weight:800;">个人与系统设置</span>
       </header>
       <div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
+        <!-- 需求1：个人中心显示打卡统计数据 -->
+        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--primary-light);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:15px;font-weight:800;color:var(--primary);">学习打卡记录</div>
+              <div style="font-size:12px;color:var(--text-sub);margin-top:2px;" id="settingsCheckinSummary">连续打卡 0 天 · 累计打卡 0 天</div>
+            </div>
+            <button class="bottom-btn primary" style="height:32px;padding:0 12px;font-size:12px;" onclick="handleDailyCheckin()">立即打卡</button>
+          </div>
+          <div class="checkin-dot-grid" id="settingsWeekDots"></div>
+        </div>
+
         <!-- 默认做题模式 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">默认做题模式</div>
@@ -1161,34 +1226,25 @@
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <div style="font-size:14px;font-weight:700;">主题外观跟随系统</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">自动跟随手机深色/浅色外观切换</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">自动跟随手机深色/浅色模式切换</div>
           </div>
           <input type="checkbox" id="settingFollowSystem" style="width:20px;height:20px;" onchange="toggleFollowSystem(this.checked)">
         </div>
 
-        <!-- AI 模型服务商与接入设置 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="openAiSettingsModal()">
-          <div>
-            <div style="font-size:14px;font-weight:700;">AI 名师模型接入</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="currentAiDesc">DeepSeek / OpenAI / 多模型支持</div>
-          </div>
-          <span style="font-size:16px;color:var(--text-muted);">›</span>
-        </div>
-
-        <!-- 需求7: 支持导入额外题目或科目文件 -->
+        <!-- 题库导入与更新 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">题库导入与更新</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">支持导入 JSON 题库文件扩充题目</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">导入 JSON 题库文件扩充题目</div>
           <div style="display:flex;gap:10px;margin-top:10px;">
             <label class="modal-submit-btn" style="flex:1;padding:10px;font-size:13px;cursor:pointer;display:inline-block;">
-              <svg class="svg-icon" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-upload"/></svg> 导入题库文件
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-upload"/></svg> 导入题库文件
               <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportQuizFile(event)">
             </label>
             <button class="bottom-btn" style="flex:1;padding:10px;font-size:13px;" onclick="exportCurrentQuizData()">导出当前题库</button>
           </div>
         </div>
 
-        <!-- 清空数据 -->
+        <!-- 清空重置数据 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;color:var(--wrong);">重置数据</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">清空所有已答题目痕迹、错题与做题记录</div>
@@ -1198,33 +1254,30 @@
     </div>
 
     <!-- =======================================
-         刷题工作台 (平铺导航: 太阳/月亮/护眼切换)
+         刷题工作台 (顶部平铺图标: 太阳/月亮/护眼)
          ======================================= -->
     <div class="quiz-view" id="quizView">
       <header class="quiz-top-nav-flat">
         <div class="nav-left-flat">
           <button class="tool-icon-btn" onclick="exitQuizToHome()" title="返回退出">
-            <svg class="svg-icon"><use href="#icon-close"/></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg>
           </button>
           <div class="quiz-timer" id="quizTimer">00:00</div>
         </div>
 
-        <!-- 需求3：主题切换改为太阳、月亮、护眼图标切换 -->
+        <!-- 需求3：太阳、月亮、护眼图标平铺切换 (严格 viewBox 杜绝裁切) -->
         <div class="nav-tools-tiled">
           <button class="tool-icon-btn" onclick="openDraftCanvas()" title="草稿画板">
-            <svg class="svg-icon"><use href="#icon-pencil"/></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-pencil"/></svg>
           </button>
           <button class="tool-icon-btn" id="favStarBtn" onclick="toggleFavoriteCurrent()" title="收藏本题">
-            <svg class="svg-icon"><use href="#icon-star"/></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
           </button>
           <button class="tool-icon-btn" id="themeCycleBtn" onclick="cycleThemeMode()" title="切换主题(太阳/月亮/护眼)">
-            <svg class="svg-icon" id="themeCurrentIcon"><use href="#icon-sun"/></svg>
-          </button>
-          <button class="tool-icon-btn" onclick="openAiSettingsModal()" title="AI模型设置">
-            <svg class="svg-icon"><use href="#icon-gear"/></svg>
+            <svg class="svg-icon" id="themeCurrentIcon" viewBox="0 0 24 24"><use href="#icon-sun"/></svg>
           </button>
           <button class="tool-icon-btn" onclick="openSheetDrawer()" title="答题卡">
-            <svg class="svg-icon"><use href="#icon-sheet"/></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-sheet"/></svg>
           </button>
         </div>
       </header>
@@ -1241,27 +1294,43 @@
     <!-- 底部 5 栏 TabBar -->
     <div class="bottom-tabbar" id="bottomTabbar">
       <button class="tabbar-item active" id="tabBtnPractice" onclick="switchBottomTab('practice')">
-        <svg><use href="#icon-book"/></svg>
+        <svg viewBox="0 0 24 24"><use href="#icon-book"/></svg>
         <span>练习</span>
       </button>
       <button class="tabbar-item" id="tabBtnWrong" onclick="switchBottomTab('wrong')">
-        <svg><use href="#icon-wrong-book"/></svg>
+        <svg viewBox="0 0 24 24"><use href="#icon-wrong-book"/></svg>
         <span>错题本</span>
       </button>
       <button class="tabbar-item" id="tabBtnExam" onclick="switchBottomTab('exam')">
-        <svg><use href="#icon-exam"/></svg>
+        <svg viewBox="0 0 24 24"><use href="#icon-exam"/></svg>
         <span>模拟考试</span>
       </button>
       <button class="tabbar-item" id="tabBtnStats" onclick="switchBottomTab('stats')">
-        <svg><use href="#icon-chart"/></svg>
+        <svg viewBox="0 0 24 24"><use href="#icon-chart"/></svg>
         <span>数据统计</span>
       </button>
       <button class="tabbar-item" id="tabBtnSettings" onclick="switchBottomTab('settings')">
-        <svg><use href="#icon-gear"/></svg>
+        <svg viewBox="0 0 24 24"><use href="#icon-gear"/></svg>
         <span>设置</span>
       </button>
     </div>
 
+  </div>
+
+  <!-- =======================================
+       全局题目搜索弹窗 (需求1)
+       ======================================= -->
+  <div class="modal-mask" id="searchModal" onclick="closeSearchModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <div class="modal-top-row">
+        <span class="modal-main-title">全真题库检索</span>
+        <button class="modal-close-icon" onclick="closeSearchModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+      <div style="position:relative;">
+        <input class="search-input-box" id="globalModalSearchInput" style="padding-left:14px;" placeholder="输入题目题干、选项或考点知识点..." oninput="handleModalSearch(this.value)">
+      </div>
+      <div id="modalSearchResultsBox" style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;"></div>
+    </div>
   </div>
 
   <!-- =======================================
@@ -1270,7 +1339,7 @@
   <div class="draft-canvas-mask" id="draftCanvasMask">
     <div class="draft-bar-float">
       <button class="draft-action-btn" onclick="undoDraftStroke()">
-        <svg class="svg-icon" style="width:14px;height:14px;"><use href="#icon-undo"/></svg>
+        <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-undo"/></svg>
         <span>撤销</span>
       </button>
       <button class="draft-action-btn danger" onclick="clearDraft()">清屏</button>
@@ -1280,7 +1349,7 @@
   </div>
 
   <!-- =======================================
-       需求4: 每次点击科目进去做题的模式与题量确认弹窗
+       刷题前确认弹窗 (模式/题量/乱序)
        ======================================= -->
   <div class="modal-mask" id="startQuizModal" onclick="closeStartQuizModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
@@ -1289,10 +1358,9 @@
           <div class="modal-main-title" id="startModalSubTitle">开始刷题</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">确认本次刷题参数</div>
         </div>
-        <button class="modal-close-icon" onclick="closeStartQuizModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+        <button class="modal-close-icon" onclick="closeStartQuizModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
 
-      <!-- 模式选择 -->
       <div>
         <div style="font-size:14px;font-weight:700;margin-bottom:8px;">做题模式</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
@@ -1301,7 +1369,6 @@
         </div>
       </div>
 
-      <!-- 题量选择 -->
       <div>
         <div style="font-size:14px;font-weight:700;margin-bottom:8px;">本次题量</div>
         <div style="display:flex;gap:6px;">
@@ -1313,11 +1380,10 @@
         </div>
       </div>
 
-      <!-- 需求3: 增加随机乱序模式 -->
       <div style="display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;">
         <div>
           <div style="font-size:14px;font-weight:700;">随机乱序出题</div>
-          <div style="font-size:12px;color:var(--text-muted);">打乱原始题卷顺序，增强应变能力</div>
+          <div style="font-size:12px;color:var(--text-muted);">打乱原始题卷顺序，强化应试变通</div>
         </div>
         <input type="checkbox" id="modalRandomShuffle" style="width:20px;height:20px;">
       </div>
@@ -1333,7 +1399,7 @@
     <div class="modal-panel" onclick="event.stopPropagation()">
       <div class="modal-top-row">
         <span class="modal-main-title">组合全真模拟卷</span>
-        <button class="modal-close-icon" onclick="closeNewExamModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+        <button class="modal-close-icon" onclick="closeNewExamModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
       <div>
         <label style="font-size:13px;font-weight:700;color:var(--text-sub);">试卷名称</label>
@@ -1352,38 +1418,47 @@
   </div>
 
   <!-- =======================================
-       AI 接口配置弹窗
+       需求2全新重构：AI 供应商详细配置与模型搜索抽屉
        ======================================= -->
-  <div class="modal-mask" id="aiSettingsModal" onclick="closeAiSettingsModal(event)">
+  <div class="modal-mask" id="aiConfigModal" onclick="closeAiConfigModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
       <div class="modal-top-row">
-        <span class="modal-main-title">AI 服务与模型设置</span>
-        <button class="modal-close-icon" onclick="closeAiSettingsModal()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="modal-main-title" id="aiConfigModalTitle">配置 AI 供应商</span>
+        </div>
+        <button class="modal-close-icon" onclick="closeAiConfigModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
+
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">服务商选择</label>
-        <select id="cfgProvider" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" onchange="handleProviderChange(this.value)">
-          <option value="deepseek">DeepSeek (官方推荐，极具性价比)</option>
-          <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
-          <option value="kimi">月之暗面 Kimi (Moonshot)</option>
-          <option value="siliconflow">硅基流动 SiliconFlow (Qwen2.5/DeepSeek)</option>
-          <option value="custom">自定义 (兼容 OpenAI 协议)</option>
-        </select>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API 端点 (Base URL) - 优先自动填充</label>
+        <input id="modalProviderBaseUrl" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
       </div>
-      <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API 地址 (Base URL)</label>
-        <input id="cfgBaseUrl" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
-      </div>
+
       <div>
         <label style="font-size:13px;font-weight:700;color:var(--text-sub);">API Key 密钥</label>
-        <input id="cfgApiKey" type="password" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
+        <input id="modalProviderApiKey" type="password" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="输入该供应商的 sk-xxxx">
       </div>
+
+      <!-- 需求2: 获取当前供应商模型与搜索模型 -->
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">模型代码 (Model)</label>
-        <input id="cfgModel" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;" id="quickModelPills"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label style="font-size:13px;font-weight:700;color:var(--text-sub);">供应商可用模型列表</label>
+          <button class="bottom-btn primary" style="height:28px;padding:0 10px;font-size:11px;" onclick="fetchProviderModelsOnline()">获取在线模型</button>
+        </div>
+        
+        <!-- 搜索模型 -->
+        <input id="modalModelSearchInput" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;margin-bottom:8px;" placeholder="搜索过滤模型 (如: chat, 4o, qwen...)" oninput="filterModalModelList(this.value)">
+        
+        <!-- 动态模型胶囊池 -->
+        <div id="modalModelPillPool" style="display:flex;gap:6px;flex-wrap:wrap;max-height:140px;overflow-y:auto;border:1px solid var(--border);padding:8px;border-radius:8px;"></div>
       </div>
-      <button class="modal-submit-btn" onclick="saveAiSettingsForm()">保存配置</button>
+
+      <div>
+        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">当前选定激活模型</label>
+        <input id="modalProviderSelectedModel" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;font-weight:700;color:var(--primary);">
+      </div>
+
+      <button class="modal-submit-btn" onclick="saveActiveProviderConfig()">保存并激活该供应商</button>
     </div>
   </div>
 
@@ -1394,7 +1469,7 @@
     <div class="sheet-drawer-content" onclick="event.stopPropagation()">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:17px;font-weight:800;">答题卡大纲</span>
-        <button class="modal-close-icon" onclick="closeSheetDrawer()"><svg class="svg-icon"><use href="#icon-close"/></svg></button>
+        <button class="modal-close-icon" onclick="closeSheetDrawer()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
       <div class="sheet-num-grid" id="sheetNumGrid"></div>
       <button class="modal-submit-btn" id="submitExamBtn" style="display:none;margin-top:10px;" onclick="submitExamPaper()">交卷并查看解析</button>
@@ -1403,7 +1478,81 @@
 
   <script>
     // ==========================================
-    // 全局数据状态
+    // 每日励志名言库 (需求1)
+    // ==========================================
+    const MOTTO_LIST = [
+      "博学之，审问之，慎思之，明辨之，笃行之。",
+      "日日行，不怕千万里；常常做，不怕千万事。",
+      "不积跬步无以至千里，不积小流无以成江海。",
+      "操千曲而后晓声，观千剑而后识器。",
+      "为学正如撑上水船，一篙不可放缓。",
+      "路虽远，行则将至；事虽难，做则必成。",
+      "知之者不如好之者，好之者不如乐之者。",
+      "业精于勤，荒于嬉；行成于思，毁于随。",
+      "锲而舍之，朽木不折；锲而不舍，金石可镂。"
+    ];
+
+    function getTodayMotto() {
+      const day = new Date().getDate();
+      return MOTTO_LIST[day % MOTTO_LIST.length];
+    }
+
+    let mottoIdx = 0;
+    function cycleDailyMotto() {
+      mottoIdx = (mottoIdx + 1) % MOTTO_LIST.length;
+      document.getElementById("dailyMottoText").textContent = `“${MOTTO_LIST[mottoIdx]}”`;
+    }
+
+    // ==========================================
+    // 需求2: 六大 AI 供应商预设配置
+    // ==========================================
+    const PROVIDERS = {
+      deepseek: {
+        name: "DeepSeek",
+        icon: "#logo-deepseek",
+        baseUrl: "https://api.deepseek.com/v1",
+        defaultModel: "deepseek-chat",
+        models: ["deepseek-chat", "deepseek-reasoner"]
+      },
+      kimi: {
+        name: "Kimi",
+        icon: "#logo-kimi",
+        baseUrl: "https://api.moonshot.cn/v1",
+        defaultModel: "moonshot-v1-8k",
+        models: ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"]
+      },
+      qwen: {
+        name: "Qwen 通义",
+        icon: "#logo-qwen",
+        baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        defaultModel: "qwen-plus",
+        models: ["qwen-plus", "qwen-turbo", "qwen-max", "qwen2.5-72b-instruct"]
+      },
+      zhipu: {
+        name: "智谱 Zhipu",
+        icon: "#logo-zhipu",
+        baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+        defaultModel: "glm-4-flash",
+        models: ["glm-4-flash", "glm-4-air", "glm-4", "glm-4-plus"]
+      },
+      openai: {
+        name: "ChatGPT",
+        icon: "#logo-openai",
+        baseUrl: "https://api.openai.com/v1",
+        defaultModel: "gpt-4o-mini",
+        models: ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "o1-mini"]
+      },
+      siliconflow: {
+        name: "硅基流动",
+        icon: "#logo-siliconflow",
+        baseUrl: "https://api.siliconflow.cn/v1",
+        defaultModel: "Qwen/Qwen2.5-7B-Instruct",
+        models: ["Qwen/Qwen2.5-7B-Instruct", "deepseek-ai/DeepSeek-V2.5", "THUDM/glm-4-9b-chat"]
+      }
+    };
+
+    // ==========================================
+    // 全局状态管理
     // ==========================================
     let allSubjectsData = {};
     let currentSubject = "";
@@ -1415,28 +1564,26 @@
       defaultMode: 'study', // 'study' | 'exam'
       defaultBatchSize: 15,
       followSystemTheme: false,
-      theme: 'light'        // 'light' | 'eye' | 'dark'
+      theme: 'light'
     };
 
     let userStore = {
       lastSubject: "",
       progress: {},
-      answers: {},          // { [qKey]: { chosen, isCorrect, time } }
+      answers: {},
       favorites: [],
-      ebbinghausWrong: {},  // { [qKey]: { firstWrongAt, lastReviewAt, reviewCount } }
+      ebbinghausWrong: {},
       savedExams: [],
       checkin: {
         lastDate: "",
-        days: 0
+        days: 0,
+        history: [] // ['2026-09-18', ...]
       },
       aiCache: {},
-      customSubjects: {},   // 额外导入的题目
-      settings: {
-        provider: "deepseek",
-        baseUrl: "https://api.deepseek.com/v1",
-        apiKey: "",
-        model: "deepseek-chat"
-      }
+      customSubjects: {},
+      // 存储各供应商的具体配置
+      activeProvider: "deepseek",
+      providersConfig: {}
     };
 
     let pendingStartSubject = "";
@@ -1451,14 +1598,27 @@
     }
 
     function loadUserStore() {
-      const s = localStorage.getItem("file2quiz_v2_store");
+      const s = localStorage.getItem("file2quiz_v3_store");
       if (s) {
         try { userStore = { ...userStore, ...JSON.parse(s) }; } catch (e) {}
       }
-      const c = localStorage.getItem("file2quiz_v2_cfg");
+      const c = localStorage.getItem("file2quiz_v3_cfg");
       if (c) {
         try { appConfig = { ...appConfig, ...JSON.parse(c) }; } catch (e) {}
       }
+
+      // 初始化供应商配置存储
+      if (!userStore.providersConfig) userStore.providersConfig = {};
+      Object.keys(PROVIDERS).forEach(pKey => {
+        if (!userStore.providersConfig[pKey]) {
+          userStore.providersConfig[pKey] = {
+            baseUrl: PROVIDERS[pKey].baseUrl,
+            apiKey: "",
+            model: PROVIDERS[pKey].defaultModel,
+            customModels: [...PROVIDERS[pKey].models]
+          };
+        }
+      });
 
       modalSelectedMode = appConfig.defaultMode || 'study';
       modalSelectedBatch = appConfig.defaultBatchSize || 15;
@@ -1472,8 +1632,8 @@
     }
 
     function saveUserStore() {
-      localStorage.setItem("file2quiz_v2_store", JSON.stringify(userStore));
-      localStorage.setItem("file2quiz_v2_cfg", JSON.stringify(appConfig));
+      localStorage.setItem("file2quiz_v3_store", JSON.stringify(userStore));
+      localStorage.setItem("file2quiz_v3_cfg", JSON.stringify(appConfig));
     }
 
     // ==========================================
@@ -1493,11 +1653,11 @@
         console.error("加载默认题库失败", e);
       }
 
-      // 合并用户导入的额外题库
       if (userStore.customSubjects) {
         Object.assign(allSubjectsData, userStore.customSubjects);
       }
 
+      document.getElementById("dailyMottoText").textContent = `“${getTodayMotto()}”`;
       renderSubjectList();
       updateCheckinUI();
       initDraftCanvasWithUndo();
@@ -1507,72 +1667,96 @@
     }
 
     // ==========================================
-    // 每日打卡与搜索 (需求2)
+    // 需求1: 每日打卡逻辑与打卡数据渲染
     // ==========================================
     function updateCheckinUI() {
       const today = new Date().toDateString();
       const isDone = (userStore.checkin.lastDate === today);
-      const days = userStore.checkin.days || 0;
+      const redDot = document.getElementById("checkinRedDot");
+      if (redDot) redDot.style.display = isDone ? "none" : "block";
 
-      document.getElementById("checkinDaysText").textContent = `已连续打卡 ${days} 天`;
-      const btn = document.getElementById("checkinActionBtn");
-      if (isDone) {
-        btn.textContent = "已打卡";
-        btn.classList.add("done");
-        document.getElementById("checkinStatusTitle").textContent = "今日打卡已完成！";
-      } else {
-        btn.textContent = "打卡";
-        btn.classList.remove("done");
-        document.getElementById("checkinStatusTitle").textContent = "每日打卡学习";
+      const totalDays = userStore.checkin.days || 0;
+      const summaryEl = document.getElementById("settingsCheckinSummary");
+      if (summaryEl) {
+        summaryEl.textContent = `连续打卡 ${totalDays} 天 · 累计坚持 ${userStore.checkin.history?.length || totalDays} 天`;
+      }
+
+      // 渲染最近 7 天打卡点阵
+      const weekContainer = document.getElementById("settingsWeekDots");
+      if (weekContainer) {
+        weekContainer.innerHTML = "";
+        const daysLabel = ["一", "二", "三", "四", "五", "六", "日"];
+        const todayDay = (new Date().getDay() + 6) % 7; // 0 是周一
+        for (let i = 0; i < 7; i++) {
+          const isCheck = (i <= todayDay && isDone) || (i < todayDay);
+          const col = document.createElement("div");
+          col.className = "checkin-dot-col";
+          col.innerHTML = `
+            <div class="checkin-dot-circle ${isCheck ? 'active' : ''}">${isCheck ? '✓' : ''}</div>
+            <span>周${daysLabel[i]}</span>
+          `;
+          weekContainer.appendChild(col);
+        }
       }
     }
 
     function handleDailyCheckin() {
       const today = new Date().toDateString();
       if (userStore.checkin.lastDate === today) {
-        alert("今日已完成打卡，明天继续保持！");
+        alert("今日已打卡成功，研习贵在坚持，明天继续！");
         return;
       }
       userStore.checkin.lastDate = today;
       userStore.checkin.days = (userStore.checkin.days || 0) + 1;
+      if (!userStore.checkin.history) userStore.checkin.history = [];
+      userStore.checkin.history.push(new Date().toISOString().slice(0, 10));
       saveUserStore();
       updateCheckinUI();
-      alert(`打卡成功！已连续打卡 ${userStore.checkin.days} 天，保持专注！`);
+      alert(`打卡成功！已连续打卡 ${userStore.checkin.days} 天，保持前行！`);
     }
 
-    // 全局题目搜索
-    function handleGlobalSearch(keyword) {
-      const box = document.getElementById("searchResultsBox");
-      keyword = keyword.trim().toLowerCase();
-      if (!keyword) {
-        box.style.display = "none";
-        return;
-      }
+    // 需求1: 全局搜索题目弹窗
+    function openSearchModal() {
+      document.getElementById("modalSearchResultsBox").innerHTML = "";
+      document.getElementById("globalModalSearchInput").value = "";
+      document.getElementById("searchModal").classList.add("open");
+      setTimeout(() => document.getElementById("globalModalSearchInput").focus(), 100);
+    }
+    function closeSearchModal() { document.getElementById("searchModal").classList.remove("open"); }
+
+    function handleModalSearch(kw) {
+      kw = kw.trim().toLowerCase();
+      const container = document.getElementById("modalSearchResultsBox");
+      if (!kw) { container.innerHTML = ""; return; }
 
       let matches = [];
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => {
-          if (matches.length >= 10) return;
-          if (q.question.toLowerCase().includes(keyword) || (q.analysis && q.analysis.toLowerCase().includes(keyword))) {
+          if (matches.length >= 20) return;
+          if (q.question.toLowerCase().includes(kw) || (q.analysis && q.analysis.toLowerCase().includes(kw))) {
             matches.push(q);
           }
         });
       });
 
       if (matches.length === 0) {
-        box.innerHTML = `<div style="padding:10px 14px;color:var(--text-muted);font-size:13px;">未匹配到相关题目</div>`;
-      } else {
-        box.innerHTML = matches.map(q => `
-          <div class="search-result-item" onclick="jumpToSearchResult('${getQKey(q)}')">
-            <strong>[${q.subject}]</strong> ${q.question.slice(0, 35)}...
-          </div>
-        `).join("");
+        container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">未检索到相关考题</div>`;
+        return;
       }
-      box.style.display = "block";
+
+      container.innerHTML = matches.map(q => `
+        <div class="exam-paper-card" style="padding:12px;" onclick="jumpFromSearchToQuiz('${getQKey(q)}')">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-main);">[${q.subject}] ${q.question.slice(0, 36)}...</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">题型: ${q.typeName} | 正确答案: ${q.answer}</div>
+          </div>
+          <span style="font-size:12px;color:var(--primary);font-weight:700;">做此题 ›</span>
+        </div>
+      `).join("");
     }
 
-    function jumpToSearchResult(qKey) {
-      document.getElementById("searchResultsBox").style.display = "none";
+    function jumpFromSearchToQuiz(qKey) {
+      closeSearchModal();
       let targetQ = null;
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => { if (getQKey(q) === qKey) targetQ = q; });
@@ -1584,15 +1768,8 @@
       openQuizView();
     }
 
-    // 点击外部隐藏搜索下拉
-    window.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-input-wrap")) {
-        document.getElementById("searchResultsBox").style.display = "none";
-      }
-    });
-
     // ==========================================
-    // 底部 5 栏导航切换 (新增数据统计与设置)
+    // 底部 5 栏导航切换
     // ==========================================
     function switchBottomTab(tab) {
       ['panePractice', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
@@ -1628,7 +1805,7 @@
     }
 
     // ==========================================
-    // TAB 1: 练习 (科目列表)
+    // TAB 1: 练习 (科目卡片列表)
     // ==========================================
     function renderSubjectList(filter = 'all') {
       const container = document.getElementById("subjectListContainer");
@@ -1664,14 +1841,14 @@
 
         let starsHtml = "";
         for (let i = 1; i <= 5; i++) {
-          starsHtml += `<svg class="star-icon ${i <= starLevel ? 'active' : ''}"><use href="#icon-star"/></svg>`;
+          starsHtml += `<svg class="star-icon ${i <= starLevel ? 'active' : ''}" viewBox="0 0 24 24"><use href="#icon-star"/></svg>`;
         }
 
         const card = document.createElement("div");
         card.className = "subject-card";
         card.innerHTML = `
           <div class="sub-left">
-            <div class="sub-bullet-circle"><svg><use href="#icon-check"/></svg></div>
+            <div class="sub-bullet-circle"><svg viewBox="0 0 24 24"><use href="#icon-check"/></svg></div>
             <div class="sub-info-col">
               <div class="sub-name">${sub}</div>
               <div class="sub-meta-row">
@@ -1696,9 +1873,7 @@
       renderSubjectList(cat);
     }
 
-    // ==========================================
-    // 需求4 & 3: 刷题确认弹窗 (提示模式/题量/乱序)
-    // ==========================================
+    // 刷题确认弹窗
     function openStartQuizModal(sub, evt) {
       if (evt) evt.stopPropagation();
       pendingStartSubject = sub || Object.keys(allSubjectsData)[0];
@@ -1708,17 +1883,12 @@
       document.getElementById("modalRandomShuffle").checked = false;
       document.getElementById("startQuizModal").classList.add("open");
     }
-
-    function closeStartQuizModal(e) {
-      document.getElementById("startQuizModal").classList.remove("open");
-    }
-
+    function closeStartQuizModal() { document.getElementById("startQuizModal").classList.remove("open"); }
     function setModalMode(mode) {
       modalSelectedMode = mode;
       document.getElementById("modalModeStudy").classList.toggle("active", mode === 'study');
       document.getElementById("modalModeExam").classList.toggle("active", mode === 'exam');
     }
-
     function setModalBatch(cnt, elem) {
       modalSelectedBatch = cnt;
       document.querySelectorAll("#startQuizModal .count-pill").forEach(p => p.classList.remove("active"));
@@ -1732,7 +1902,6 @@
       currentExamId = null;
 
       let fullList = [...(allSubjectsData[sub] || [])];
-      // 需求3: 支持随机乱序模式
       if (document.getElementById("modalRandomShuffle").checked) {
         fullList.sort(() => Math.random() - 0.5);
       }
@@ -1774,7 +1943,7 @@
     }
 
     // ==========================================
-    // 刷题工作台渲染 (左右滑屏切题 & 太阳/月亮/护眼)
+    // 需求2: 刷题工作台 - AI 供应商面板与交互
     // ==========================================
     function renderCurrentQuestion() {
       const container = document.getElementById("quizScrollBody");
@@ -1808,8 +1977,8 @@
         }
         optionsHtml = `
           <div class="judge-btn-grid">
-            <button class="${yesClass}" onclick="handleAnswerSelect('对')"><svg class="svg-icon"><use href="#icon-check"/></svg> 正确</button>
-            <button class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon"><use href="#icon-close"/></svg> 错误</button>
+            <button class="${yesClass}" onclick="handleAnswerSelect('对')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-check"/></svg> 正确</button>
+            <button class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg> 错误</button>
           </div>
         `;
       } else {
@@ -1836,6 +2005,23 @@
 
       let analysisBlock = "";
       if (showAnswer) {
+        // 渲染 6 大 AI 供应商徽标栏
+        const activeProv = userStore.activeProvider || "deepseek";
+        let providerBadgesHtml = "";
+        Object.keys(PROVIDERS).forEach(pKey => {
+          const p = PROVIDERS[pKey];
+          const isActive = (pKey === activeProv);
+          providerBadgesHtml += `
+            <div class="provider-badge-btn ${isActive ? 'active' : ''}" onclick="switchActiveAiProvider('${pKey}')">
+              <svg class="provider-logo-svg" viewBox="0 0 24 24"><use href="${p.icon}"/></svg>
+              <span>${p.name}</span>
+            </div>
+          `;
+        });
+
+        const curCfg = userStore.providersConfig[activeProv] || {};
+        const curModelName = curCfg.model || PROVIDERS[activeProv].defaultModel;
+
         analysisBlock = `
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
@@ -1845,14 +2031,24 @@
             <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
           </div>
 
+          <!-- 需求2：全新 AI 供应商与模型面板 -->
           <div class="ai-stream-box">
-            <div class="ai-header-bar">
-              <div class="ai-label-title">
-                <svg class="svg-icon" style="width:16px;height:16px;"><use href="#icon-gear"/></svg>
-                <span>AI 名师深度剖析 (${userStore.settings.model || 'AI'})</span>
-              </div>
-              <button class="ai-trigger-btn" onclick="requestAiHelp()">${userStore.aiCache[qKey] ? '重新精讲' : '一键精讲'}</button>
+            <div style="font-size:12px;font-weight:700;color:var(--text-sub);">选择 AI 解析供应商:</div>
+            <div class="ai-providers-scroll">
+              ${providerBadgesHtml}
             </div>
+
+            <div class="ai-active-info-bar">
+              <div>当前模型: <span class="ai-model-tag">${curModelName}</span></div>
+              <button class="ai-config-btn" style="padding:4px 10px;font-size:11px;" onclick="openAiProviderConfigModal('${activeProv}')">配置参数 / 换模型 ⚙</button>
+            </div>
+
+            <div class="ai-actions-row">
+              <button class="ai-trigger-btn" onclick="requestAiHelpWithActiveProvider()">
+                ${userStore.aiCache[qKey] ? '重新精讲' : '🤖 AI 名师一键深度精讲'}
+              </button>
+            </div>
+
             <div class="ai-text-container" id="aiTextContainer" style="${userStore.aiCache[qKey] ? '' : 'display:none;'}">${userStore.aiCache[qKey] || ''}</div>
           </div>
         `;
@@ -1869,7 +2065,6 @@
       `;
       container.scrollTop = 0;
 
-      // 顶部收藏星标状态
       const isFav = userStore.favorites.includes(qKey);
       document.getElementById("favStarBtn").classList.toggle("active", isFav);
 
@@ -1923,7 +2118,7 @@
       }
     }
 
-    // 左右滑屏切题
+    // 左右滑屏
     function initTouchSwipe() {
       let touchStartX = 0, touchStartY = 0;
       const quizView = document.getElementById("quizView");
@@ -1943,7 +2138,7 @@
       }, { passive: true });
     }
 
-    // 需求3: 太阳、月亮、护眼图标切换
+    // 需求3: 太阳、月亮、护眼图标动态切换 (严格 viewBox)
     function cycleThemeMode() {
       const themes = ['light', 'eye', 'dark'];
       let nextIdx = (themes.indexOf(appConfig.theme) + 1) % themes.length;
@@ -1969,7 +2164,204 @@
     }
 
     // ==========================================
-    // 草稿画板 (带撤销一步 Undo 笔画栈)
+    // 需求2: AI 供应商切换、在线获取模型与搜索过滤
+    // ==========================================
+    let editingProviderKey = "deepseek";
+
+    function switchActiveAiProvider(pKey) {
+      userStore.activeProvider = pKey;
+      saveUserStore();
+      renderCurrentQuestion();
+    }
+
+    function openAiProviderConfigModal(pKey) {
+      editingProviderKey = pKey;
+      const p = PROVIDERS[pKey];
+      const cfg = userStore.providersConfig[pKey] || {};
+
+      document.getElementById("aiConfigModalTitle").textContent = `配置 ${p.name}`;
+      document.getElementById("modalProviderBaseUrl").value = cfg.baseUrl || p.baseUrl;
+      document.getElementById("modalProviderApiKey").value = cfg.apiKey || "";
+      document.getElementById("modalProviderSelectedModel").value = cfg.model || p.defaultModel;
+      document.getElementById("modalModelSearchInput").value = "";
+
+      renderProviderModelPills(cfg.customModels || p.models);
+      document.getElementById("aiConfigModal").classList.add("open");
+    }
+
+    function closeAiConfigModal() {
+      document.getElementById("aiConfigModal").classList.remove("open");
+    }
+
+    function renderProviderModelPills(modelList) {
+      const container = document.getElementById("modalModelPillPool");
+      container.innerHTML = "";
+      const selected = document.getElementById("modalProviderSelectedModel").value;
+
+      modelList.forEach(m => {
+        const pill = document.createElement("span");
+        pill.className = `count-pill ${m === selected ? 'active' : ''}`;
+        pill.style.cssText = "padding:4px 10px;font-size:12px;margin:2px;";
+        pill.textContent = m;
+        pill.onclick = () => {
+          document.getElementById("modalProviderSelectedModel").value = m;
+          renderProviderModelPills(modelList);
+        };
+        container.appendChild(pill);
+      });
+    }
+
+    function filterModalModelList(query) {
+      query = query.trim().toLowerCase();
+      const p = PROVIDERS[editingProviderKey];
+      const cfg = userStore.providersConfig[editingProviderKey] || {};
+      const all = cfg.customModels || p.models;
+      const filtered = query ? all.filter(m => m.toLowerCase().includes(query)) : all;
+      renderProviderModelPills(filtered);
+    }
+
+    // 在线获取当前供应商可用模型 (GET /models)
+    async function fetchProviderModelsOnline() {
+      const baseUrl = document.getElementById("modalProviderBaseUrl").value.trim().replace(/\/+$/, "");
+      const apiKey = document.getElementById("modalProviderApiKey").value.trim();
+
+      if (!apiKey) {
+        alert("请先填入该供应商的 API Key，以便发起验证并拉取模型！");
+        return;
+      }
+
+      const btn = event.target;
+      const oldTxt = btn.textContent;
+      btn.textContent = "拉取中...";
+      btn.disabled = true;
+
+      try {
+        const endpoint = `${baseUrl}/models`;
+        const resp = await fetch(endpoint, {
+          headers: { "Authorization": `Bearer ${apiKey}` }
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        let models = [];
+        if (Array.isArray(data.data)) {
+          models = data.data.map(item => item.id).filter(Boolean);
+        }
+        if (models.length === 0) throw new Error("未解析到有效模型ID");
+
+        userStore.providersConfig[editingProviderKey].customModels = models;
+        renderProviderModelPills(models);
+        alert(`成功获取到 ${models.length} 个在线可用模型！已更新在下方列表。`);
+      } catch (err) {
+        alert(`拉取在线模型失败 (${err.message})，将使用供应商默认推荐模型列表。`);
+        const fallback = PROVIDERS[editingProviderKey].models;
+        renderProviderModelPills(fallback);
+      } finally {
+        btn.textContent = oldTxt;
+        btn.disabled = false;
+      }
+    }
+
+    function saveActiveProviderConfig() {
+      const bUrl = document.getElementById("modalProviderBaseUrl").value.trim();
+      const aKey = document.getElementById("modalProviderApiKey").value.trim();
+      const mModel = document.getElementById("modalProviderSelectedModel").value.trim();
+
+      if (!userStore.providersConfig[editingProviderKey]) {
+        userStore.providersConfig[editingProviderKey] = {};
+      }
+      userStore.providersConfig[editingProviderKey].baseUrl = bUrl;
+      userStore.providersConfig[editingProviderKey].apiKey = aKey;
+      userStore.providersConfig[editingProviderKey].model = mModel;
+      userStore.activeProvider = editingProviderKey;
+
+      saveUserStore();
+      closeAiConfigModal();
+      renderCurrentQuestion();
+      alert(`已成功配置并激活供应商【${PROVIDERS[editingProviderKey].name}】！`);
+    }
+
+    // 执行当前激活供应商的 AI 流式解析
+    async function requestAiHelpWithActiveProvider() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+
+      const activeProvKey = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProvKey] || {};
+
+      if (!cfg.apiKey) {
+        alert(`请先配置【${PROVIDERS[activeProvKey].name}】的 API Key 密钥`);
+        openAiProviderConfigModal(activeProvKey);
+        return;
+      }
+
+      const box = document.getElementById("aiTextContainer");
+      box.style.display = "block";
+      box.textContent = `连线 ${PROVIDERS[activeProvKey].name} (${cfg.model}) 深度思考中...`;
+
+      const prompt = `你是一位顶级考试辅导名师。请对本题进行精准考点深度剖析：
+【科目】：${q.subject}
+【题型】：${q.typeName}
+【题干】：${q.question}
+【官方正确答案】：${q.answer}
+【官方原解析】：${q.analysis || '无'}
+
+请按以下三部分精炼输出：
+1. 【考点本质】：一句话点破考查的核心概念与法律/理论背景。
+2. 【正解与混淆项拆解】：精准讲透为什么选 ${q.answer}，指出干扰项的陷阱。
+3. 【秒记口诀】：给出一句好记的记忆口诀或联想背诵技巧。`;
+
+      try {
+        const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
+        const resp = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${cfg.apiKey}`
+          },
+          body: JSON.stringify({
+            model: cfg.model || PROVIDERS[activeProvKey].defaultModel,
+            messages: [
+              { role: "system", content: "你是一位专业教育辅导专家，输出直击考点核心，拒绝废话。" },
+              { role: "user", content: prompt }
+            ],
+            stream: true
+          })
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let full = "";
+        box.textContent = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n");
+          for (const line of lines) {
+            const tr = line.trim();
+            if (tr.startsWith("data: ") && tr !== "data: [DONE]") {
+              try {
+                const parsed = JSON.parse(tr.slice(6));
+                const delta = parsed.choices[0]?.delta?.content || "";
+                full += delta;
+                box.textContent = full;
+              } catch (e) {}
+            }
+          }
+        }
+        userStore.aiCache[qKey] = full;
+        saveUserStore();
+      } catch (err) {
+        box.textContent = `AI 解析失败: ${err.message}，请点击“配置参数”检查 API Key 与端点。`;
+      }
+    }
+
+    // ==========================================
+    // 草稿画板 (带撤销一步 Undo)
     // ==========================================
     let draftCanvas, draftCtx, isDrawing = false;
     let strokes = [];
@@ -2115,25 +2507,21 @@
       }
       saveUserStore();
       renderCurrentQuestion();
-      alert(`交卷成功！\n共 ${total} 题，答对 ${correct} 题，得分：${score} 分！\n已转为全卷答案解析模式。`);
+      alert(`交卷成功！\n共 ${total} 题，答对 ${correct} 题，得分：${score} 分！\n已转入全卷解析模式。`);
     }
 
     // ==========================================
-    // TAB 4: 数据统计板块 (需求6: 统计与预估考分)
+    // TAB 4: 数据统计
     // ==========================================
     function renderStatsPane() {
       const subjects = Object.keys(allSubjectsData);
-      let totalQuestions = 0;
-      let totalAnswered = 0;
-      let totalCorrect = 0;
-
+      let totalQuestions = 0, totalAnswered = 0, totalCorrect = 0;
       const barsContainer = document.getElementById("statsSubjectBars");
       barsContainer.innerHTML = "";
 
       subjects.forEach(sub => {
         const qs = allSubjectsData[sub] || [];
         totalQuestions += qs.length;
-
         let subAns = 0, subCor = 0;
         qs.forEach(q => {
           const rec = userStore.answers[getQKey(q)];
@@ -2142,7 +2530,6 @@
             if (rec.isCorrect) subCor++;
           }
         });
-
         totalAnswered += subAns;
         totalCorrect += subCor;
 
@@ -2172,7 +2559,6 @@
       document.getElementById("statsAccuracy").textContent = `${overallAccuracy}%`;
       document.getElementById("statsCheckinDays").textContent = `${userStore.checkin?.days || 0}天`;
 
-      // 智能预估分算法 (按100分考分体系)
       let predictedScore = 0;
       if (totalAnswered > 0) {
         predictedScore = ((totalCorrect / totalAnswered) * 100).toFixed(1);
@@ -2183,29 +2569,28 @@
       const adviseEl = document.getElementById("predictedScoreAdvise");
       if (predictedScore >= 85) {
         tagEl.textContent = "优秀水平 (拔尖)";
-        adviseEl.textContent = "已超越 92% 的备考同学，建议进行全真模考冲刺！";
+        adviseEl.textContent = "超越 92% 备考考生，建议重点进行全真模考！";
       } else if (predictedScore >= 70) {
         tagEl.textContent = "良好水平 (稳定)";
-        adviseEl.textContent = "知识结构较扎实，建议重点突破艾宾浩斯错题！";
+        adviseEl.textContent = "基础扎实，建议重点攻坚艾宾浩斯错题！";
       } else if (predictedScore >= 60) {
         tagEl.textContent = "及格边缘 (攻坚)";
-        adviseEl.textContent = "建议针对薄弱科目加大刷题量，强化概念记忆。";
+        adviseEl.textContent = "建议针对薄弱科目专项练习，夯实考点。";
       } else {
         tagEl.textContent = "起步阶段 (蓄力)";
-        adviseEl.textContent = "完成更多真题练习后，预估分将更加精准！";
+        adviseEl.textContent = "完成更多真题练习后，预测分将更加精准！";
       }
     }
 
     // ==========================================
-    // TAB 5: 个人设置 (需求5 & 7: 默认模式/系统跟随/导入导出)
+    // TAB 5: 个人设置
     // ==========================================
     function updateSettingsUI() {
       const mode = appConfig.defaultMode || 'study';
       document.getElementById("settingModeStudy").classList.toggle("active", mode === 'study');
       document.getElementById("settingModeExam").classList.toggle("active", mode === 'exam');
-
       document.getElementById("settingFollowSystem").checked = !!appConfig.followSystemTheme;
-      document.getElementById("currentAiDesc").textContent = `${userStore.settings.provider || 'DeepSeek'} · ${userStore.settings.model || 'deepseek-chat'}`;
+      updateCheckinUI();
     }
 
     function setDefaultMode(mode) {
@@ -2223,7 +2608,6 @@
       saveUserStore();
     }
 
-    // 需求7: 题库导入
     function handleImportQuizFile(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -2256,153 +2640,17 @@
     }
 
     function clearAllUserData() {
-      if (!confirm("确定要重置所有已做题目的记录与错题本吗？（题库本身不会丢失）")) return;
+      if (!confirm("确定要重置所有做题记录与错题本吗？")) return;
       userStore.answers = {};
       userStore.ebbinghausWrong = {};
       userStore.favorites = [];
       userStore.progress = {};
       saveUserStore();
-      alert("做题进度与错题已全部清空！");
+      alert("做题记录已重置！");
       renderSubjectList();
     }
 
-    // ==========================================
-    // AI 配置逻辑
-    // ==========================================
-    const PROVIDER_PRESETS = {
-      deepseek: { baseUrl: "https://api.deepseek.com/v1", model: "deepseek-chat", models: ["deepseek-chat", "deepseek-reasoner"] },
-      openai: { baseUrl: "https://api.openai.com/v1", model: "gpt-4o-mini", models: ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"] },
-      kimi: { baseUrl: "https://api.moonshot.cn/v1", model: "moonshot-v1-8k", models: ["moonshot-v1-8k", "moonshot-v1-32k"] },
-      siliconflow: { baseUrl: "https://api.siliconflow.cn/v1", model: "Qwen/Qwen2.5-7B-Instruct", models: ["Qwen/Qwen2.5-7B-Instruct", "deepseek-ai/DeepSeek-V2.5"] },
-      custom: { baseUrl: "", model: "", models: [] }
-    };
-
-    function openAiSettingsModal() {
-      const p = userStore.settings.provider || "deepseek";
-      document.getElementById("cfgProvider").value = p;
-      document.getElementById("cfgBaseUrl").value = userStore.settings.baseUrl || "";
-      document.getElementById("cfgApiKey").value = userStore.settings.apiKey || "";
-      document.getElementById("cfgModel").value = userStore.settings.model || "";
-      renderQuickModelPills(p);
-      document.getElementById("aiSettingsModal").classList.add("open");
-    }
-    function closeAiSettingsModal() { document.getElementById("aiSettingsModal").classList.remove("open"); }
-
-    function handleProviderChange(providerKey) {
-      const preset = PROVIDER_PRESETS[providerKey];
-      if (preset && providerKey !== 'custom') {
-        document.getElementById("cfgBaseUrl").value = preset.baseUrl;
-        document.getElementById("cfgModel").value = preset.model;
-      }
-      renderQuickModelPills(providerKey);
-    }
-
-    function renderQuickModelPills(providerKey) {
-      const container = document.getElementById("quickModelPills");
-      container.innerHTML = "";
-      const models = PROVIDER_PRESETS[providerKey]?.models || [];
-      models.forEach(m => {
-        const pill = document.createElement("span");
-        pill.className = "count-pill";
-        pill.style.padding = "4px 8px";
-        pill.textContent = m;
-        pill.onclick = () => { document.getElementById("cfgModel").value = m; };
-        container.appendChild(pill);
-      });
-    }
-
-    function saveAiSettingsForm() {
-      userStore.settings.provider = document.getElementById("cfgProvider").value;
-      userStore.settings.baseUrl = document.getElementById("cfgBaseUrl").value.trim();
-      userStore.settings.apiKey = document.getElementById("cfgApiKey").value.trim();
-      userStore.settings.model = document.getElementById("cfgModel").value.trim();
-      saveUserStore();
-      closeAiSettingsModal();
-      updateSettingsUI();
-      alert("AI 接口与模型配置已保存！");
-    }
-
-    // AI 流式调用
-    async function requestAiHelp() {
-      const q = activeQuestions[currentQuizIndex];
-      if (!q) return;
-      const qKey = getQKey(q);
-      const cfg = userStore.settings;
-
-      if (!cfg.apiKey) {
-        alert("请先在设置中填入 API Key 密钥");
-        openAiSettingsModal();
-        return;
-      }
-
-      const box = document.getElementById("aiTextContainer");
-      box.style.display = "block";
-      box.textContent = "连线大模型梳理考点中...";
-
-      const prompt = `你是一位顶尖的考试辅导专家。请对以下题目进行深入剖析：
-【科目】：${q.subject}
-【题型】：${q.typeName}
-【题干】：${q.question}
-【官方正确答案】：${q.answer}
-【官方原解析】：${q.analysis || '无'}
-
-请按三点简短输出：
-1. 【核心考点】：一句话点破考查的核心概念。
-2. 【正解与混淆项拆解】：为什么选 ${q.answer}，以及其他选项的陷阱。
-3. 【秒记口诀】：给出一句押韵或便于记忆的口诀。`;
-
-      try {
-        const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
-        const resp = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${cfg.apiKey}`
-          },
-          body: JSON.stringify({
-            model: cfg.model || "deepseek-chat",
-            messages: [
-              { role: "system", content: "你是一位专业教育辅导专家，输出内容直击核心，拒绝冗余废话。" },
-              { role: "user", content: prompt }
-            ],
-            stream: true
-          })
-        });
-
-        if (!resp.ok) throw new Error(`HTTP 错误码 ${resp.status}`);
-
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let full = "";
-        box.textContent = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n");
-          for (const line of lines) {
-            const tr = line.trim();
-            if (tr.startsWith("data: ") && tr !== "data: [DONE]") {
-              try {
-                const parsed = JSON.parse(tr.slice(6));
-                const delta = parsed.choices[0]?.delta?.content || "";
-                full += delta;
-                box.textContent = full;
-              } catch (e) {}
-            }
-          }
-        }
-        userStore.aiCache[qKey] = full;
-        saveUserStore();
-      } catch (err) {
-        box.textContent = `AI 解析失败: ${err.message}，请在设置中检查 API Key 与 Base URL。`;
-      }
-    }
-
-    // ==========================================
-    // 错题本与模拟考试辅助
-    // ==========================================
+    // 错题本与模拟考试
     function switchWrongTab(tab) {
       document.getElementById('btnTabAllWrong').classList.toggle('active', tab === 'all');
       document.getElementById('btnTabEbbinghaus').classList.toggle('active', tab === 'ebbinghaus');
@@ -2491,7 +2739,7 @@
       openQuizView();
     }
 
-    // 模拟考试
+    // 模考
     let chosenExamCount = 20;
     function renderSavedExams() {
       const container = document.getElementById("savedExamList");
@@ -2549,12 +2797,10 @@
       const exam = userStore.savedExams.find(e => e.id === examId);
       if (!exam) return;
       currentExamId = examId;
-
       let qMap = {};
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => { qMap[getQKey(q)] = q; });
       });
-
       activeQuestions = exam.questionKeys.map(k => qMap[k]).filter(Boolean);
       currentQuizIndex = 0;
       appConfig.quizMode = 'exam';
