@@ -592,6 +592,75 @@
       color: #ffffff;
     }
 
+    /* 多选题复选框与提交操作条样式 */
+    .option-checkbox-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      color: var(--text-sub);
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .option-row.multi-selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .option-row.multi-selected .option-checkbox-box {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .option-row.status-correct .option-checkbox-box {
+      border-color: var(--correct);
+      background: var(--correct);
+      color: #ffffff;
+    }
+    .option-row.status-wrong .option-checkbox-box {
+      border-color: var(--wrong);
+      background: var(--wrong);
+      color: #ffffff;
+    }
+    .multi-submit-bar {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+    .multi-hint-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+    .multi-confirm-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .multi-confirm-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
     /* 判断题操作区 */
     .judge-btn-grid {
       display: grid;
@@ -1520,6 +1589,17 @@
       <g id="icon-star"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" /></g>
       <!-- 对勾 -->
       <g id="icon-check"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <!-- 复选框方形对勾 -->
+      <g id="icon-checkbox-checked">
+        <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/>
+        <polyline points="16 8 10 15 7 12" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <!-- 云同步图标 -->
+      <g id="icon-cloud-sync">
+        <path d="M19 16.9A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="13 14 10 11 7 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="10" y1="11" x2="10" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </g>
       <!-- 日历打卡 -->
       <g id="icon-calendar"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></g>
       <!-- 搜索 -->
@@ -1940,27 +2020,70 @@
           <input type="checkbox" id="settingFollowSystem" style="width:20px;height:20px;" onchange="toggleFollowSystem(this.checked)">
         </div>
 
-        <!-- 需求：手机与电脑数据多端同步 -->
+        <!-- 需求：多端数据同步中心 (支持 Gist 免服云同步、自定义服务与快照口令) -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-share"/></svg>
-              <span style="font-size:15px;font-weight:800;">手机与电脑历史同步</span>
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-cloud-sync"/></svg>
+              <span style="font-size:15px;font-weight:800;">多端数据双向同步中心</span>
             </div>
             <span id="syncStatusBadge" style="font-size:11px;color:var(--text-muted);background:var(--bg);padding:2px 8px;border-radius:4px;">未同步</span>
           </div>
-          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
-            手机与电脑在同一局域网 WiFi 下自动无损双向合并做题进度、艾宾浩斯抗遗忘错题与收藏夹，无需手动传文件。
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:10px;">
+            支持手机（无论在 WiFi 还是 4G/5G 流量刷题）与电脑无损双向合并答题进度、艾宾浩斯错题与收藏。
           </div>
-          <div style="display:flex;gap:10px;">
-            <button class="modal-submit-btn" id="manualSyncBtn" style="flex:1.2;padding:9px 12px;font-size:13px;" onclick="syncWithServer(true)">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 立即合并同步
-            </button>
-            <button class="bottom-btn" style="flex:1;padding:9px 10px;font-size:12px;" onclick="openNetworkConnectModal()">
-              网络连接指引
-            </button>
+
+          <!-- 环境与模式提示 -->
+          <div id="syncEnvNotice" style="font-size:11.5px;padding:8px 10px;background:var(--bg);border-radius:6px;border:1px solid var(--border);margin-bottom:12px;line-height:1.5;color:var(--text-sub);"></div>
+
+          <!-- 方式一：GitHub Gist 极简云同步 (首选推荐) -->
+          <div style="border-top:1px dashed var(--border);padding-top:12px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:4px;">
+                <span>方式一：GitHub Gist 云同步</span>
+                <span style="font-size:10.5px;color:#ffffff;background:var(--correct);padding:1px 5px;border-radius:4px;font-weight:600;">推荐·跨网络</span>
+              </div>
+              <button class="text-name-btn" style="padding:2px 6px;font-size:11px;color:var(--primary);" onclick="toggleGistHelp()">如何获取 Token?</button>
+            </div>
+            <div id="gistHelpPanel" style="display:none;font-size:11.5px;color:var(--text-muted);line-height:1.6;background:var(--primary-light);padding:8px 10px;border-radius:6px;margin-bottom:8px;">
+              1. 登录 GitHub ➔ 点击右上角头像 ➔ Settings ➔ Developer Settings ➔ Personal access tokens ➔ Tokens (classic)；<br>
+              2. 点击 Generate new token，名称填 file2quiz，<strong>仅勾选 [x] gist 权限</strong>并生成；<br>
+              3. 将生成的 ghp_xxxx 密钥填入下方，手机电脑填相同 Token 即可随时云同步！
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <input id="githubTokenInput" type="password" style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 GitHub Token (ghp_xxxx)" onchange="saveSyncSettings()">
+              <button class="modal-submit-btn" style="padding:7px 14px;font-size:12px;white-space:nowrap;" onclick="syncWithGitHubGist(true)">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-cloud-sync"/></svg> 立即 Gist 同步
+              </button>
+            </div>
           </div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:8px;" id="lastSyncTimeText">上次同步：未进行</div>
+
+          <!-- 方式二：局域网 / 自定义同步服务器 -->
+          <div style="border-top:1px dashed var(--border);padding-top:12px;margin-bottom:14px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:6px;">方式二：局域网 / 自定义同步服务</div>
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <input id="customServerUrlInput" style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="默认自动连接本网或填 http://电脑IP:8080" onchange="saveSyncSettings()">
+              <button class="bottom-btn" style="padding:7px 10px;font-size:12px;white-space:nowrap;" onclick="testServerConnection()">测试</button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="modal-submit-btn" id="manualSyncBtn" style="flex:1.2;padding:8px 12px;font-size:12px;" onclick="syncWithServer(true)">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 局域网立即合并
+              </button>
+              <button class="bottom-btn" style="flex:1;padding:8px 10px;font-size:12px;" onclick="openNetworkConnectModal()">网络排查指引</button>
+            </div>
+          </div>
+
+          <!-- 方式三：同步口令快照 (离线一键互导) -->
+          <div style="border-top:1px dashed var(--border);padding-top:12px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:4px;">方式三：数据快照口令 (无网络也能互传)</div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;">电脑一键复制口令，手机微信/剪贴板粘贴即可瞬间合并进度。</div>
+            <div style="display:flex;gap:8px;">
+              <button class="bottom-btn" style="flex:1;padding:7px 10px;font-size:12px;" onclick="exportSyncToken()">复制同步口令</button>
+              <button class="bottom-btn" style="flex:1;padding:7px 10px;font-size:12px;" onclick="importSyncToken()">粘贴口令合并</button>
+            </div>
+          </div>
+
+          <div style="font-size:11px;color:var(--text-muted);margin-top:12px;" id="lastSyncTimeText">上次同步：未进行</div>
         </div>
 
         <!-- 题库导入与更新 -->
@@ -2853,6 +2976,13 @@
       if (!userStore.openedSubjects) userStore.openedSubjects = {};
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
       if (!userStore.customTextbooks) userStore.customTextbooks = [];
+      if (!userStore.syncConfig) {
+        userStore.syncConfig = {
+          githubToken: "",
+          gistId: "",
+          customServerUrl: ""
+        };
+      }
 
       // 初始化供应商配置存储
       if (!userStore.providersConfig) userStore.providersConfig = {};
@@ -2912,8 +3042,12 @@
     function debouncedCloudSync() {
       if (cloudSyncTimeout) clearTimeout(cloudSyncTimeout);
       cloudSyncTimeout = setTimeout(() => {
-        syncWithServer(false);
-      }, 2500);
+        if (userStore.syncConfig && userStore.syncConfig.githubToken) {
+          syncWithGitHubGist(false);
+        } else {
+          syncWithServer(false);
+        }
+      }, 3000);
     }
 
     function saveUserStore(skipCloudSync = false) {
@@ -2925,20 +3059,268 @@
     }
 
     // ==========================================
-    // 手机与电脑局域网历史双向合并同步
+    // 多端云同步系统：数据安全合并、Gist云同步、自定义服务与离线口令
     // ==========================================
+    function mergeRemoteUserStore(remote) {
+      if (!remote || typeof remote !== 'object') return;
+
+      // 1. answers: 按每道题最新 time 合并
+      if (remote.answers && typeof remote.answers === 'object') {
+        if (!userStore.answers) userStore.answers = {};
+        for (const [k, rAns] of Object.entries(remote.answers)) {
+          const lAns = userStore.answers[k];
+          if (!lAns || (rAns.time && (!lAns.time || rAns.time > lAns.time))) {
+            userStore.answers[k] = rAns;
+          }
+        }
+      }
+
+      // 2. favorites: 取并集
+      if (Array.isArray(remote.favorites)) {
+        const favSet = new Set([...(userStore.favorites || []), ...remote.favorites]);
+        userStore.favorites = Array.from(favSet);
+      }
+
+      // 3. wrongBook: 合并
+      if (remote.wrongBook && typeof remote.wrongBook === 'object') {
+        userStore.wrongBook = { ...(userStore.wrongBook || {}), ...remote.wrongBook };
+      }
+
+      // 4. ebbinghausWrong: 按最新 lastReviewAt 合并
+      if (remote.ebbinghausWrong && typeof remote.ebbinghausWrong === 'object') {
+        if (!userStore.ebbinghausWrong) userStore.ebbinghausWrong = {};
+        for (const [k, rEb] of Object.entries(remote.ebbinghausWrong)) {
+          const lEb = userStore.ebbinghausWrong[k];
+          if (!lEb || (rEb.lastReviewAt && (!lEb.lastReviewAt || rEb.lastReviewAt > lEb.lastReviewAt))) {
+            userStore.ebbinghausWrong[k] = rEb;
+          }
+        }
+      }
+
+      // 5. checkin: 打卡天数去重合并
+      if (remote.checkin) {
+        if (!userStore.checkin) userStore.checkin = { days: 0, lastDate: "", history: [] };
+        if (Array.isArray(remote.checkin.days)) {
+          const daysSet = new Set([...(Array.isArray(userStore.checkin.days) ? userStore.checkin.days : []), ...remote.checkin.days]);
+          userStore.checkin.days = Array.from(daysSet);
+        } else if (typeof remote.checkin.days === 'number') {
+          userStore.checkin.days = Math.max(userStore.checkin.days || 0, remote.checkin.days);
+        }
+        if (remote.checkin.lastDate && (!userStore.checkin.lastDate || remote.checkin.lastDate > userStore.checkin.lastDate)) {
+          userStore.checkin.lastDate = remote.checkin.lastDate;
+        }
+      }
+
+      // 6. unfinishedSessions: 合并未完成练习
+      if (remote.unfinishedSessions && typeof remote.unfinishedSessions === 'object') {
+        userStore.unfinishedSessions = { ...(userStore.unfinishedSessions || {}), ...remote.unfinishedSessions };
+      }
+
+      // 7. aiCache: 合并 AI 解析缓存
+      if (remote.aiCache && typeof remote.aiCache === 'object') {
+        userStore.aiCache = { ...(userStore.aiCache || {}), ...remote.aiCache };
+      }
+
+      // 8. 自定义科目题库
+      if (remote.customSubjects && typeof remote.customSubjects === 'object') {
+        if (!userStore.customSubjects) userStore.customSubjects = {};
+        Object.assign(userStore.customSubjects, remote.customSubjects);
+        Object.assign(allSubjectsData, remote.customSubjects);
+      }
+
+      saveUserStore(true);
+      renderSubjectList();
+      updateCheckinUI();
+    }
+
+    // 保存同步配置
+    function saveSyncSettings() {
+      if (!userStore.syncConfig) userStore.syncConfig = {};
+      const tokenInput = document.getElementById("githubTokenInput");
+      const srvInput = document.getElementById("customServerUrlInput");
+      if (tokenInput) userStore.syncConfig.githubToken = tokenInput.value.trim();
+      if (srvInput) userStore.syncConfig.customServerUrl = srvInput.value.trim();
+      saveUserStore(true);
+    }
+
+    function toggleGistHelp() {
+      const el = document.getElementById("gistHelpPanel");
+      if (el) el.style.display = (el.style.display === "none") ? "block" : "none";
+    }
+
+    // GitHub Gist 极简免服云同步 (推荐跨网使用)
+    let isGistSyncing = false;
+    async function syncWithGitHubGist(isManual = false) {
+      if (isGistSyncing) return;
+      saveSyncSettings();
+      const cfg = userStore.syncConfig || {};
+      const token = (cfg.githubToken || "").trim();
+
+      if (!token) {
+        if (isManual) {
+          alert("请先在上方输入 GitHub Token (ghp_xxxx) 并勾选 gist 权限。\n\n配置后手机和电脑在任意网络下都能随时双向同步做题记录！");
+          document.getElementById("githubTokenInput")?.focus();
+        }
+        return;
+      }
+
+      isGistSyncing = true;
+      const badge = document.getElementById("syncStatusBadge");
+      const timeText = document.getElementById("lastSyncTimeText");
+
+      if (badge) {
+        badge.textContent = "Gist 同步中...";
+        badge.style.color = "var(--primary)";
+        badge.style.background = "var(--primary-light)";
+      }
+
+      try {
+        let gistId = cfg.gistId;
+
+        // 如果没有记录过 gistId，先搜索用户的 gist 列表寻找名为 file2quiz_sync_store 的已有备份
+        if (!gistId) {
+          const listResp = await fetch("https://api.github.com/gists?per_page=30", {
+            headers: {
+              "Authorization": `token ${token}`,
+              "Accept": "application/vnd.github.v3+json"
+            }
+          });
+          if (listResp.ok) {
+            const listData = await listResp.json();
+            const found = listData.find(g => g.description && g.description.includes("file2quiz_sync_store"));
+            if (found) {
+              gistId = found.id;
+              cfg.gistId = gistId;
+              userStore.syncConfig.gistId = gistId;
+              saveUserStore(true);
+            }
+          }
+        }
+
+        const payloadFiles = {
+          "file2quiz_store.json": {
+            content: JSON.stringify(userStore, null, 2)
+          }
+        };
+
+        if (gistId) {
+          // 1. 先拉取远端已有进度合并
+          const getResp = await fetch(`https://api.github.com/gists/${gistId}`, {
+            headers: {
+              "Authorization": `token ${token}`,
+              "Accept": "application/vnd.github.v3+json"
+            }
+          });
+          if (getResp.ok) {
+            const gistData = await getResp.json();
+            const f = gistData.files && gistData.files["file2quiz_store.json"];
+            if (f && f.content) {
+              try {
+                const remoteStore = JSON.parse(f.content);
+                mergeRemoteUserStore(remoteStore);
+              } catch(e) {
+                console.warn("解析远端 Gist 数据失败:", e);
+              }
+            }
+          }
+
+          // 2. 将最新本地合并结果更新回 Gist
+          payloadFiles["file2quiz_store.json"].content = JSON.stringify(userStore, null, 2);
+          const patchResp = await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: "PATCH",
+            headers: {
+              "Authorization": `token ${token}`,
+              "Accept": "application/vnd.github.v3+json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              description: "file2quiz_sync_store (多端同步数据云端备份)",
+              files: payloadFiles
+            })
+          });
+          if (!patchResp.ok) throw new Error(`Gist 更新失败: HTTP ${patchResp.status}`);
+        } else {
+          // 首次创建私密 Gist
+          const createResp = await fetch("https://api.github.com/gists", {
+            method: "POST",
+            headers: {
+              "Authorization": `token ${token}`,
+              "Accept": "application/vnd.github.v3+json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              description: "file2quiz_sync_store (多端同步数据云端备份)",
+              public: false,
+              files: payloadFiles
+            })
+          });
+          if (!createResp.ok) throw new Error(`Gist 创建失败: HTTP ${createResp.status}`);
+          const createdData = await createResp.json();
+          cfg.gistId = createdData.id;
+          userStore.syncConfig.gistId = createdData.id;
+          saveUserStore(true);
+        }
+
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        if (badge) {
+          badge.textContent = "Gist 已同步";
+          badge.style.color = "var(--correct)";
+          badge.style.background = "var(--correct-bg)";
+        }
+        if (timeText) {
+          timeText.textContent = `上次同步：今天 ${timeStr} (GitHub Gist 云端双向合并)`;
+        }
+        showToast("☁️ GitHub Gist 云端同步成功");
+
+        if (isManual) {
+          alert(`🎉 GitHub Gist 云端双向同步成功！\n\n已成功连通云端专属备份。\n无论手机使用 4G/5G 流量还是任意网络，只需在其他设备输入相同 Token，即可随时随地双向同步做题历史与错题本！`);
+        }
+      } catch (err) {
+        console.error("Gist 同步失败:", err);
+        if (badge) {
+          badge.textContent = "Gist 同步失败";
+          badge.style.color = "var(--wrong)";
+          badge.style.background = "var(--wrong-bg)";
+        }
+        if (isManual) {
+          alert(`Gist 同步失败: ${err.message}\n\n请检查：\n1. Token 是否已填入且有效；\n2. Token 是否勾选了 [gist] 权限；\n3. 手机当前是否能够正常联网访问 github.com。`);
+        }
+      } finally {
+        isGistSyncing = false;
+      }
+    }
+
+    // 局域网 / 自定义服务端同步
     let isSyncing = false;
     async function syncWithServer(isManual = false) {
       if (isSyncing) return;
-      isSyncing = true;
+      saveSyncSettings();
+      const cfg = userStore.syncConfig || {};
+      let targetUrl = (cfg.customServerUrl || "").trim();
 
+      // 如果未配置且当前处于 GitHub Pages (github.io)，提示配置 Gist
+      if (!targetUrl && location.hostname.includes("github.io")) {
+        if (isManual) {
+          alert("提示：当前运行在 GitHub 静态公网网页，无法直接直连电脑的局域网私网 IP。\n\n推荐在上方【方式一】中填入 GitHub Token，即可开启终身免费的云端随时同步！\n如果您配置了内网穿透（如 cpolar/ngrok/frp），也可在下方输入公网 HTTPS 地址。");
+        }
+        return;
+      }
+
+      if (!targetUrl) {
+        targetUrl = "/api/sync";
+      } else if (!targetUrl.endsWith("/api/sync")) {
+        targetUrl = targetUrl.replace(/\/+$/, '') + "/api/sync";
+      }
+
+      isSyncing = true;
       const badge = document.getElementById("syncStatusBadge");
       const timeText = document.getElementById("lastSyncTimeText");
       const btn = document.getElementById("manualSyncBtn");
       const origBtnTxt = btn ? btn.innerHTML : "";
 
       if (badge) {
-        badge.textContent = "同步中...";
+        badge.textContent = "服务同步中...";
         badge.style.color = "var(--primary)";
       }
       if (btn && isManual) {
@@ -2947,7 +3329,7 @@
       }
 
       try {
-        const resp = await fetch("/api/sync", {
+        const resp = await fetch(targetUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userStore),
@@ -2958,29 +3340,20 @@
         const result = await resp.json();
 
         if (result && result.store) {
-          // 将合并后完整数据保存至本地
-          userStore = { ...userStore, ...result.store };
-          saveUserStore(true); // 避免重复触发云同步
-
-          if (userStore.customSubjects) {
-            Object.assign(allSubjectsData, userStore.customSubjects);
-          }
+          mergeRemoteUserStore(result.store);
 
           const now = new Date();
           const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-          
+
           if (badge) {
             badge.textContent = "已连接并同步";
             badge.style.color = "var(--correct)";
             badge.style.background = "var(--correct-bg)";
           }
           if (timeText) {
-            timeText.textContent = `上次同步：今天 ${timeStr} (局域网双向合并)`;
+            timeText.textContent = `上次同步：今天 ${timeStr} (服务端双向合并)`;
           }
 
-          // 局部更新受影响视图
-          renderSubjectList();
-          updateCheckinUI();
           showToast("手机与电脑做题历史已双向同步");
 
           if (isManual) {
@@ -2988,14 +3361,14 @@
           }
         }
       } catch (err) {
-        console.warn("局域网同步暂未连通:", err);
+        console.warn("服务端同步暂未连通:", err);
         if (badge) {
           badge.textContent = "离线/未连接";
           badge.style.color = "var(--text-muted)";
           badge.style.background = "var(--bg)";
         }
         if (isManual) {
-          alert(`同步未完成：未能连接到电脑端服务。\n\n排查建议：\n1. 请确认电脑已运行【启动服务.bat】；\n2. 手机需与电脑在同一个 WiFi，或连接电脑手机热点；\n3. 请在浏览器地址栏直接输入当前电脑IP:8080 (如 http://10.30.183.115:8080)；\n4. 本地刷题记录已保存在手机中，重新连入局域网时会自动合并。`);
+          alert(`同步未完成：未能连接到目标服务器 (${targetUrl})。\n\n排查建议：\n1. 请确认电脑已运行【启动服务.bat】；\n2. 手机需与电脑在同一个 WiFi 或开启电脑移动热点；\n3. 如果在 GitHub 网页上做题，建议在上方使用【方式一：GitHub Gist 云同步】！`);
         }
       } finally {
         isSyncing = false;
@@ -3003,6 +3376,73 @@
           btn.disabled = false;
           btn.innerHTML = origBtnTxt;
         }
+      }
+    }
+
+    // 测试服务器连接延迟
+    async function testServerConnection() {
+      saveSyncSettings();
+      const cfg = userStore.syncConfig || {};
+      let targetUrl = (cfg.customServerUrl || "").trim() || "/api/sync";
+      if (!targetUrl.endsWith("/api/sync")) targetUrl = targetUrl.replace(/\/+$/, '') + "/api/sync";
+
+      const start = Date.now();
+      try {
+        const resp = await fetch(targetUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ping: true }),
+          cache: "no-cache"
+        });
+        const elapsed = Date.now() - start;
+        if (resp.ok) {
+          alert(`连接成功！\n\n地址：${targetUrl}\n响应延迟：${elapsed} 毫秒\n状态：正常通信`);
+        } else {
+          alert(`服务器响应异常: HTTP ${resp.status}\n地址: ${targetUrl}`);
+        }
+      } catch (e) {
+        alert(`无法连接到目标服务器: ${targetUrl}\n原因: ${e.message}\n请检查地址或网络环境。`);
+      }
+    }
+
+    // 复制同步口令 (离线快照)
+    function exportSyncToken() {
+      const snapshot = {
+        answers: userStore.answers || {},
+        favorites: userStore.favorites || [],
+        wrongBook: userStore.wrongBook || {},
+        ebbinghausWrong: userStore.ebbinghausWrong || {},
+        checkin: userStore.checkin || {},
+        unfinishedSessions: userStore.unfinishedSessions || {},
+        timestamp: Date.now()
+      };
+      try {
+        const jsonStr = JSON.stringify(snapshot);
+        const token = btoa(unescape(encodeURIComponent(jsonStr)));
+        navigator.clipboard.writeText("FILE2QUIZ_SYNC:" + token).then(() => {
+          showToast("已成功复制同步口令到剪贴板！");
+          alert("同步口令已复制！\n\n请在另一台设备（如手机）的【粘贴口令合并】中粘贴，即可瞬间完成合并。");
+        }).catch(() => {
+          prompt("请手动复制下方同步口令：", "FILE2QUIZ_SYNC:" + token);
+        });
+      } catch (e) {
+        alert("生成同步口令失败: " + e.message);
+      }
+    }
+
+    // 粘贴口令合并
+    function importSyncToken() {
+      const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 FILE2QUIZ_SYNC: 开头)：");
+      if (!input) return;
+      const clean = input.trim().replace(/^FILE2QUIZ_SYNC:/, '');
+      try {
+        const jsonStr = decodeURIComponent(escape(atob(clean)));
+        const data = JSON.parse(jsonStr);
+        mergeRemoteUserStore(data);
+        showToast("同步口令数据已成功合并！");
+        alert("🎉 数据合并完成！做题记录、收藏与错题本已成功双向合并！");
+      } catch (e) {
+        alert("口令解析失败，请确认复制了完整的同步口令文本。");
       }
     }
 
@@ -3992,8 +4432,10 @@
     }
 
     // ==========================================
-    // 需求2与需求3: 刷题工作台 - 题目渲染、顶部AI纯文字菜单与悬浮助教
+    // 需求2与需求3: 刷题工作台 - 题目渲染、多选复选框、顶部AI纯文字菜单与悬浮助教
     // ==========================================
+    let currentMultiSelection = new Set();
+
     function renderCurrentQuestion() {
       const container = document.getElementById("quizScrollBody");
       const q = activeQuestions[currentQuizIndex];
@@ -4008,6 +4450,13 @@
       const userAnsRec = userStore.answers[qKey];
       const isExam = (appConfig.quizMode === 'exam');
       const showAnswer = isExam ? isExamSubmitted : (userAnsRec !== undefined);
+
+      const isMulti = (q.type === 'multiple' || q.type === 'multi' || (q.answer && q.answer.length > 1 && q.type !== 'judge'));
+
+      // 若已有作答记录，恢复已选集合；若没有作答记录，且尚未针对当前题做过勾选，保持或重置
+      if (userAnsRec) {
+        currentMultiSelection = new Set((userAnsRec.chosen || '').split(''));
+      }
 
       const activeProv = userStore.activeProvider || "deepseek";
       const curProv = PROVIDERS[activeProv] || PROVIDERS["deepseek"];
@@ -4035,7 +4484,63 @@
             <button class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg> 错误</button>
           </div>
         `;
+      } else if (isMulti) {
+        // 多选题：复选框架构，未点击确认提交前绝不提前判题
+        optionsHtml = `<div class="quiz-options-col">`;
+        const ansLetters = (q.answer || '').split('');
+        const chosenLetters = userAnsRec ? (userAnsRec.chosen || '').split('') : Array.from(currentMultiSelection);
+
+        for (const [letter, text] of Object.entries(q.options || {})) {
+          let rowClass = "option-row";
+          let isChecked = false;
+
+          if (userAnsRec) {
+            // 已作答 (已提交)
+            isChecked = chosenLetters.includes(letter);
+            if (showAnswer) {
+              if (ansLetters.includes(letter)) {
+                rowClass += " status-correct"; // 正确答案高亮绿
+              } else if (isChecked) {
+                rowClass += " status-wrong"; // 错选的高亮红
+              }
+            } else {
+              if (isChecked) rowClass += " exam-selected";
+            }
+          } else {
+            // 答题中 (未提交)：自由勾选/反选
+            isChecked = currentMultiSelection.has(letter);
+            if (isChecked) rowClass += " multi-selected";
+          }
+
+          const clickHandler = userAnsRec ? '' : `onclick="toggleMultiOption('${letter}')"`;
+          const boxContent = isChecked ?
+            `<svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-check"/></svg>` : letter;
+
+          optionsHtml += `
+            <div class="${rowClass}" ${clickHandler}>
+              <div class="option-checkbox-box">${boxContent}</div>
+              <div class="option-label-text">${text}</div>
+            </div>
+          `;
+        }
+        optionsHtml += `</div>`;
+
+        // 若尚未提交本题答案，展示多选确认提交操作条
+        if (!userAnsRec) {
+          const selectedCount = currentMultiSelection.size;
+          const isBtnDisabled = (selectedCount === 0);
+          optionsHtml += `
+            <div class="multi-submit-bar">
+              <div class="multi-hint-text">多选题 · 已选 <span style="color:var(--primary);font-weight:700;">${selectedCount}</span> 项</div>
+              <button class="multi-confirm-btn" id="multiConfirmBtn" ${isBtnDisabled ? 'disabled' : ''} onclick="submitMultiAnswer()">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-check"/></svg>
+                <span>确认提交本题</span>
+              </button>
+            </div>
+          `;
+        }
       } else {
+        // 单选题
         optionsHtml = `<div class="quiz-options-col">`;
         for (const [letter, text] of Object.entries(q.options || {})) {
           let rowClass = "option-row";
@@ -4121,6 +4626,53 @@
       }
     }
 
+    // 多选题切换勾选状态
+    function toggleMultiOption(letter) {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      if (userStore.answers[qKey]) return; // 已提交不可选
+
+      if (currentMultiSelection.has(letter)) {
+        currentMultiSelection.delete(letter);
+      } else {
+        currentMultiSelection.add(letter);
+      }
+      renderCurrentQuestion();
+    }
+
+    // 多选题确认提交本题答案
+    function submitMultiAnswer() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      if (userStore.answers[qKey]) return;
+
+      if (currentMultiSelection.size === 0) {
+        showToast("请至少勾选一个选项");
+        return;
+      }
+
+      const chosen = Array.from(currentMultiSelection).sort().join('');
+      const standardAns = (q.answer || '').split('').sort().join('');
+      const isCorrect = (chosen === standardAns);
+
+      userStore.answers[qKey] = { chosen, isCorrect, time: Date.now() };
+
+      if (!isCorrect) {
+        const now = Date.now();
+        if (!userStore.ebbinghausWrong[qKey]) {
+          userStore.ebbinghausWrong[qKey] = { firstWrongAt: now, lastReviewAt: now, reviewCount: 0 };
+        } else {
+          userStore.ebbinghausWrong[qKey].lastReviewAt = now;
+          userStore.ebbinghausWrong[qKey].reviewCount += 1;
+        }
+      }
+
+      saveUserStore();
+      renderCurrentQuestion();
+    }
+
     function handleAnswerSelect(ans) {
       const q = activeQuestions[currentQuizIndex];
       const qKey = getQKey(q);
@@ -4158,6 +4710,8 @@
       }
       if (target >= 0 && target < total) {
         currentQuizIndex = target;
+        currentMultiSelection = new Set(); // 切题重置多选暂存
+
         const curQ = activeQuestions[currentQuizIndex];
         if (currentSubject && curQ && curQ._originalIdx !== undefined) {
           userStore.progress[currentSubject] = curQ._originalIdx + 1;
@@ -4176,8 +4730,11 @@
 
     // 左右滑屏切题手势 (手机端)
     function initTouchSwipe() {
-      let touchStartX = 0, touchStartY = 0;
       const quizView = document.getElementById("quizView");
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchEndX = 0;
+      let touchEndY = 0;
 
       quizView.addEventListener("touchstart", (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -4185,13 +4742,23 @@
       }, { passive: true });
 
       quizView.addEventListener("touchend", (e) => {
-        const dx = e.changedTouches[0].screenX - touchStartX;
-        const dy = e.changedTouches[0].screenY - touchStartY;
-        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-          if (dx < 0) navigateQuestion(1);
-          else navigateQuestion(-1);
-        }
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipeGesture();
       }, { passive: true });
+
+      function handleSwipeGesture() {
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+        // 确保水平滑动幅度明显大于垂直滚动，防止误触
+        if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+          if (diffX < 0) {
+            navigateQuestion(1); // 向左划 -> 下一题
+          } else {
+            navigateQuestion(-1); // 向右划 -> 上一题
+          }
+        }
+      }
     }
 
     // 电脑端鼠标滚轮上下切题与快捷键支持 (需求1)
@@ -4231,10 +4798,15 @@
         }
       }, { passive: true });
 
-      // 键盘快捷键监听 (方向键切题、按键快捷答题)
+      // 键盘快捷键监听 (方向键切题、按键快捷答题、回车提交多选)
       window.addEventListener("keydown", (e) => {
         if (!quizView || quizView.style.display === "none") return;
         if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+        const q = activeQuestions[currentQuizIndex];
+        const isMulti = q && (q.type === 'multiple' || q.type === 'multi' || (q.answer && q.answer.length > 1 && q.type !== 'judge'));
+        const qKey = q ? getQKey(q) : null;
+        const isSubmitted = qKey && userStore.answers[qKey];
 
         if (e.key === "ArrowRight" || e.key === "ArrowDown") {
           e.preventDefault();
@@ -4242,16 +4814,31 @@
         } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
           e.preventDefault();
           navigateQuestion(-1);
+        } else if (e.key === "Enter" || e.key === " ") {
+          if (isMulti && !isSubmitted) {
+            e.preventDefault();
+            submitMultiAnswer();
+          }
         } else if (["a", "A", "1"].includes(e.key)) {
-          const q = activeQuestions[currentQuizIndex];
-          if (q) handleAnswerSelect(q.type === 'judge' ? '对' : 'A');
+          if (q) {
+            if (isMulti && !isSubmitted) toggleMultiOption('A');
+            else if (!isMulti) handleAnswerSelect(q.type === 'judge' ? '对' : 'A');
+          }
         } else if (["b", "B", "2"].includes(e.key)) {
-          const q = activeQuestions[currentQuizIndex];
-          if (q) handleAnswerSelect(q.type === 'judge' ? '错' : 'B');
+          if (q) {
+            if (isMulti && !isSubmitted) toggleMultiOption('B');
+            else if (!isMulti) handleAnswerSelect(q.type === 'judge' ? '错' : 'B');
+          }
         } else if (["c", "C", "3"].includes(e.key)) {
-          handleAnswerSelect('C');
+          if (q) {
+            if (isMulti && !isSubmitted) toggleMultiOption('C');
+            else if (!isMulti) handleAnswerSelect('C');
+          }
         } else if (["d", "D", "4"].includes(e.key)) {
-          handleAnswerSelect('D');
+          if (q) {
+            if (isMulti && !isSubmitted) toggleMultiOption('D');
+            else if (!isMulti) handleAnswerSelect('D');
+          }
         }
       });
     }
@@ -5259,6 +5846,22 @@
       document.getElementById("settingFollowSystem").checked = !!appConfig.followSystemTheme;
       updateCheckinUI();
       initSettingsAiConfig();
+
+      // 更新同步中心状态和输入框回显
+      const syncCfg = userStore.syncConfig || {};
+      const tokenInput = document.getElementById("githubTokenInput");
+      if (tokenInput && !tokenInput.value) tokenInput.value = syncCfg.githubToken || "";
+      const srvInput = document.getElementById("customServerUrlInput");
+      if (srvInput && !srvInput.value) srvInput.value = syncCfg.customServerUrl || "";
+
+      const envNotice = document.getElementById("syncEnvNotice");
+      if (envNotice) {
+        if (location.hostname.includes("github.io")) {
+          envNotice.innerHTML = `<strong>当前运行环境：GitHub Pages 公网</strong><br>处于纯静态托管公网环境。推荐使用下方【方式一：GitHub Gist 云同步】，手机用流量也能随时与电脑双向同步！`;
+        } else {
+          envNotice.innerHTML = `<strong>当前运行环境：局域网 / 本机服务</strong><br>可使用下方【方式一：Gist 云同步】跨网络互通，或使用【方式二：局域网】与电脑直接双向合并。`;
+        }
+      }
     }
 
     function setDefaultMode(mode) {
