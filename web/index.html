@@ -98,12 +98,123 @@
 
     /* 需求1：首页头部 - 每日随机鼓励标语 + 右侧打卡/搜索图标 */
     .home-top-header {
-      padding: 14px 20px 10px;
+      padding: 12px 20px 8px;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .home-header-wrap {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+    }
+    .home-header-normal-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      width: 100%;
+      transition: opacity 0.2s ease;
+    }
+    .inline-search-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+      z-index: 10;
+    }
+    .inline-search-bar.expanded {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .inline-search-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px 4px 12px;
+    }
+    .inline-search-inner:focus-within {
+      border-color: var(--primary);
+      background: var(--card-bg);
+    }
+    .inline-search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      height: 28px;
+    }
+    .inline-search-results-panel {
+      background: var(--card-bg);
+      border-bottom: 1.5px solid var(--border);
+      padding: 12px 20px 16px;
+      max-height: 55vh;
+      overflow-y: auto;
+      display: none;
+    }
+    .inline-search-results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+    .configured-model-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1.5px solid var(--border);
+      background: var(--card-bg);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .configured-model-item.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .configured-model-del {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .configured-model-del:hover {
+      color: var(--wrong);
     }
     .motto-box {
       flex: 1;
@@ -1364,27 +1475,52 @@
          ======================================= -->
     <div class="view-content-pane" id="panePractice">
       <!-- 首页头部：标题状态 + 右侧更新/打卡/搜索图标 (无 Emoji, 不显过期日期) -->
-      <header class="home-top-header" style="padding:14px 20px 8px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">时政研学要点</div>
-          <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">最新重要会议与金句动态</div>
-        </div>
-        <div class="header-icons-row">
-          <!-- 检索更新最新重要金句 -->
-          <button class="header-icon-btn" onclick="searchOnlineLatestMottoAndNews()" title="检索/刷新最新重要会议金句">
-            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
-          </button>
-          <!-- 打卡图标 -->
-          <button class="header-icon-btn" onclick="handleDailyCheckin()" title="每日打卡">
-            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-calendar"/></svg>
-            <span class="badge-dot" id="checkinRedDot"></span>
-          </button>
-          <!-- 搜索图标 -->
-          <button class="header-icon-btn" onclick="openSearchModal()" title="搜索题目">
-            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-search"/></svg>
-          </button>
+      <header class="home-top-header">
+        <div class="home-header-wrap">
+          <!-- 默认状态：标题与功能图标 -->
+          <div class="home-header-normal-row" id="homeHeaderNormalRow">
+            <div>
+              <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">时政研学要点</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">最新重要会议与金句动态</div>
+            </div>
+            <div class="header-icons-row">
+              <!-- 检索更新最新重要金句 -->
+              <button class="header-icon-btn" onclick="searchOnlineLatestMottoAndNews()" title="检索/刷新最新重要会议金句">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
+              </button>
+              <!-- 打卡图标 -->
+              <button class="header-icon-btn" onclick="handleDailyCheckin()" title="每日打卡">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-calendar"/></svg>
+                <span class="badge-dot" id="checkinRedDot"></span>
+              </button>
+              <!-- 搜索图标 (点击横向展开搜索框，无弹窗) -->
+              <button class="header-icon-btn" id="headerSearchBtn" onclick="expandInlineSearch()" title="搜索题目">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-search"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 横向动画展开的搜索栏 (不弹窗，直接平滑展开) -->
+          <div class="inline-search-bar" id="inlineSearchBar">
+            <div class="inline-search-inner">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);flex-shrink:0;"><use href="#icon-search"/></svg>
+              <input id="inlineSearchInput" class="inline-search-input" placeholder="输入题目或考点关键字搜索..." oninput="handleInlineSearch(this.value)">
+              <button class="header-icon-btn" onclick="collapseInlineSearch()" style="padding:4px;" title="关闭搜索">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--text-muted);"><use href="#icon-close"/></svg>
+              </button>
+            </div>
+          </div>
         </div>
       </header>
+
+      <!-- 首页横向搜索实时结果下拉面板 (不弹窗) -->
+      <div class="inline-search-results-panel" id="inlineSearchResultsPanel">
+        <div class="inline-search-results-header">
+          <span id="inlineSearchCountText">检索结果</span>
+          <span style="font-size:12px;color:var(--primary);cursor:pointer;font-weight:700;" onclick="collapseInlineSearch()">收起</span>
+        </div>
+        <div id="inlineSearchResultsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
 
       <!-- 需求2：每日动态汇总与每日金句左右滑动 Banner -->
       <div class="banner-carousel-container">
@@ -1555,21 +1691,33 @@
             <input id="settingsProviderApiKey" type="password" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 sk-xxxx">
           </div>
 
-          <!-- 在线获取与搜索模型 -->
-          <div style="margin-top:10px;">
+          <!-- 该供应商已配置模型（支持配置多个模型并自由切换默认，做题时也可快速切换） -->
+          <div style="margin-top:12px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">可用模型列表</label>
-              <button class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);" onclick="fetchSettingsProviderModelsOnline()">在线获取模型</button>
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">已配置模型列表 (点击切换默认)</label>
+              <span style="font-size:11px;color:var(--text-muted);">做题时仅显示此列表</span>
             </div>
-            <input id="settingsModelSearchInput" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;margin-bottom:6px;" placeholder="搜索过滤模型 (如: chat, 4o, qwen...)" oninput="filterSettingsModelList(this.value)">
-            <div id="settingsModelPillPool" style="display:flex;gap:6px;flex-wrap:wrap;max-height:110px;overflow-y:auto;border:1px solid var(--border);padding:6px;border-radius:6px;background:var(--bg);"></div>
+            <div id="settingsConfiguredModelsBox" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
+            
+            <!-- 添加自定义模型输入行 -->
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input id="settingsNewModelInput" style="flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入模型名称 (如: deepseek-reasoner, claude-3-5-sonnet)..." onkeydown="if(event.key==='Enter')addSettingsCustomModel()">
+              <button class="text-name-btn" style="padding:6px 12px;font-size:12px;color:var(--primary);border-color:var(--primary-border);white-space:nowrap;" onclick="addSettingsCustomModel()">+ 添加模型</button>
+            </div>
           </div>
 
-          <!-- 当前激活模型 -->
-          <div style="margin-top:10px;">
-            <label style="font-size:12px;font-weight:700;color:var(--text-sub);">当前选定模型</label>
-            <input id="settingsProviderSelectedModel" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:700;color:var(--primary);outline:none;">
+          <!-- 在线获取与推荐模型库 -->
+          <div style="margin-top:12px;border-top:1px dashed var(--border);padding-top:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">推荐与在线模型库 (点击加入已配置)</label>
+              <button class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);" onclick="fetchSettingsProviderModelsOnline()">在线获取全部</button>
+            </div>
+            <input id="settingsModelSearchInput" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;margin-bottom:6px;" placeholder="搜索过滤可用模型..." oninput="filterSettingsModelList(this.value)">
+            <div id="settingsModelPillPool" style="display:flex;gap:6px;flex-wrap:wrap;max-height:100px;overflow-y:auto;border:1px solid var(--border);padding:6px;border-radius:6px;background:var(--bg);"></div>
           </div>
+
+          <!-- 当前激活模型字段 -->
+          <input type="hidden" id="settingsProviderSelectedModel">
 
           <!-- 保存按钮 -->
           <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
@@ -2360,6 +2508,8 @@
         try { appConfig = { ...appConfig, ...JSON.parse(c) }; } catch (e) {}
       }
 
+      if (!userStore.openedSubjects) userStore.openedSubjects = {};
+
       // 初始化供应商配置存储
       if (!userStore.providersConfig) userStore.providersConfig = {};
       Object.keys(PROVIDERS).forEach(pKey => {
@@ -2368,8 +2518,18 @@
             baseUrl: PROVIDERS[pKey].baseUrl,
             apiKey: "",
             model: PROVIDERS[pKey].defaultModel,
+            models: [...PROVIDERS[pKey].models],
             customModels: [...PROVIDERS[pKey].models]
           };
+        } else {
+          if (!Array.isArray(userStore.providersConfig[pKey].models) || userStore.providersConfig[pKey].models.length === 0) {
+            userStore.providersConfig[pKey].models = (userStore.providersConfig[pKey].customModels && userStore.providersConfig[pKey].customModels.length > 0)
+              ? [...userStore.providersConfig[pKey].customModels]
+              : [...PROVIDERS[pKey].models];
+          }
+          if (!userStore.providersConfig[pKey].model) {
+            userStore.providersConfig[pKey].model = userStore.providersConfig[pKey].models[0] || PROVIDERS[pKey].defaultModel;
+          }
         }
       });
 
@@ -2476,48 +2636,82 @@
       alert(`打卡成功！已连续打卡 ${userStore.checkin.days} 天，保持前行！`);
     }
 
-    // 需求1: 全局搜索题目弹窗
-    function openSearchModal() {
-      document.getElementById("modalSearchResultsBox").innerHTML = "";
-      document.getElementById("globalModalSearchInput").value = "";
-      document.getElementById("searchModal").classList.add("open");
-      setTimeout(() => document.getElementById("globalModalSearchInput").focus(), 100);
+    // ==========================================
+    // 需求4: 首页横向平滑展开搜索栏 (不弹窗)
+    // ==========================================
+    function expandInlineSearch() {
+      const bar = document.getElementById("inlineSearchBar");
+      if (bar) {
+        bar.classList.add("expanded");
+        const inp = document.getElementById("inlineSearchInput");
+        if (inp) {
+          inp.value = "";
+          setTimeout(() => inp.focus(), 120);
+        }
+      }
+      const panel = document.getElementById("inlineSearchResultsPanel");
+      if (panel) panel.style.display = "none";
     }
-    function closeSearchModal() { document.getElementById("searchModal").classList.remove("open"); }
 
-    function handleModalSearch(kw) {
-      kw = kw.trim().toLowerCase();
-      const container = document.getElementById("modalSearchResultsBox");
-      if (!kw) { container.innerHTML = ""; return; }
+    function collapseInlineSearch() {
+      const bar = document.getElementById("inlineSearchBar");
+      if (bar) bar.classList.remove("expanded");
+      const panel = document.getElementById("inlineSearchResultsPanel");
+      if (panel) panel.style.display = "none";
+      const inp = document.getElementById("inlineSearchInput");
+      if (inp) inp.value = "";
+    }
+
+    function handleInlineSearch(kw) {
+      kw = (kw || "").trim().toLowerCase();
+      const panel = document.getElementById("inlineSearchResultsPanel");
+      const list = document.getElementById("inlineSearchResultsList");
+      const countText = document.getElementById("inlineSearchCountText");
+
+      if (!kw) {
+        if (panel) panel.style.display = "none";
+        if (list) list.innerHTML = "";
+        return;
+      }
 
       let matches = [];
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => {
-          if (matches.length >= 20) return;
+          if (matches.length >= 25) return;
           if (q.question.toLowerCase().includes(kw) || (q.analysis && q.analysis.toLowerCase().includes(kw))) {
             matches.push(q);
           }
         });
       });
 
+      if (panel) panel.style.display = "block";
+      if (countText) countText.textContent = `找到 ${matches.length} 道相关考题`;
+
       if (matches.length === 0) {
-        container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">未检索到相关考题</div>`;
+        list.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">未检索到相关考题</div>`;
         return;
       }
 
-      container.innerHTML = matches.map(q => `
-        <div class="exam-paper-card" style="padding:12px;" onclick="jumpFromSearchToQuiz('${getQKey(q)}')">
-          <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text-main);">[${q.subject}] ${q.question.slice(0, 36)}...</div>
+      list.innerHTML = matches.map(q => `
+        <div class="exam-paper-card" style="padding:10px 12px;margin-bottom:0;" onclick="jumpFromSearchToQuiz('${getQKey(q)}')">
+          <div style="flex:1;overflow:hidden;">
+            <div style="font-size:13px;font-weight:700;color:var(--text-main);line-height:1.4;">[${q.subject}] ${q.question.slice(0, 40)}...</div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">题型: ${q.typeName} | 正确答案: ${q.answer}</div>
           </div>
-          <span style="font-size:12px;color:var(--primary);font-weight:700;">做此题 ›</span>
+          <span style="font-size:12px;color:var(--primary);font-weight:700;white-space:nowrap;margin-left:8px;">做此题 ›</span>
         </div>
       `).join("");
     }
 
+    function openSearchModal() {
+      expandInlineSearch();
+    }
+    function closeSearchModal() {
+      collapseInlineSearch();
+    }
+
     function jumpFromSearchToQuiz(qKey) {
-      closeSearchModal();
+      collapseInlineSearch();
       let targetQ = null;
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => { if (getQKey(q) === qKey) targetQ = q; });
@@ -2605,6 +2799,9 @@
           starsHtml += `<svg class="star-icon ${i <= starLevel ? 'active' : ''}" viewBox="0 0 24 24"><use href="#icon-star"/></svg>`;
         }
 
+        const isOpened = !!(userStore.openedSubjects && userStore.openedSubjects[sub]);
+        const actionText = isOpened ? "继续上次" : "开始做题";
+
         const card = document.createElement("div");
         card.className = "subject-card";
         card.innerHTML = `
@@ -2618,12 +2815,12 @@
               </div>
             </div>
           </div>
-          <div class="sub-right-btn" onclick="openStartQuizModal('${sub}', event)">
-            <span>继续上次</span>
+          <div class="sub-right-btn" onclick="handleSubjectCardClick('${sub}', event)">
+            <span>${actionText}</span>
             <span>›</span>
           </div>
         `;
-        card.onclick = () => openStartQuizModal(sub);
+        card.onclick = (e) => handleSubjectCardClick(sub, e);
         container.appendChild(card);
       });
     }
@@ -2632,6 +2829,45 @@
       document.querySelectorAll(".capsule-item").forEach(el => el.classList.remove("active"));
       elem.classList.add("active");
       renderSubjectList(cat);
+    }
+
+    // 需求5: 点击科目卡片 - 第一次打开弹窗设置题量，非第一次直接继续上次做题
+    function handleSubjectCardClick(sub, evt) {
+      if (evt) evt.stopPropagation();
+      const isOpened = !!(userStore.openedSubjects && userStore.openedSubjects[sub]);
+      if (!isOpened) {
+        // 第一次打开该科目：弹出题量和模式设置
+        openStartQuizModal(sub);
+      } else {
+        // 已经打开过：直接默认继续做题，无需任何弹窗
+        continueSubjectDirect(sub);
+      }
+    }
+
+    function continueSubjectDirect(sub) {
+      currentSubject = sub;
+      userStore.lastSubject = sub;
+      if (!userStore.openedSubjects) userStore.openedSubjects = {};
+      userStore.openedSubjects[sub] = true;
+      currentExamId = null;
+
+      let fullList = [...(allSubjectsData[sub] || [])];
+      const batch = appConfig.defaultBatchSize || 15;
+      const lastIdx = userStore.progress[sub] || 0;
+
+      if (batch > 0 && fullList.length > batch) {
+        let start = (lastIdx < fullList.length) ? lastIdx : 0;
+        activeQuestions = fullList.slice(start, start + batch);
+      } else {
+        activeQuestions = fullList;
+      }
+
+      appConfig.quizMode = appConfig.defaultMode || 'study';
+      currentQuizIndex = 0;
+      isExamSubmitted = false;
+
+      saveUserStore();
+      openQuizView();
     }
 
     // 刷题确认弹窗
@@ -2660,6 +2896,8 @@
       const sub = pendingStartSubject || Object.keys(allSubjectsData)[0];
       currentSubject = sub;
       userStore.lastSubject = sub;
+      if (!userStore.openedSubjects) userStore.openedSubjects = {};
+      userStore.openedSubjects[sub] = true;
       currentExamId = null;
 
       let fullList = [...(allSubjectsData[sub] || [])];
@@ -2679,6 +2917,7 @@
       currentQuizIndex = 0;
       isExamSubmitted = false;
 
+      saveUserStore();
       closeStartQuizModal();
       openQuizView();
     }
@@ -2961,18 +3200,30 @@
         });
       }
 
-      // 渲染模型纯文字名称按钮 (需求2：纯文字名称按钮)
+      // 需求3: 做题板块的ai设置不要显示所有模型，只显示已经配置的模型
       const modelGrid = document.getElementById("dropdownModelBtnGrid");
       if (modelGrid) {
         modelGrid.innerHTML = "";
-        const models = provCfg.customModels || PROVIDERS[activeProv]?.models || [];
-        models.forEach(m => {
-          const btn = document.createElement("div");
-          btn.className = `text-name-btn ${m === curModel ? 'active' : ''}`;
-          btn.textContent = m;
-          btn.onclick = () => selectDropdownModel(m);
-          modelGrid.appendChild(btn);
-        });
+        let configuredModels = provCfg.models;
+        if (!Array.isArray(configuredModels) || configuredModels.length === 0) {
+          configuredModels = provCfg.model ? [provCfg.model] : [PROVIDERS[activeProv]?.defaultModel].filter(Boolean);
+        }
+
+        if (configuredModels.length === 0) {
+          modelGrid.innerHTML = `
+            <div style="grid-column:1/-1;padding:8px;font-size:12px;color:var(--text-muted);text-align:center;">
+              暂未配置可用模型，请前往设置
+            </div>
+          `;
+        } else {
+          configuredModels.forEach(m => {
+            const btn = document.createElement("div");
+            btn.className = `text-name-btn ${m === curModel ? 'active' : ''}`;
+            btn.textContent = m;
+            btn.onclick = () => selectDropdownModel(m);
+            modelGrid.appendChild(btn);
+          });
+        }
       }
     }
 
@@ -3299,7 +3550,7 @@
     }
 
     // ==========================================
-    // 需求4: 设置板块完整的 AI 配置逻辑
+    // 需求2与需求4: 设置板块完整的 AI 配置逻辑与同一供应商多模型增删切换
     // ==========================================
     let editingSettingsProviderKey = "deepseek";
 
@@ -3342,25 +3593,132 @@
 
       document.getElementById("settingsProviderBaseUrl").value = cfg.baseUrl || p.baseUrl;
       document.getElementById("settingsProviderApiKey").value = cfg.apiKey || "";
-      document.getElementById("settingsProviderSelectedModel").value = cfg.model || p.defaultModel;
-      document.getElementById("settingsModelSearchInput").value = "";
 
+      const currentModel = cfg.model || (cfg.models && cfg.models[0]) || p.defaultModel;
+      document.getElementById("settingsProviderSelectedModel").value = currentModel;
+
+      const newInp = document.getElementById("settingsNewModelInput");
+      if (newInp) newInp.value = "";
+      const searchInp = document.getElementById("settingsModelSearchInput");
+      if (searchInp) searchInp.value = "";
+
+      renderSettingsConfiguredModels(pKey);
       renderSettingsModelPool(cfg.customModels || p.models);
     }
 
+    // 渲染当前供应商已配置的模型标签（支持切换默认和删除）
+    function renderSettingsConfiguredModels(pKey = editingSettingsProviderKey) {
+      const box = document.getElementById("settingsConfiguredModelsBox");
+      if (!box) return;
+      box.innerHTML = "";
+
+      const p = PROVIDERS[pKey] || PROVIDERS["deepseek"];
+      const cfg = userStore.providersConfig[pKey] || {};
+      let models = cfg.models;
+      if (!Array.isArray(models) || models.length === 0) {
+        models = [...p.models];
+        if (!userStore.providersConfig[pKey]) userStore.providersConfig[pKey] = {};
+        userStore.providersConfig[pKey].models = models;
+      }
+
+      const curActiveModel = document.getElementById("settingsProviderSelectedModel")?.value || cfg.model || models[0];
+
+      models.forEach(m => {
+        const item = document.createElement("div");
+        const isActive = (m === curActiveModel);
+        item.className = `configured-model-item ${isActive ? 'active' : ''}`;
+        item.innerHTML = `
+          <span style="display:inline-flex;align-items:center;gap:4px;" onclick="selectSettingsActiveModel('${m}')">
+            ${isActive ? '<svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:var(--primary);"><use href="#icon-check"/></svg>' : ''}
+            <span>${m}</span>
+          </span>
+          ${models.length > 1 ? `<span class="configured-model-del" onclick="removeSettingsConfiguredModel('${m}', event)" title="从已配置中移除">×</span>` : ''}
+        `;
+        box.appendChild(item);
+      });
+    }
+
+    // 切换设置中当前供应商的默认激活模型
+    function selectSettingsActiveModel(m) {
+      document.getElementById("settingsProviderSelectedModel").value = m;
+      if (!userStore.providersConfig[editingSettingsProviderKey]) {
+        userStore.providersConfig[editingSettingsProviderKey] = {};
+      }
+      userStore.providersConfig[editingSettingsProviderKey].model = m;
+      renderSettingsConfiguredModels(editingSettingsProviderKey);
+    }
+
+    // 添加新模型至已配置列表
+    function addSettingsCustomModel() {
+      const inp = document.getElementById("settingsNewModelInput");
+      if (!inp) return;
+      const mName = inp.value.trim();
+      if (!mName) {
+        alert("请输入有效的模型名称！");
+        return;
+      }
+
+      if (!userStore.providersConfig[editingSettingsProviderKey]) {
+        userStore.providersConfig[editingSettingsProviderKey] = {};
+      }
+      const cfg = userStore.providersConfig[editingSettingsProviderKey];
+      if (!Array.isArray(cfg.models)) {
+        cfg.models = [...(PROVIDERS[editingSettingsProviderKey]?.models || [])];
+      }
+
+      if (!cfg.models.includes(mName)) {
+        cfg.models.push(mName);
+      }
+      cfg.model = mName;
+      document.getElementById("settingsProviderSelectedModel").value = mName;
+      inp.value = "";
+      renderSettingsConfiguredModels(editingSettingsProviderKey);
+    }
+
+    // 移除已配置模型
+    function removeSettingsConfiguredModel(mName, evt) {
+      if (evt) evt.stopPropagation();
+      const cfg = userStore.providersConfig[editingSettingsProviderKey];
+      if (!cfg || !Array.isArray(cfg.models) || cfg.models.length <= 1) {
+        alert("至少需要保留一个已配置模型！");
+        return;
+      }
+
+      cfg.models = cfg.models.filter(item => item !== mName);
+      if (cfg.model === mName) {
+        cfg.model = cfg.models[0];
+        document.getElementById("settingsProviderSelectedModel").value = cfg.model;
+      }
+      renderSettingsConfiguredModels(editingSettingsProviderKey);
+    }
+
+    // 渲染推荐与在线模型池（点击直接加入已配置并设为当前激活）
     function renderSettingsModelPool(models) {
       const pool = document.getElementById("settingsModelPillPool");
       if (!pool) return;
       pool.innerHTML = "";
-      const curSel = document.getElementById("settingsProviderSelectedModel").value;
+      const curSel = document.getElementById("settingsProviderSelectedModel")?.value;
 
       models.forEach(m => {
         const pill = document.createElement("span");
         pill.className = `text-name-btn ${m === curSel ? 'active' : ''}`;
         pill.style.cssText = "padding:3px 8px;font-size:11px;";
         pill.textContent = m;
+        pill.title = "点击加入已配置列表并设为默认";
         pill.onclick = () => {
+          if (!userStore.providersConfig[editingSettingsProviderKey]) {
+            userStore.providersConfig[editingSettingsProviderKey] = {};
+          }
+          const cfg = userStore.providersConfig[editingSettingsProviderKey];
+          if (!Array.isArray(cfg.models)) {
+            cfg.models = [...(PROVIDERS[editingSettingsProviderKey]?.models || [])];
+          }
+          if (!cfg.models.includes(m)) {
+            cfg.models.push(m);
+          }
+          cfg.model = m;
           document.getElementById("settingsProviderSelectedModel").value = m;
+          renderSettingsConfiguredModels(editingSettingsProviderKey);
           renderSettingsModelPool(models);
         };
         pool.appendChild(pill);
@@ -3406,7 +3764,7 @@
         }
         userStore.providersConfig[editingSettingsProviderKey].customModels = models;
         renderSettingsModelPool(models);
-        alert(`成功获取 ${models.length} 个在线模型！已更新到列表。`);
+        alert(`成功获取 ${models.length} 个在线模型！点击即可添加至已配置列表。`);
       } catch (e) {
         alert(`获取失败 (${e.message})，使用推荐模型列表。`);
         renderSettingsModelPool(PROVIDERS[editingSettingsProviderKey].models);
@@ -3423,15 +3781,16 @@
       if (!userStore.providersConfig[editingSettingsProviderKey]) {
         userStore.providersConfig[editingSettingsProviderKey] = {};
       }
-      userStore.providersConfig[editingSettingsProviderKey].baseUrl = bUrl;
-      userStore.providersConfig[editingSettingsProviderKey].apiKey = aKey;
-      userStore.providersConfig[editingSettingsProviderKey].model = mModel;
+      const cfg = userStore.providersConfig[editingSettingsProviderKey];
+      cfg.baseUrl = bUrl;
+      cfg.apiKey = aKey;
+      cfg.model = mModel || (cfg.models && cfg.models[0]) || PROVIDERS[editingSettingsProviderKey].defaultModel;
 
       userStore.activeProvider = editingSettingsProviderKey;
       saveUserStore();
       loadSettingsProviderForm(editingSettingsProviderKey);
       updateDrawerModelTag();
-      alert(`已成功保存并激活【${PROVIDERS[editingSettingsProviderKey].name}】配置！`);
+      alert(`已成功保存并激活【${PROVIDERS[editingSettingsProviderKey].name}】配置！包含 ${cfg.models?.length || 1} 个快捷模型。`);
     }
 
     function toggleFloatingAiSetting(checked) {
