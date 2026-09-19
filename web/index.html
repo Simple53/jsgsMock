@@ -1732,6 +1732,29 @@
           <input type="checkbox" id="settingFollowSystem" style="width:20px;height:20px;" onchange="toggleFollowSystem(this.checked)">
         </div>
 
+        <!-- 需求：手机与电脑数据多端同步 -->
+        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-share"/></svg>
+              <span style="font-size:15px;font-weight:800;">手机与电脑历史同步</span>
+            </div>
+            <span id="syncStatusBadge" style="font-size:11px;color:var(--text-muted);background:var(--bg);padding:2px 8px;border-radius:4px;">未同步</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
+            手机与电脑在同一局域网 WiFi 下自动无损双向合并做题进度、艾宾浩斯抗遗忘错题与收藏夹，无需手动传文件。
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="modal-submit-btn" id="manualSyncBtn" style="flex:1.2;padding:9px 12px;font-size:13px;" onclick="syncWithServer(true)">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 立即合并同步
+            </button>
+            <button class="bottom-btn" style="flex:1;padding:9px 10px;font-size:12px;" onclick="openNetworkConnectModal()">
+              网络连接指引
+            </button>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px;" id="lastSyncTimeText">上次同步：未进行</div>
+        </div>
+
         <!-- 题库导入与更新 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">题库导入与更新</div>
@@ -1916,9 +1939,17 @@
       <div class="modal-top-row">
         <div>
           <div class="modal-main-title" id="startModalSubTitle">开始刷题</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">确认本次刷题参数</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="startModalSubDesc">确认本次刷题参数</div>
         </div>
         <button class="modal-close-icon" onclick="closeStartQuizModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+
+      <!-- 从主页自定义设置打开时的可选科目选择行 -->
+      <div id="modalSubjectSelectRow" style="display:none;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">选择本次练习科目 (可选)</div>
+        <select id="modalStartSubjectSelect" onchange="handleModalSubjectChange()" style="width:100%;padding:10px;border:1.5px solid var(--border);border-radius:8px;outline:none;background:var(--card-bg);color:var(--text-main);font-size:13px;">
+          <option value="">-- 仅保存设置，暂不开始做题 --</option>
+        </select>
       </div>
 
       <div>
@@ -1931,7 +1962,7 @@
 
       <div>
         <div style="font-size:14px;font-weight:700;margin-bottom:8px;">本次题量</div>
-        <div style="display:flex;gap:6px;">
+        <div style="display:flex;gap:6px;" id="modalBatchPillsRow">
           <div class="count-pill" onclick="setModalBatch(5, this)">5题</div>
           <div class="count-pill" onclick="setModalBatch(10, this)">10题</div>
           <div class="count-pill active" onclick="setModalBatch(15, this)">15题</div>
@@ -1948,7 +1979,7 @@
         <input type="checkbox" id="modalRandomShuffle" style="width:20px;height:20px;">
       </div>
 
-      <button class="modal-submit-btn" onclick="executeConfirmedStartQuiz()">立即进入刷题</button>
+      <button class="modal-submit-btn" id="confirmStartQuizBtn" onclick="executeConfirmedStartQuiz()">立即进入刷题</button>
     </div>
   </div>
 
@@ -2073,7 +2104,49 @@
         <button class="modal-close-icon" onclick="closeSheetDrawer()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
       <div class="sheet-num-grid" id="sheetNumGrid"></div>
+      <button class="modal-submit-btn" id="submitPracticeBtn" style="display:none;margin-top:10px;" onclick="submitPracticeQuiz()">完成并提交练习</button>
       <button class="modal-submit-btn" id="submitExamBtn" style="display:none;margin-top:10px;" onclick="submitExamPaper()">交卷并查看解析</button>
+    </div>
+  </div>
+
+  <!-- =======================================
+       练习完成 / 模拟考交卷结算弹窗
+       ======================================= -->
+  <div class="modal-mask" id="practiceResultModal" onclick="closePracticeResultModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <div class="modal-top-row">
+        <div>
+          <div class="modal-main-title" id="practiceResultTitle">练习已完成！</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;" id="practiceResultSub">本次练习报告</div>
+        </div>
+        <button class="modal-close-icon" onclick="closePracticeResultModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+
+      <!-- 核心统计数据 -->
+      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;text-align:center;margin:16px 0;">
+        <div style="padding:12px 8px;background:var(--bg);border-radius:10px;border:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--text-sub);">总题量</div>
+          <div style="font-size:20px;font-weight:900;color:var(--text-main);margin-top:4px;" id="resTotalCount">0</div>
+        </div>
+        <div style="padding:12px 8px;background:var(--correct-bg);border-radius:10px;border:1px solid var(--correct);">
+          <div style="font-size:11px;color:var(--correct);">答对</div>
+          <div style="font-size:20px;font-weight:900;color:var(--correct);margin-top:4px;" id="resCorrectCount">0</div>
+        </div>
+        <div style="padding:12px 8px;background:var(--primary-light);border-radius:10px;border:1px solid var(--primary-border);">
+          <div style="font-size:11px;color:var(--primary);">正确率</div>
+          <div style="font-size:20px;font-weight:900;color:var(--primary);margin-top:4px;" id="resAccuracyRate">0%</div>
+        </div>
+      </div>
+
+      <div id="resSummaryNote" style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:16px;text-align:center;"></div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="modal-submit-btn" id="btnNextBatchAction" onclick="startNextPracticeBatch()">继续练下一组</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <button class="bottom-btn" style="height:42px;" onclick="reviewPracticeAnswers()">查看解析</button>
+          <button class="bottom-btn" style="height:42px;" onclick="exitPracticeToHome()">返回主页</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2544,9 +2617,101 @@
       }
     }
 
-    function saveUserStore() {
+    let cloudSyncTimeout = null;
+    function debouncedCloudSync() {
+      if (cloudSyncTimeout) clearTimeout(cloudSyncTimeout);
+      cloudSyncTimeout = setTimeout(() => {
+        syncWithServer(false);
+      }, 2500);
+    }
+
+    function saveUserStore(skipCloudSync = false) {
       localStorage.setItem("file2quiz_v3_store", JSON.stringify(userStore));
       localStorage.setItem("file2quiz_v3_cfg", JSON.stringify(appConfig));
+      if (!skipCloudSync) {
+        debouncedCloudSync();
+      }
+    }
+
+    // ==========================================
+    // 手机与电脑局域网历史双向合并同步
+    // ==========================================
+    let isSyncing = false;
+    async function syncWithServer(isManual = false) {
+      if (isSyncing) return;
+      isSyncing = true;
+
+      const badge = document.getElementById("syncStatusBadge");
+      const timeText = document.getElementById("lastSyncTimeText");
+      const btn = document.getElementById("manualSyncBtn");
+      const origBtnTxt = btn ? btn.innerHTML : "";
+
+      if (badge) {
+        badge.textContent = "同步中...";
+        badge.style.color = "var(--primary)";
+      }
+      if (btn && isManual) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 正在合并同步...`;
+      }
+
+      try {
+        const resp = await fetch("/api/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userStore),
+          cache: "no-cache"
+        });
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const result = await resp.json();
+
+        if (result && result.store) {
+          // 将合并后完整数据保存至本地
+          userStore = { ...userStore, ...result.store };
+          saveUserStore(true); // 避免重复触发云同步
+
+          if (userStore.customSubjects) {
+            Object.assign(allSubjectsData, userStore.customSubjects);
+          }
+
+          const now = new Date();
+          const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+          
+          if (badge) {
+            badge.textContent = "已连接并同步";
+            badge.style.color = "var(--correct)";
+            badge.style.background = "var(--correct-bg)";
+          }
+          if (timeText) {
+            timeText.textContent = `上次同步：今天 ${timeStr} (局域网双向合并)`;
+          }
+
+          // 局部更新受影响视图
+          renderSubjectList();
+          updateCheckinUI();
+
+          if (isManual) {
+            alert(`手机与电脑数据已成功双向同步！\n\n- 做题历史、进度与答案记录已无损合并\n- 艾宾浩斯抗遗忘错题已对齐\n- 收藏题目与打卡天数已同步`);
+          }
+        }
+      } catch (err) {
+        console.warn("局域网同步暂未连通:", err);
+        if (badge) {
+          badge.textContent = "离线/未连接";
+          badge.style.color = "var(--text-muted)";
+          badge.style.background = "var(--bg)";
+        }
+        if (isManual) {
+          alert(`同步未完成：未能连接到电脑端服务。\n\n排查建议：\n1. 请确认电脑已运行【启动服务.bat】；\n2. 手机需与电脑在同一个 WiFi，或连接电脑手机热点；\n3. 请在浏览器地址栏直接输入当前电脑IP:8080 (如 http://10.30.183.115:8080)；\n4. 本地刷题记录已保存在手机中，重新连入局域网时会自动合并。`);
+        }
+      } finally {
+        isSyncing = false;
+        if (btn && isManual) {
+          btn.disabled = false;
+          btn.innerHTML = origBtnTxt;
+        }
+      }
     }
 
     // ==========================================
@@ -2583,6 +2748,9 @@
       initTouchSwipe();
       renderSavedExams();
       updateSettingsUI();
+
+      // 启动时后台静默同步一次局域网历史记录
+      syncWithServer(false);
     }
 
     // ==========================================
@@ -2844,6 +3012,83 @@
       }
     }
 
+    // ==========================================
+    // 智能抽题算法 (优先出未做题、自动顺延上次进度、单次练习严格去重)
+    // ==========================================
+    function selectQuestionsForPractice(sub, batchSize = 15, isShuffle = false) {
+      const fullList = allSubjectsData[sub] || [];
+      if (fullList.length === 0) return [];
+
+      // 1. 区分未作答题目与已作答题目
+      const unanswered = [];
+      const answered = [];
+
+      fullList.forEach((q, originalIdx) => {
+        const key = getQKey(q);
+        const item = { q: { ...q, _originalIdx: originalIdx }, originalIdx, key };
+        if (userStore.answers && userStore.answers[key]) {
+          answered.push(item);
+        } else {
+          unanswered.push(item);
+        }
+      });
+
+      let candidatePool = [];
+
+      if (unanswered.length > 0) {
+        if (isShuffle) {
+          // 乱序：在未作答题目中随机打乱
+          candidatePool = [...unanswered].sort(() => Math.random() - 0.5);
+        } else {
+          // 顺序模式：从上次记录的进度继续往后取
+          const lastProg = userStore.progress[sub] || 0;
+          const later = unanswered.filter(i => i.originalIdx >= lastProg);
+          const earlier = unanswered.filter(i => i.originalIdx < lastProg);
+          candidatePool = [...later, ...earlier];
+        }
+      }
+
+      // 如果未做题目不足设定题量，补足已作答题目（错题优先，防止题量不足中断）
+      if (batchSize > 0 && candidatePool.length < batchSize) {
+        let wrongList = answered.filter(i => {
+          const rec = userStore.answers[i.key];
+          return rec && !rec.isCorrect;
+        });
+        let correctList = answered.filter(i => {
+          const rec = userStore.answers[i.key];
+          return rec && rec.isCorrect;
+        });
+
+        if (isShuffle) {
+          wrongList.sort(() => Math.random() - 0.5);
+          correctList.sort(() => Math.random() - 0.5);
+        }
+        candidatePool = [...candidatePool, ...wrongList, ...correctList];
+      } else if (batchSize === 0 && candidatePool.length === 0) {
+        candidatePool = answered;
+      }
+
+      // 严格去重且保证单次练习内题目全局唯一
+      const seen = new Set();
+      const finalQuestions = [];
+      for (const item of candidatePool) {
+        if (!seen.has(item.key)) {
+          seen.add(item.key);
+          finalQuestions.push(item.q);
+          if (batchSize > 0 && finalQuestions.length >= batchSize) {
+            break;
+          }
+        }
+      }
+
+      // 记录当前抽题批次首题的原始序号作为进度参考
+      if (finalQuestions.length > 0 && finalQuestions[0]._originalIdx !== undefined) {
+        userStore.progress[sub] = finalQuestions[0]._originalIdx;
+      }
+
+      return finalQuestions;
+    }
+
     function continueSubjectDirect(sub) {
       currentSubject = sub;
       userStore.lastSubject = sub;
@@ -2851,15 +3096,12 @@
       userStore.openedSubjects[sub] = true;
       currentExamId = null;
 
-      let fullList = [...(allSubjectsData[sub] || [])];
-      const batch = appConfig.defaultBatchSize || 15;
-      const lastIdx = userStore.progress[sub] || 0;
+      const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
+      activeQuestions = selectQuestionsForPractice(sub, batch, !!appConfig.randomShuffle);
 
-      if (batch > 0 && fullList.length > batch) {
-        let start = (lastIdx < fullList.length) ? lastIdx : 0;
-        activeQuestions = fullList.slice(start, start + batch);
-      } else {
-        activeQuestions = fullList;
+      if (activeQuestions.length === 0) {
+        alert("本科目暂无题目！");
+        return;
       }
 
       appConfig.quizMode = appConfig.defaultMode || 'study';
@@ -2870,16 +3112,69 @@
       openQuizView();
     }
 
-    // 刷题确认弹窗
+    // 刷题确认弹窗与自定义偏好设置
     function openStartQuizModal(sub, evt) {
       if (evt) evt.stopPropagation();
-      pendingStartSubject = sub || Object.keys(allSubjectsData)[0];
-      document.getElementById("startModalSubTitle").textContent = sub ? `开始刷题: ${sub}` : "自定义刷题设置";
+      pendingStartSubject = sub || null;
+      
+      const titleEl = document.getElementById("startModalSubTitle");
+      const subRow = document.getElementById("modalSubjectSelectRow");
+      const subSelect = document.getElementById("modalStartSubjectSelect");
+      const submitBtn = document.getElementById("confirmStartQuizBtn");
 
+      if (sub) {
+        // 从具体科目卡片点击进入
+        titleEl.textContent = `开始刷题: ${sub}`;
+        if (subRow) subRow.style.display = "none";
+        if (submitBtn) submitBtn.textContent = "立即进入刷题";
+      } else {
+        // 从主页点击“自定义刷题设置”
+        titleEl.textContent = "自定义刷题设置";
+        if (subRow) {
+          subRow.style.display = "block";
+          if (subSelect) {
+            subSelect.innerHTML = `<option value="">-- 仅保存设置，暂不开始做题 --</option>`;
+            Object.keys(allSubjectsData).forEach(s => {
+              const opt = document.createElement("option");
+              opt.value = s;
+              opt.textContent = `${s} (${(allSubjectsData[s] || []).length}题)`;
+              subSelect.appendChild(opt);
+            });
+            subSelect.value = "";
+          }
+        }
+        if (submitBtn) submitBtn.textContent = "保存自定义设置";
+      }
+
+      // 回显当前存储的偏好配置
       setModalMode(appConfig.defaultMode || 'study');
-      document.getElementById("modalRandomShuffle").checked = false;
+      
+      const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
+      modalSelectedBatch = batch;
+      document.querySelectorAll("#modalBatchPillsRow .count-pill").forEach(p => {
+        const txt = p.textContent.trim();
+        if (batch === 0 && txt.includes("不限")) p.classList.add("active");
+        else if (batch > 0 && txt.includes(`${batch}题`)) p.classList.add("active");
+        else p.classList.remove("active");
+      });
+
+      const shuffleChk = document.getElementById("modalRandomShuffle");
+      if (shuffleChk) shuffleChk.checked = !!appConfig.randomShuffle;
+
       document.getElementById("startQuizModal").classList.add("open");
     }
+
+    function handleModalSubjectChange() {
+      const subSelect = document.getElementById("modalStartSubjectSelect");
+      const submitBtn = document.getElementById("confirmStartQuizBtn");
+      if (!subSelect || !submitBtn) return;
+      if (subSelect.value) {
+        submitBtn.textContent = `保存并进入【${subSelect.value}】刷题`;
+      } else {
+        submitBtn.textContent = "保存自定义设置";
+      }
+    }
+
     function closeStartQuizModal() { document.getElementById("startQuizModal").classList.remove("open"); }
     function setModalMode(mode) {
       modalSelectedMode = mode;
@@ -2888,29 +3183,46 @@
     }
     function setModalBatch(cnt, elem) {
       modalSelectedBatch = cnt;
-      document.querySelectorAll("#startQuizModal .count-pill").forEach(p => p.classList.remove("active"));
-      elem.classList.add("active");
+      document.querySelectorAll("#modalBatchPillsRow .count-pill").forEach(p => p.classList.remove("active"));
+      if (elem) elem.classList.add("active");
     }
 
     function executeConfirmedStartQuiz() {
-      const sub = pendingStartSubject || Object.keys(allSubjectsData)[0];
-      currentSubject = sub;
-      userStore.lastSubject = sub;
-      if (!userStore.openedSubjects) userStore.openedSubjects = {};
-      userStore.openedSubjects[sub] = true;
-      currentExamId = null;
+      // 1. 保存偏好设置到全局 appConfig
+      appConfig.defaultMode = modalSelectedMode;
+      appConfig.defaultBatchSize = modalSelectedBatch;
+      const shuffleChk = document.getElementById("modalRandomShuffle");
+      appConfig.randomShuffle = shuffleChk ? shuffleChk.checked : false;
+      saveUserStore();
 
-      let fullList = [...(allSubjectsData[sub] || [])];
-      if (document.getElementById("modalRandomShuffle").checked) {
-        fullList.sort(() => Math.random() - 0.5);
+      // 2. 判定目标科目
+      let targetSub = pendingStartSubject;
+      const subSelect = document.getElementById("modalStartSubjectSelect");
+      if (!targetSub && subSelect && subSelect.value) {
+        targetSub = subSelect.value;
       }
 
-      if (modalSelectedBatch > 0 && fullList.length > modalSelectedBatch) {
-        const lastIdx = userStore.progress[sub] || 0;
-        let start = (lastIdx + modalSelectedBatch <= fullList.length) ? lastIdx : 0;
-        activeQuestions = fullList.slice(start, start + modalSelectedBatch);
-      } else {
-        activeQuestions = fullList;
+      // 如果没有指定科目（即用户在主页点击自定义，并选择“仅保存设置，暂不开始做题”）
+      if (!targetSub) {
+        closeStartQuizModal();
+        const modeDesc = (modalSelectedMode === 'exam') ? '做题模式 (交卷查看)' : '背题模式 (立见解析)';
+        const batchDesc = modalSelectedBatch ? `${modalSelectedBatch} 题/组` : '不限题量';
+        const shuffleDesc = appConfig.randomShuffle ? '开启' : '关闭';
+        alert(`自定义刷题偏好已成功保存！\n\n- 默认模式：${modeDesc}\n- 单次题量：${batchDesc}\n- 随机乱序：${shuffleDesc}\n\n已保存至配置，随时点击科目即可按照此设置直接练习。`);
+        return;
+      }
+
+      // 3. 进入目标科目开始刷题
+      currentSubject = targetSub;
+      userStore.lastSubject = targetSub;
+      if (!userStore.openedSubjects) userStore.openedSubjects = {};
+      userStore.openedSubjects[targetSub] = true;
+      currentExamId = null;
+
+      activeQuestions = selectQuestionsForPractice(targetSub, modalSelectedBatch, !!appConfig.randomShuffle);
+      if (activeQuestions.length === 0) {
+        alert("本科目暂无题目！");
+        return;
       }
 
       appConfig.quizMode = modalSelectedMode;
@@ -3109,13 +3421,19 @@
         if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
           submitExamPaper();
         } else {
-          openSheetDrawer();
+          // 普通练习完成最后一题：弹出练习结算报告弹窗，不再卡死
+          submitPracticeQuiz();
         }
         return;
       }
       if (target >= 0 && target < total) {
         currentQuizIndex = target;
-        if (currentSubject) userStore.progress[currentSubject] = currentQuizIndex;
+        const curQ = activeQuestions[currentQuizIndex];
+        if (currentSubject && curQ && curQ._originalIdx !== undefined) {
+          userStore.progress[currentSubject] = curQ._originalIdx + 1;
+        } else if (currentSubject) {
+          userStore.progress[currentSubject] = currentQuizIndex;
+        }
         saveUserStore();
         renderCurrentQuestion();
       }
@@ -3926,10 +4244,111 @@
         cell.onclick = () => { currentQuizIndex = idx; closeSheetDrawer(); renderCurrentQuestion(); };
         grid.appendChild(cell);
       });
-      document.getElementById("submitExamBtn").style.display = (appConfig.quizMode === 'exam' && !isExamSubmitted) ? "block" : "none";
+      const isExam = (appConfig.quizMode === 'exam');
+      document.getElementById("submitExamBtn").style.display = (isExam && !isExamSubmitted) ? "block" : "none";
+      const practiceBtn = document.getElementById("submitPracticeBtn");
+      if (practiceBtn) {
+        practiceBtn.style.display = (!isExam || isExamSubmitted) ? "block" : "none";
+      }
       document.getElementById("sheetDrawer").classList.add("open");
     }
     function closeSheetDrawer() { document.getElementById("sheetDrawer").classList.remove("open"); }
+
+    // ==========================================
+    // 练习完成与结算报告弹窗
+    // ==========================================
+    function submitPracticeQuiz() {
+      closeSheetDrawer();
+      const total = activeQuestions.length;
+      let answeredCount = 0;
+      let correctCount = 0;
+
+      activeQuestions.forEach(q => {
+        const rec = userStore.answers[getQKey(q)];
+        if (rec) {
+          answeredCount++;
+          if (rec.isCorrect) correctCount++;
+        }
+      });
+
+      const rate = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+      const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const s = String(timerSeconds % 60).padStart(2, '0');
+
+      const totalEl = document.getElementById("resTotalCount");
+      const corEl = document.getElementById("resCorrectCount");
+      const accEl = document.getElementById("resAccuracyRate");
+      if (totalEl) totalEl.textContent = total;
+      if (corEl) corEl.textContent = correctCount;
+      if (accEl) accEl.textContent = `${rate}%`;
+
+      const subName = currentSubject || "练习题组";
+      const summaryEl = document.getElementById("resSummaryNote");
+      if (summaryEl) {
+        let comment = "基础扎实，继续保持！";
+        if (rate >= 90) comment = "卓越表现！对考点掌握非常熟练！";
+        else if (rate < 60) comment = "已自动将错题收录至艾宾浩斯抗遗忘本，建议稍后重点攻坚！";
+        summaryEl.innerHTML = `本次【${subName}】共 ${total} 题，已作答 ${answeredCount} 题，答对 ${correctCount} 题。<br>用时 <strong>${m}分${s}秒</strong>。${comment}`;
+      }
+
+      // 继续下一组按钮
+      // 继续下一组按钮：精准统计本科目未作答题目
+      const nextBtn = document.getElementById("btnNextBatchAction");
+      if (nextBtn) {
+        if (currentSubject && allSubjectsData[currentSubject]) {
+          const fullList = allSubjectsData[currentSubject];
+          const unansCount = fullList.filter(q => !userStore.answers[getQKey(q)]).length;
+          if (unansCount > 0) {
+            nextBtn.textContent = `继续练下一组 (还有 ${unansCount} 道未做题)`;
+            nextBtn.style.display = "block";
+          } else {
+            nextBtn.textContent = "本科目题库已全做完，开启新一轮巩固复习";
+            nextBtn.style.display = "block";
+          }
+        } else {
+          nextBtn.style.display = "none";
+        }
+      }
+
+      saveUserStore();
+      document.getElementById("practiceResultModal").classList.add("open");
+    }
+
+    function closePracticeResultModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById("practiceResultModal").classList.remove("open");
+    }
+
+    function startNextPracticeBatch() {
+      closePracticeResultModal();
+      if (!currentSubject || !allSubjectsData[currentSubject]) {
+        exitPracticeToHome();
+        return;
+      }
+      const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
+      const nextQuestions = selectQuestionsForPractice(currentSubject, batch, !!appConfig.randomShuffle);
+      if (nextQuestions.length === 0) {
+        alert("本科目暂无题目！");
+        exitPracticeToHome();
+        return;
+      }
+      activeQuestions = nextQuestions;
+      currentQuizIndex = 0;
+      isExamSubmitted = false;
+      startTimer();
+      saveUserStore();
+      renderCurrentQuestion();
+    }
+
+    function reviewPracticeAnswers() {
+      closePracticeResultModal();
+      openSheetDrawer();
+    }
+
+    function exitPracticeToHome() {
+      closePracticeResultModal();
+      exitQuizToHome();
+    }
 
     function submitExamPaper() {
       isExamSubmitted = true;
@@ -4257,6 +4676,14 @@
 
     
     function openNetworkConnectModal() {
+      const el = document.getElementById("currentNetworkAccessUrl");
+      if (el) {
+        if (window.location.protocol.startsWith("http") && !window.location.hostname.includes("github.io")) {
+          el.textContent = `${window.location.protocol}//${window.location.hostname}:${window.location.port || '8080'}`;
+        } else {
+          el.textContent = "http://电脑局域网IP:8080 (请查看启动服务控制台输出)";
+        }
+      }
       document.getElementById("networkConnectModal")?.classList.add("open");
     }
     function closeNetworkConnectModal(e) {
@@ -4283,7 +4710,7 @@
       <div style="font-size:13px;line-height:1.6;color:var(--text-main);display:flex;flex-direction:column;gap:12px;">
         <div style="padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);">
           <div style="font-weight:800;color:var(--primary);margin-bottom:4px;">1. 同一 WiFi 局域网访问地址：</div>
-          <div style="font-size:15px;font-weight:900;word-break:break-all;color:var(--text-main);font-family:monospace;">http://10.30.249.139:8080</div>
+          <div style="font-size:15px;font-weight:900;word-break:break-all;color:var(--text-main);font-family:monospace;" id="currentNetworkAccessUrl">http://10.30.183.115:8080</div>
           <div style="font-size:11px;color:var(--wrong);margin-top:4px;font-weight:700;">特别注意：请务必输入 http://，严禁输入 https:// (否则浏览器会因证书不匹配报错中断连接)</div>
         </div>
 
@@ -4298,7 +4725,9 @@
         <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);">
           <div style="font-weight:800;margin-bottom:4px;color:var(--primary);">3. 终极免电脑方案：GitHub Pages (随时随地秒开)</div>
           <div style="font-size:12px;color:var(--text-sub);">
-            本项目已开源至 GitHub，支持通过 Pages 生成永久公网链接，手机无需电脑开机、4G/5G 均能秒开，支持离线添加到主屏幕！
+            在线公网访问地址：<br>
+            <a href="https://simple53.github.io/file2quiz/" target="_blank" style="color:var(--primary);font-weight:700;text-decoration:none;">https://simple53.github.io/file2quiz/</a><br>
+            手机无需电脑开机、4G/5G 均能秒开，且支持离线添加到主屏幕！
           </div>
         </div>
       </div>

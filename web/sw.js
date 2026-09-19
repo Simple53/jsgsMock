@@ -1,4 +1,4 @@
-const CACHE_NAME = 'file2quiz-v5';
+const CACHE_NAME = 'file2quiz-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -33,8 +33,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
 
-  // 外部 AI API 请求直接穿透
-  if (url.includes('/chat/completions') || url.includes('/models') || url.includes('openrouter.ai')) {
+  // 外部 AI API 及后端同步接口 /api/ 请求直接穿透
+  if (url.includes('/api/') || url.includes('/chat/completions') || url.includes('/models') || url.includes('openrouter.ai')) {
     return;
   }
 
