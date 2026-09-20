@@ -875,14 +875,23 @@
       background: var(--card-bg);
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      transition: all 0.2s;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    .chat-action-btn svg {
+      width: 14px;
+      height: 14px;
     }
     .chat-action-btn:hover {
       color: var(--primary);
       border-color: var(--primary);
+      background: var(--primary-light);
     }
     .feedback-btn {
       display: flex;
@@ -1647,6 +1656,16 @@
         <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/>
         <polyline points="16 8 10 15 7 12" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
+      <!-- 复制图标 -->
+      <g id="icon-copy">
+        <rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/>
+      </g>
+      <!-- 修改/重新生成图标 -->
+      <g id="icon-edit-retry">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
       <!-- 云同步图标 -->
       <g id="icon-cloud-sync">
         <path d="M19 16.9A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -1905,6 +1924,7 @@
         <div class="inner-tab-header">
           <button class="inner-tab-btn active" id="btnTabAllWrong" onclick="switchWrongTab('all')">全部错题</button>
           <button class="inner-tab-btn" id="btnTabEbbinghaus" onclick="switchWrongTab('ebbinghaus')">艾宾浩斯复习</button>
+          <button class="inner-tab-btn" id="btnTabFavorites" onclick="switchWrongTab('fav')">我的收藏</button>
         </div>
 
         <div id="allWrongBannerArea" style="margin-bottom:14px;">
@@ -1922,6 +1942,16 @@
             <div style="font-size:15px;font-weight:800;color:var(--primary);">艾宾浩斯抗遗忘科学周期</div>
             <div style="font-size:12px;color:var(--text-sub);margin:4px 0 10px;">依据 1/2/4/7/15 天智能筛选进入临界期的错题</div>
             <button class="modal-submit-btn" style="padding:10px;width:100%;font-size:14px;" onclick="startEbbinghausQuizDirect()">开始今日艾宾浩斯攻坚</button>
+          </div>
+        </div>
+
+        <div id="favBannerArea" style="display:none;margin-bottom:14px;">
+          <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--text-main);">收藏题目抗遗忘攻坚</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">艾宾浩斯记忆周期 · 记得/模糊/忘记反馈</div>
+            </div>
+            <button class="bottom-btn primary" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;" onclick="startFavEbbinghausQuizDirect()">开始做题</button>
           </div>
         </div>
 
@@ -4543,7 +4573,7 @@
       }
 
       const qKey = getQKey(q);
-      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习');
+      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
       const userAnsRec = isWrongSession ? wrongSessionAnswers[qKey] : userStore.answers[qKey];
       const isExam = (appConfig.quizMode === 'exam');
 
@@ -4767,7 +4797,7 @@
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
       const qKey = getQKey(q);
-      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习');
+      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
       const hasAnswered = isWrongSession ? !!wrongSessionAnswers[qKey] : !!userStore.answers[qKey];
       if (hasAnswered) return;
 
@@ -4784,7 +4814,7 @@
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
       const qKey = getQKey(q);
-      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习');
+      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
       const hasAnswered = isWrongSession ? !!wrongSessionAnswers[qKey] : !!userStore.answers[qKey];
       if (hasAnswered) return;
 
@@ -4820,7 +4850,7 @@
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
       const qKey = getQKey(q);
-      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习');
+      const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
 
       if (isWrongSession) {
         if (wrongSessionAnswers[qKey]) return;
@@ -5209,14 +5239,20 @@
       if (role === "user") {
         actionsHtml = `
           <div class="chat-msg-actions">
-            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制消息内容">复制</button>
-            <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="修改此条内容并重新生成">修改并重试</button>
+            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制内容">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+            </button>
+            <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="修改此条内容并重新生成">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-edit-retry"/></svg>
+            </button>
           </div>
         `;
       } else if (role === "assistant") {
         actionsHtml = `
           <div class="chat-msg-actions">
-            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制助教回答">复制</button>
+            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制助教回答">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+            </button>
           </div>
         `;
       }
@@ -5345,6 +5381,9 @@
         return;
       }
 
+      isWrongPracticeActive = true;
+      wrongSessionRevealed = {};
+      wrongSessionAnswers = {};
       currentSubject = "我的收藏";
       activeQuestions = favList;
       currentQuizIndex = 0;
@@ -5476,9 +5515,22 @@
         container.innerHTML = `
           <div class="chat-msg user">
             <div class="chat-bubble-body">请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】</div>
+            <div class="chat-msg-actions">
+              <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制内容">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+              </button>
+              <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="修改此条内容并重新生成">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-edit-retry"/></svg>
+              </button>
+            </div>
           </div>
           <div class="chat-msg assistant">
             <div class="chat-bubble-body"><div style="font-weight:700;margin-bottom:4px;color:var(--primary);">【本题一键 AI 考点精解回顾】：</div>${escapeHtml(explanation)}</div>
+            <div class="chat-msg-actions">
+              <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制解析内容">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+              </button>
+            </div>
           </div>
           <div class="chat-msg assistant">
             <div class="chat-bubble-body" style="font-size:12px;color:var(--text-muted);background:var(--card-bg);">已为您保留上述一键解析内容历史。您可以在下方输入框继续自由追问（如为什么不选B、相关真题辨析等）！</div>
@@ -6275,16 +6327,61 @@
     function switchWrongTab(tab) {
       document.getElementById('btnTabAllWrong').classList.toggle('active', tab === 'all');
       document.getElementById('btnTabEbbinghaus').classList.toggle('active', tab === 'ebbinghaus');
+      const favBtn = document.getElementById('btnTabFavorites');
+      if (favBtn) favBtn.classList.toggle('active', tab === 'fav');
+
       const ebBanner = document.getElementById('ebbinghausBannerArea');
       const allBanner = document.getElementById('allWrongBannerArea');
+      const favBanner = document.getElementById('favBannerArea');
+
       if (ebBanner) ebBanner.style.display = (tab === 'ebbinghaus') ? 'block' : 'none';
       if (allBanner) allBanner.style.display = (tab === 'all') ? 'block' : 'none';
+      if (favBanner) favBanner.style.display = (tab === 'fav') ? 'block' : 'none';
+
       renderWrongPane(tab);
     }
 
     function renderWrongPane(tab) {
       const container = document.getElementById("wrongListContent");
       container.innerHTML = "";
+
+      // 需求2: 错题本新增【我的收藏】一栏，支持艾宾浩斯抗遗忘记忆与做题
+      if (tab === 'fav') {
+        const favKeys = userStore.favorites || [];
+        if (favKeys.length === 0) {
+          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无收藏题目。答题时点击右上角星标即可收藏！</div>`;
+          return;
+        }
+        let favQs = [];
+        Object.values(allSubjectsData).forEach(qs => {
+          qs.forEach(q => { if (favKeys.includes(getQKey(q))) favQs.push(q); });
+        });
+        if (favQs.length === 0) {
+          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无可练的收藏题目！</div>`;
+          return;
+        }
+
+        favQs.forEach((q, idx) => {
+          const qKey = getQKey(q);
+          const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
+          const revCnt = eb.reviewCount || 0;
+          const card = document.createElement("div");
+          card.className = "exam-paper-card";
+          card.innerHTML = `
+            <div>
+              <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${q.question.slice(0, 32)}...</div>
+              <div class="exam-paper-desc">题型: ${q.typeName} | 艾宾浩斯复习: ${revCnt} 轮</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="toggleFavoriteFromList('${qKey}', event)">移出</button>
+              <button class="bottom-btn primary" style="padding:4px 12px;font-size:12px;" onclick="startSingleFavQuiz('${qKey}')">做题</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        return;
+      }
+
       const wrongKeys = Object.keys(userStore.ebbinghausWrong || {});
       if (wrongKeys.length === 0) {
         container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无错题记录，保持优秀！</div>`;
@@ -6328,6 +6425,14 @@
       });
     }
 
+    function toggleFavoriteFromList(qKey, evt) {
+      if (evt) evt.stopPropagation();
+      userStore.favorites = (userStore.favorites || []).filter(k => k !== qKey);
+      saveUserStore();
+      showToast("已移出收藏！");
+      renderWrongPane('fav');
+    }
+
     function removeSingleWrong(qKey, evt) {
       evt.stopPropagation();
       delete userStore.ebbinghausWrong[qKey];
@@ -6346,6 +6451,24 @@
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
       currentSubject = "错题复习";
+      activeQuestions = [targetQ];
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      isExamSubmitted = false;
+      openQuizView();
+    }
+
+    // 单题进入收藏做题（真实做题，支持艾宾浩斯反馈）
+    function startSingleFavQuiz(qKey) {
+      let targetQ = null;
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { if (getQKey(q) === qKey) targetQ = q; });
+      });
+      if (!targetQ) return;
+      isWrongPracticeActive = true;
+      wrongSessionRevealed = {};
+      wrongSessionAnswers = {};
+      currentSubject = "我的收藏";
       activeQuestions = [targetQ];
       currentQuizIndex = 0;
       appConfig.quizMode = 'study';
@@ -6373,6 +6496,32 @@
       wrongSessionAnswers = {};
       currentSubject = "错题复习";
       activeQuestions = wrongQs;
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      isExamSubmitted = false;
+      openQuizView();
+    }
+
+    // 收藏题目艾宾浩斯攻坚（真实做题，支持记得/模糊/忘记艾宾浩斯反馈）
+    function startFavEbbinghausQuizDirect() {
+      const favKeys = userStore.favorites || [];
+      if (favKeys.length === 0) {
+        showToast("暂无收藏题目！");
+        return;
+      }
+      let favQs = [];
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { if (favKeys.includes(getQKey(q))) favQs.push(q); });
+      });
+      if (favQs.length === 0) {
+        showToast("暂无可练收藏题目！");
+        return;
+      }
+      isWrongPracticeActive = true;
+      wrongSessionRevealed = {};
+      wrongSessionAnswers = {};
+      currentSubject = "我的收藏";
+      activeQuestions = favQs;
       currentQuizIndex = 0;
       appConfig.quizMode = 'study';
       isExamSubmitted = false;
