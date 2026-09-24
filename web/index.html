@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="quiz_data.js"></script>
   <style>
     /* =========================================
        file2quiz 纯扁平设计体系 (No Shadow, No Gradient, No Emoji)
@@ -3781,6 +3782,77 @@
     }
 
     // ==========================================
+    // 题库数据加载保障引擎 (解决 Android APK / 本地 file:// 协议 CORS 限制)
+    // ==========================================
+    async function loadDefaultQuizData() {
+      // 1. 优先读取静态注入的 window.DEFAULT_QUIZ_DATA (APK/离线环境秒开，绝对零失败)
+      if (typeof window.DEFAULT_QUIZ_DATA === 'object' && window.DEFAULT_QUIZ_DATA && Object.keys(window.DEFAULT_QUIZ_DATA).length > 0) {
+        try {
+          allSubjectsData = JSON.parse(JSON.stringify(window.DEFAULT_QUIZ_DATA));
+          return true;
+        } catch (e) {
+          allSubjectsData = window.DEFAULT_QUIZ_DATA;
+          return true;
+        }
+      }
+
+      // 2. 次选 Fetch API (网络服务器/GitHub Pages/HTTP 调试环境)
+      try {
+        const resp = await fetch("quiz_data.json");
+        if (resp.ok) {
+          allSubjectsData = await resp.json();
+          return true;
+        }
+      } catch (fetchErr) {
+        console.warn("Fetch 题库失败 (常见于本地 file:// 协议受限)，启动 XHR 深度加载:", fetchErr);
+      }
+
+      // 3. 终极兜底: 使用 XMLHttpRequest 读取本地文件 (支持在 file:// 环境下读取)
+      try {
+        const xhrData = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", "quiz_data.json", true);
+          xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 0) {
+              try {
+                const res = (xhr.responseType === 'json' && xhr.response) ? xhr.response : JSON.parse(xhr.responseText);
+                resolve(res);
+              } catch (parseErr) {
+                reject(parseErr);
+              }
+            } else {
+              reject(new Error("XHR 状态码异常: " + xhr.status));
+            }
+          };
+          xhr.onerror = () => reject(new Error("XHR 网络/文件读取错误"));
+          xhr.send();
+        });
+        if (xhrData && Object.keys(xhrData).length > 0) {
+          allSubjectsData = xhrData;
+          return true;
+        }
+      } catch (xhrErr) {
+        console.error("XHR 本地题库读取亦失败:", xhrErr);
+      }
+
+      return false;
+    }
+
+    async function reloadQuizData() {
+      showToast("正在重新检索本地题库...");
+      const success = await loadDefaultQuizData();
+      if (userStore.customSubjects) {
+        Object.assign(allSubjectsData, userStore.customSubjects);
+      }
+      renderSubjectList();
+      if (success && Object.keys(allSubjectsData).length > 0) {
+        showToast("题库重载成功，已解锁全部考点！");
+      } else {
+        alert("未能检测到内置题库文件。\n\n如您正在使用安卓客户端，请确认安装了最新发布的安装包；\n您也可以在【设置】或首页中点击【导入题库】手动导入 JSON 题库。");
+      }
+    }
+
+    // ==========================================
     // 初始化应用
     // ==========================================
     async function init() {
@@ -3790,12 +3862,8 @@
         navigator.serviceWorker.register('./sw.js').catch(() => {});
       }
 
-      try {
-        const resp = await fetch("quiz_data.json");
-        allSubjectsData = await resp.json();
-      } catch (e) {
-        console.error("加载默认题库失败", e);
-      }
+      // 题库加载三重保障体系 (解决 Android APK / file:// 协议 CORS 限制问题)
+      await loadDefaultQuizData();
 
       if (userStore.customSubjects) {
         Object.assign(allSubjectsData, userStore.customSubjects);
@@ -4595,6 +4663,22 @@
       container.innerHTML = "";
 
       const subjects = Object.keys(allSubjectsData);
+      if (subjects.length === 0) {
+        container.innerHTML = `
+          <div style="border:1.5px dashed var(--border);border-radius:12px;padding:36px 20px;text-align:center;background:var(--card-bg);margin-top:10px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--text-muted);margin-bottom:12px;"><use href="#icon-book"/></svg>
+            <div style="font-size:15px;font-weight:800;color:var(--text-main);margin-bottom:6px;">未检测到题库科目</div>
+            <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:16px;">
+              本地题库尚未完成载入或环境读取受限。<br>请点击下方按钮重新读取内置题库，或导入自定义题库。
+            </div>
+            <div style="display:flex;justify-content:center;gap:10px;">
+              <button class="bottom-btn primary" style="height:36px;padding:0 16px;font-size:12.5px;width:auto;" onclick="reloadQuizData()">重新读取题库</button>
+              <button class="bottom-btn secondary" style="height:36px;padding:0 16px;font-size:12.5px;width:auto;" onclick="triggerImportQuiz()">导入外部题库</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
       subjects.forEach((sub) => {
         if (filter === 'theory' && !sub.includes("学") && !sub.includes("论述")) return;
         if (filter === 'law' && !sub.includes("道德") && !sub.includes("法规")) return;

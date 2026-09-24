@@ -1,8 +1,9 @@
-const CACHE_NAME = 'file2quiz-v14';
+const CACHE_NAME = 'file2quiz-v15';
 const ASSETS = [
   './',
   './index.html',
   './quiz_data.json',
+  './quiz_data.js',
   './manifest.json',
   './icon.svg'
 ];

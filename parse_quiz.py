@@ -126,5 +126,13 @@ def main():
         json.dump(all_data, out, ensure_ascii=False, indent=2)
     print("Saved to quiz_data.json successfully!")
 
+    # 同步保存到 web/quiz_data.json 与 web/quiz_data.js (支持 APK 离线秒开)
+    os.makedirs("web", exist_ok=True)
+    with open(os.path.join("web", "quiz_data.json"), "w", encoding="utf-8") as out:
+        json.dump(all_data, out, ensure_ascii=False, indent=2)
+    with open(os.path.join("web", "quiz_data.js"), "w", encoding="utf-8") as out:
+        out.write("window.DEFAULT_QUIZ_DATA = " + json.dumps(all_data, ensure_ascii=False, indent=2) + ";\n")
+    print("Saved to web/quiz_data.json and web/quiz_data.js successfully!")
+
 if __name__ == "__main__":
     main()

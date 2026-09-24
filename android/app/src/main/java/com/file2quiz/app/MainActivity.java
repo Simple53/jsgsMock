@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.webkit.WebViewAssetLoader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,12 +47,32 @@ public class MainActivity extends AppCompatActivity {
         settings.setLoadWithOverviewMode(true);
         settings.setSupportZoom(false);
 
+        // 使用 AndroidX 官方推荐的 WebViewAssetLoader 将本地 Assets 映射为合法的虚拟安全域
+        // 彻底根治本地 file:/// 协议下 Fetch/XHR/CORS 无法读取 JSON 题库的问题
+        final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
+                .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+                .build();
+
         mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return assetLoader.shouldInterceptRequest(request.getUrl());
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file:///")) {
+                if (url.startsWith("https://appassets.androidcache.net/") || url.startsWith("file:///")) {
                     return false;
+                }
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        return true;
+                    }
                 }
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -81,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWebView.loadUrl("file:///android_asset/web/index.html");
+        mWebView.loadUrl("https://appassets.androidcache.net/assets/web/index.html");
 
         // 双击返回键退出
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
