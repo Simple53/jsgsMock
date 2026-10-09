@@ -684,6 +684,62 @@
       gap: 8px;
     }
 
+    /* 重点新题与答案订正标签及提示条 (扁平无阴影设计) */
+    .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      border: 1px solid transparent;
+      vertical-align: middle;
+    }
+    .badge-tag.update-tag {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+    .badge-tag.new-tag {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+    .sub-new-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+    }
+    .answer-update-alert-card {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #fef2f2;
+      border: 1.5px solid #f87171;
+      border-radius: 10px;
+      color: #7f1d1d;
+    }
+    .answer-update-alert-title {
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .answer-update-alert-desc {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #991b1b;
+    }
+
     /* 官方解析 */
     .fenbi-analysis-box {
       border: 1.5px solid var(--border);
@@ -2608,6 +2664,14 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div class="count-pill active" id="modalModeStudy" onclick="setModalMode('study')">背题模式 (立见解析)</div>
           <div class="count-pill" id="modalModeExam" onclick="setModalMode('exam')">做题模式 (交卷查看)</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">出题范围</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="count-pill active" id="modalScopeAll" onclick="setModalScope('all')">全量题目练习</div>
+          <div class="count-pill" id="modalScopeNew" onclick="setModalScope('new')">重点新题与订正专练</div>
         </div>
       </div>
 
@@ -4722,13 +4786,18 @@
           actionText = "继续上次";
         }
 
+        const newQuestionsCount = qList.filter(q => q.isNew || q.isAnswerUpdated).length;
+
         const card = document.createElement("div");
         card.className = "subject-card";
         card.innerHTML = `
           <div class="sub-left">
             <div class="sub-bullet-circle"><svg viewBox="0 0 24 24"><use href="#icon-check"/></svg></div>
             <div class="sub-info-col">
-              <div class="sub-name">${sub}</div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <div class="sub-name">${sub}</div>
+                ${newQuestionsCount > 0 ? `<span class="sub-new-pill">含${newQuestionsCount}道重点更新</span>` : ''}
+              </div>
               <div class="sub-meta-row">
                 <div class="stars-group">${starsHtml}</div>
                 <span class="sub-progress-count">${answeredCount}/${total}</span>
@@ -4767,9 +4836,14 @@
     // ==========================================
     // 智能抽题算法 (优先出未做题、自动顺延上次进度、单次练习严格去重)
     // ==========================================
-    function selectQuestionsForPractice(sub, batchSize = 15, isShuffle = false) {
-      const fullList = allSubjectsData[sub] || [];
+    function selectQuestionsForPractice(sub, batchSize = 15, isShuffle = false, scope = 'all') {
+      let fullList = allSubjectsData[sub] || [];
       if (fullList.length === 0) return [];
+
+      if (scope === 'new') {
+        fullList = fullList.filter(q => q.isNew || q.isAnswerUpdated);
+        if (fullList.length === 0) return [];
+      }
 
       // 1. 区分未作答题目与已作答题目
       const unanswered = [];
@@ -4922,6 +4996,7 @@
 
       // 回显当前存储的偏好配置
       setModalMode(appConfig.defaultMode || 'study');
+      setModalScope('all');
       
       const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
       modalSelectedBatch = batch;
@@ -4947,6 +5022,15 @@
       } else {
         submitBtn.textContent = "保存自定义设置";
       }
+    }
+
+    let modalSelectedScope = 'all';
+    function setModalScope(scope) {
+      modalSelectedScope = scope;
+      const elAll = document.getElementById("modalScopeAll");
+      const elNew = document.getElementById("modalScopeNew");
+      if (elAll) elAll.classList.toggle("active", scope === 'all');
+      if (elNew) elNew.classList.toggle("active", scope === 'new');
     }
 
     function closeStartQuizModal() { document.getElementById("startQuizModal").classList.remove("open"); }
@@ -4995,9 +5079,13 @@
       userStore.openedSubjects[targetSub] = true;
       currentExamId = null;
 
-      activeQuestions = selectQuestionsForPractice(targetSub, modalSelectedBatch, !!appConfig.randomShuffle);
+      activeQuestions = selectQuestionsForPractice(targetSub, modalSelectedBatch, !!appConfig.randomShuffle, modalSelectedScope);
       if (activeQuestions.length === 0) {
-        alert("本科目暂无题目！");
+        if (modalSelectedScope === 'new') {
+          alert(`【${targetSub}】本科目暂无标注的重点新题或答案订正题，建议选择“全量题目练习”！`);
+        } else {
+          alert("本科目暂无题目！");
+        }
         return;
       }
 
@@ -5229,9 +5317,37 @@
         `;
       }
 
+      let updateAlertHtml = "";
+      if (q.isAnswerUpdated) {
+        updateAlertHtml = `
+          <div class="answer-update-alert-card">
+            <div class="answer-update-alert-title">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#b91c1c;"><use href="#icon-alert"/></svg>
+              <span>重点考点 · 2026最新答案已订正</span>
+            </div>
+            <div class="answer-update-alert-desc">
+              本题经最新 Word 题库校对，标准答案为 <strong>【${q.answer}】</strong>${q.oldAnswer ? ` (原旧版错误答案为: ${q.oldAnswer})` : ''}，请着重对比记忆！
+            </div>
+          </div>
+        `;
+      } else if (q.isNew) {
+        updateAlertHtml = `
+          <div class="answer-update-alert-card" style="background:#eff6ff;border-color:#93c5fd;color:#1e40af;">
+            <div class="answer-update-alert-title" style="color:#1d4ed8;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#1d4ed8;"><use href="#icon-bulb"/></svg>
+              <span>全新考题 · 2026大纲新增题</span>
+            </div>
+            <div class="answer-update-alert-desc" style="color:#1e40af;">
+              本题为最新题库补充的全新考题，紧扣核心考点，请务必掌握！
+            </div>
+          </div>
+        `;
+      }
+
       let analysisBlock = "";
       if (showAnswer) {
         analysisBlock = `
+          ${updateAlertHtml}
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
               <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
@@ -5271,9 +5387,19 @@
         `;
       }
 
+      let badgeHtml = "";
+      if (q.isAnswerUpdated) {
+        badgeHtml = `<span class="badge-tag update-tag">答案订正</span>`;
+      } else if (q.isNew) {
+        badgeHtml = `<span class="badge-tag new-tag">全新考题</span>`;
+      }
+
       container.innerHTML = `
         <div class="quiz-header-meta">
-          <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
+            ${badgeHtml}
+          </div>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
         </div>
         <div class="q-text-body">${q.question}</div>
@@ -6869,11 +6995,12 @@
           const qKey = getQKey(q);
           const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
           const revCnt = eb.reviewCount || 0;
+          const badge = q.isAnswerUpdated ? '<span class="badge-tag update-tag">答案订正</span> ' : (q.isNew ? '<span class="badge-tag new-tag">全新考题</span> ' : '');
           const card = document.createElement("div");
           card.className = "exam-paper-card";
           card.innerHTML = `
             <div>
-              <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${q.question.slice(0, 32)}...</div>
+              <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${badge}${q.question.slice(0, 30)}...</div>
               <div class="exam-paper-desc">题型: ${q.typeName} | 艾宾浩斯复习: ${revCnt} 轮</div>
             </div>
             <div style="display:flex;gap:8px;">
@@ -6912,12 +7039,13 @@
         const qKey = getQKey(q);
         const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
         const revCnt = eb.reviewCount || 0;
+        const badge = q.isAnswerUpdated ? '<span class="badge-tag update-tag">答案订正</span> ' : (q.isNew ? '<span class="badge-tag new-tag">全新考题</span> ' : '');
         const card = document.createElement("div");
         card.className = "exam-paper-card";
         // 需求4: 错题本不直接出答案，避免提前剧透
         card.innerHTML = `
           <div>
-            <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${q.question.slice(0, 32)}...</div>
+            <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${badge}${q.question.slice(0, 30)}...</div>
             <div class="exam-paper-desc">题型: ${q.typeName} | 艾宾浩斯复习: ${revCnt} 轮</div>
           </div>
           <div style="display:flex;gap:8px;">
