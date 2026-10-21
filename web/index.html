@@ -523,6 +523,20 @@
       font-weight: 600;
       color: var(--text-main);
       word-break: break-word;
+    }
+    .quiz-blank-underline {
+      display: inline-block;
+      min-width: 48px;
+      border-bottom: 2px solid var(--primary);
+      margin: 0 4px;
+      vertical-align: baseline;
+      background: rgba(37, 99, 235, 0.08);
+      border-radius: 2px 2px 0 0;
+      padding: 0 4px;
+      line-height: 1.2;
+      text-align: center;
+      color: var(--primary);
+      font-weight: 700;
     }
 
     /* 选项 */
@@ -5402,7 +5416,7 @@
           </div>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
         </div>
-        <div class="q-text-body">${q.question}</div>
+        <div class="q-text-body">${renderQuestionText(q.question)}</div>
         ${optionsHtml}
         ${ebbinghausFeedbackBar}
         ${analysisBlock}
@@ -5985,6 +5999,12 @@
 
     function escapeHtml(str) {
       return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function renderQuestionText(str) {
+      if (!str) return "";
+      const escaped = escapeHtml(str);
+      return escaped.replace(/_{2,}/g, '<span class="quiz-blank-underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
     }
 
     // 需求2: 点击首页顶栏收藏 icon，直接加载所有收藏题目并进入练习版面
