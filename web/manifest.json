@@ -1,7 +1,7 @@
 {
-  "name": "file2quiz",
-  "short_name": "file2quiz",
-  "description": "文件智能转化题库与刷题助手",
+  "name": "jsgsMock",
+  "short_name": "jsgsMock",
+  "description": "江苏高校教师岗前培训刷题与教程",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

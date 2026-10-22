@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     } else {
                         mLastBackPressTime = now;
-                        Toast.makeText(MainActivity.this, "再按一次退出 file2quiz 刷题宝", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "再按一次退出 jsgsMock", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

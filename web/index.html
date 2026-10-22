@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>file2quiz - 智能刷题与AI解析</title>
+  <title>jsgsMock - 江苏高校教师岗前练习</title>
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="quiz_data.js"></script>
+  <script src="course_videos.js"></script>
   <style>
     /* =========================================
-       file2quiz 纯扁平设计体系 (No Shadow, No Gradient, No Emoji)
+       jsgsMock 纯扁平设计体系 (No Shadow, No Gradient, No Emoji)
        ========================================= */
     :root {
       --primary: #2563eb;         /* 品牌蓝 */
@@ -1066,7 +1068,7 @@
     }
 
     /* =========================================
-       首页：每日动态汇总与金句左右滑动 Banner
+       首页：每日考点
        ========================================= */
     .banner-carousel-container {
       padding: 12px 20px 6px;
@@ -1719,6 +1721,21 @@
       flex-direction: column;
       gap: 12px;
     }
+    .settings-menu-row,.wrong-compact-row,.video-lesson-row{width:100%;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text-main);text-align:left;cursor:pointer}
+    .settings-menu-row{display:flex;align-items:center;justify-content:space-between;padding:17px 4px;font:inherit}
+    .settings-menu-row strong{font-size:14px}.settings-menu-row small{display:block;color:var(--text-muted);font-size:12px;margin-top:3px}
+    .settings-back{border:0;background:none;color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;margin-right:10px}
+    .wrong-compact-row{display:flex;align-items:center;gap:12px;padding:10px 2px;line-height:1.45}
+    .wrong-compact-row:focus-visible,.settings-menu-row:focus-visible,.video-lesson-row:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+    .wrong-compact-row .row-index{min-width:24px;color:var(--text-muted);font-size:12px}
+    .wrong-compact-row .row-main{flex:1;min-width:0}.wrong-compact-row .row-title{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .wrong-compact-row .row-meta{display:block;font-size:11px;color:var(--text-muted);margin-top:2px}
+    .video-lesson-row{padding:11px 2px;font-size:13px}
+    .video-lesson-row:hover,.wrong-compact-row:hover,.settings-menu-row:hover{background:var(--primary-light)}
+    .home-video-entry{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 16px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--card-bg);color:var(--text-main);text-align:left;cursor:pointer}
+    .home-video-entry .svg-icon{width:22px;height:22px;color:var(--primary)}
+    .home-video-entry span:nth-child(2){flex:1}.home-video-entry strong,.home-video-entry small{display:block}.home-video-entry small{color:var(--text-muted);font-size:12px;margin-top:2px}
+    .home-video-entry:hover{background:var(--primary-light)}
     .textbook-card {
       border: 1.5px solid var(--border);
       border-radius: 12px;
@@ -2013,7 +2030,7 @@
         <line x1="6" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <line x1="6" y1="16" x2="11" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </g>
-      <!-- 金句引用 -->
+      <!-- 引用图标 -->
       <g id="icon-quote">
         <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-2 8z" fill="currentColor"/>
         <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 1.25.75 2 2 2 0 4-1 6-2 8z" fill="currentColor"/>
@@ -2049,6 +2066,7 @@
         <line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
       </g>
+      <g id="icon-play"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="m10 8 6 4-6 4z" fill="currentColor"/></g>
       <!-- 最小化/折叠 -->
       <g id="icon-minus">
         <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
@@ -2059,7 +2077,7 @@
   <div class="app-viewport">
 
     <!-- =======================================
-         TAB 1: 练习 (首页: 每日动态与金句轮播 Banner + 打卡/搜索)
+         TAB 1: 首页 (每日考点 + 打卡/搜索)
          ======================================= -->
     <div class="view-content-pane" id="panePractice">
       <!-- 首页头部：标题状态 + 右侧更新/打卡/搜索图标 (无 Emoji, 不显过期日期) -->
@@ -2068,17 +2086,13 @@
           <!-- 默认状态：标题与功能图标 -->
           <div class="home-header-normal-row" id="homeHeaderNormalRow">
             <div>
-              <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">时政研学要点</div>
-              <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">最新重要会议与金句动态</div>
+              <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">jsgsMock</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">今日考点 · 开始练习</div>
             </div>
             <div class="header-icons-row">
               <!-- 收藏题目入口 -->
               <button class="header-icon-btn" onclick="startFavoritesQuizDirect()" title="我的收藏题目">
                 <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
-              </button>
-              <!-- 检索更新最新重要金句 -->
-              <button class="header-icon-btn" onclick="searchOnlineLatestMottoAndNews()" title="检索/刷新最新重要会议金句">
-                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
               </button>
               <!-- 打卡图标 -->
               <button class="header-icon-btn" onclick="handleDailyCheckin()" title="每日打卡">
@@ -2114,7 +2128,7 @@
         <div id="inlineSearchResultsList" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
 
-      <!-- 需求2：每日动态汇总与每日金句左右滑动 Banner -->
+      <!-- 每日随机考点，从题库答案解析提取 -->
       <div class="banner-carousel-container">
         <div class="banner-viewport" id="bannerViewport">
           <div class="banner-track" id="bannerTrack">
@@ -2123,6 +2137,12 @@
         </div>
         <div class="banner-dots-row" id="bannerDotsRow"></div>
       </div>
+
+      <button class="home-video-entry" type="button" onclick="openTutorialVideos()">
+        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-play"/></svg>
+        <span><strong>视频课程</strong><small>按科目观看 123 节课程</small></span>
+        <span aria-hidden="true">›</span>
+      </button>
 
       <nav class="capsule-nav">
         <span class="capsule-item active" onclick="filterCategory('all', this)">全部科目 (5科)</span>
@@ -2147,8 +2167,8 @@
     <div class="view-content-pane" id="paneTextbook" style="display:none;">
       <header class="home-top-header" style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <span style="font-size:18px;font-weight:800;">权威教材与考点讲义</span>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">支持在线加载与本地 EPUB，内置考点全文检索</div>
+          <span style="font-size:18px;font-weight:800;">教程</span>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">教材阅读与课程视频</div>
         </div>
         <label class="custom-fab-btn" style="padding:6px 12px;font-size:12px;cursor:pointer;">
           <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-upload"/></svg>
@@ -2158,6 +2178,15 @@
       </header>
 
       <div style="padding:14px 20px 80px;">
+        <section id="tutorialVideosPane">
+          <h2 style="font-size:16px;margin:0 0 8px;">视频课程</h2>
+          <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">课程视频需联网观看</div>
+          <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;background:#111;border-radius:8px;margin-bottom:12px;"></video>
+          <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;margin-bottom:12px;"></div>
+          <div id="tutorialVideoCatalog"></div>
+        </section>
+        <section id="tutorialBooksPane" style="margin-top:24px;">
+        <h2 style="font-size:16px;margin:0 0 10px;">教材与讲义</h2>
         <!-- 搜索栏 -->
         <div style="display:flex;gap:8px;margin-bottom:14px;">
           <div style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;">
@@ -2171,6 +2200,7 @@
 
         <!-- 教材卡片列表 -->
         <div class="textbook-grid" id="textbookCardsContainer"></div>
+        </section>
       </div>
     </div>
 
@@ -2342,60 +2372,59 @@
         </div>
 
         <!-- 需求4：设置板块内置完整 AI 配置专区 (无 Emoji, 纯扁平) -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+        <div class="ai-settings-panel" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:6px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
-              <span>AI 大模型与深度解析配置</span>
+              <span>AI 助教</span>
             </div>
             <span style="font-size:11px;color:var(--primary);font-weight:700;" id="settingsActiveProviderLabel">当前激活：DeepSeek</span>
           </div>
-          <div style="font-size:12px;color:var(--text-muted);margin:4px 0 10px;">支持主流大模型自由切换，数据完全保存在手机本地</div>
+          <div style="font-size:12px;color:var(--text-muted);margin:8px 0 16px;">选择服务商、填写密钥、选好模型后保存</div>
 
           <!-- 需求3：悬浮 AI 助教全局开启/关闭 -->
           <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--border);">
             <div>
-              <div style="font-size:13px;font-weight:700;">启用悬浮 AI 助教 (多轮对话)</div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">刷题时可在右下角唤起悬浮助教自由追问</div>
+              <div style="font-size:13px;font-weight:700;">练习中显示助教入口</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">可随时追问当前题目</div>
             </div>
             <input type="checkbox" id="settingEnableFloatingAi" style="width:20px;height:20px;" onchange="toggleFloatingAiSetting(this.checked)">
           </div>
 
           <!-- 切换供应商纯文字按钮组 (无复杂icon, 纯文字按钮) -->
           <div style="margin-top:12px;">
-            <div style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">选择配置的供应商：</div>
-            <div class="dropdown-btn-grid" id="settingsProviderBtnGrid"></div>
+            <label for="settingsProviderSelect" style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;display:block;">1 · 服务商</label>
+            <select id="settingsProviderSelect" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-main);font-size:14px;" onchange="changeSettingsProvider(this.value)"></select>
           </div>
 
           <!-- API Base URL -->
-          <div style="margin-top:12px;">
+          <div class="ai-advanced-option" style="margin-top:12px;display:none;">
             <label style="font-size:12px;font-weight:700;color:var(--text-sub);">API 端点 (Base URL)</label>
             <input id="settingsProviderBaseUrl" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;">
           </div>
 
           <!-- API Key -->
           <div style="margin-top:10px;">
-            <label style="font-size:12px;font-weight:700;color:var(--text-sub);">API 密钥 (API Key)</label>
+            <label for="settingsProviderApiKey" style="font-size:12px;font-weight:700;color:var(--text-sub);">2 · API 密钥</label>
             <input id="settingsProviderApiKey" type="password" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 sk-xxxx">
           </div>
 
           <!-- 该供应商已配置模型（支持配置多个模型并自由切换默认，做题时也可快速切换） -->
           <div style="margin-top:12px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">已配置模型列表 (点击切换默认)</label>
-              <span style="font-size:11px;color:var(--text-muted);">做题时仅显示此列表</span>
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">3 · 使用模型</label>
             </div>
             <div id="settingsConfiguredModelsBox" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
             
             <!-- 添加自定义模型输入行 -->
-            <div style="display:flex;gap:6px;align-items:center;">
+            <div class="ai-advanced-option" style="display:none;gap:6px;align-items:center;">
               <input id="settingsNewModelInput" style="flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入模型名称 (如: deepseek-reasoner, claude-3-5-sonnet)..." onkeydown="if(event.key==='Enter')addSettingsCustomModel()">
               <button class="text-name-btn" style="padding:6px 12px;font-size:12px;color:var(--primary);border-color:var(--primary-border);white-space:nowrap;" onclick="addSettingsCustomModel()">+ 添加模型</button>
             </div>
           </div>
 
           <!-- 在线获取与推荐模型库 -->
-          <div style="margin-top:12px;border-top:1px dashed var(--border);padding-top:10px;">
+          <div class="ai-advanced-option" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
               <label style="font-size:12px;font-weight:700;color:var(--text-sub);">推荐与在线模型库 (点击加入已配置)</label>
               <button class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);" onclick="fetchSettingsProviderModelsOnline()">在线获取全部</button>
@@ -2406,6 +2435,8 @@
 
           <!-- 当前激活模型字段 -->
           <input type="hidden" id="settingsProviderSelectedModel">
+
+          <button type="button" class="text-name-btn" style="width:100%;padding:8px;font-size:12px;margin-top:8px;" onclick="toggleAiAdvancedOptions(this)" aria-expanded="false">高级设置：端点与模型管理 ›</button>
 
           <!-- 保存按钮 -->
           <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
@@ -2447,7 +2478,7 @@
             </div>
             <div id="gistHelpPanel" style="display:none;font-size:11.5px;color:var(--text-muted);line-height:1.6;background:var(--primary-light);padding:8px 10px;border-radius:6px;margin-bottom:8px;">
               1. 登录 GitHub ➔ 点击右上角头像 ➔ Settings ➔ Developer Settings ➔ Personal access tokens ➔ Tokens (classic)；<br>
-              2. 点击 Generate new token，名称填 file2quiz，<strong>仅勾选 [x] gist 权限</strong>并生成；<br>
+              2. 点击 Generate new token，名称填 jsgsMock，<strong>仅勾选 [x] gist 权限</strong>并生成；<br>
               3. 将生成的 ghp_xxxx 密钥填入下方，手机电脑填相同 Token 即可随时云同步！
             </div>
             <div style="display:flex;gap:6px;margin-bottom:8px;">
@@ -2497,6 +2528,13 @@
             </label>
             <button class="bottom-btn" style="flex:1;padding:10px;font-size:13px;" onclick="exportCurrentQuizData()">导出当前题库</button>
           </div>
+        </div>
+
+        <!-- 历史做题记录深度恢复 -->
+        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+          <div style="font-size:14px;font-weight:700;">导出做题记录</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">下载 CSV，包含题目编号、作答、对错和时间</div>
+          <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="exportAnswerRecords()">导出 CSV</button>
         </div>
 
         <!-- 历史做题记录深度恢复 -->
@@ -2616,11 +2654,11 @@
     <div class="bottom-tabbar" id="bottomTabbar">
       <button class="tabbar-item active" id="tabBtnPractice" onclick="switchBottomTab('practice')">
         <svg viewBox="0 0 24 24"><use href="#icon-book"/></svg>
-        <span>练习</span>
+        <span>首页</span>
       </button>
       <button class="tabbar-item" id="tabBtnTextbook" onclick="switchBottomTab('textbook')">
         <svg viewBox="0 0 24 24"><use href="#icon-textbook"/></svg>
-        <span>教材</span>
+        <span>教程</span>
       </button>
       <button class="tabbar-item" id="tabBtnWrong" onclick="switchBottomTab('wrong')">
         <svg viewBox="0 0 24 24"><use href="#icon-wrong-book"/></svg>
@@ -2755,41 +2793,6 @@
         </div>
       </div>
       <button class="modal-submit-btn" onclick="createAndSaveExamPaper()">生成并保存至试卷库</button>
-    </div>
-  </div>
-
-  <!-- =======================================
-       需求2：每日动态汇总与金句详情弹窗
-       ======================================= -->
-  <div class="modal-mask" id="bannerDetailModal" onclick="closeBannerDetailModal(event)">
-    <div class="modal-panel" onclick="event.stopPropagation()" style="max-height:82vh;overflow-y:auto;">
-      <div class="modal-top-row">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="banner-tag" id="modalBannerTypeTag">重要会议动态</span>
-          <span style="font-size:11px;color:var(--text-muted);" id="modalBannerDate"></span>
-        </div>
-        <button class="modal-close-icon" onclick="closeBannerDetailModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
-      </div>
-
-      <div style="font-size:16px;font-weight:900;line-height:1.45;color:var(--text-main);" id="modalBannerTitle"></div>
-      <div style="font-size:12px;color:var(--text-sub);margin:4px 0 10px;" id="modalBannerSource"></div>
-
-      <div style="font-size:12px;font-weight:800;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:4px;">
-        <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--primary);"><use href="#icon-news"/></svg>
-        <span>核心论述与会议内容</span>
-      </div>
-      <div style="font-size:13.5px;line-height:1.75;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px;color:var(--text-main);white-space:pre-wrap;" id="modalBannerContent"></div>
-
-      <div style="font-size:12px;font-weight:800;color:var(--text-main);margin:14px 0 6px;display:flex;align-items:center;gap:4px;">
-        <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--correct);"><use href="#icon-star"/></svg>
-        <span>考试考点结合与备考启示</span>
-      </div>
-      <div style="font-size:13px;line-height:1.7;color:var(--text-sub);background:var(--primary-light);border:1.5px solid var(--primary-border);border-radius:10px;padding:12px;" id="modalBannerExamPoints"></div>
-
-      <div style="display:flex;gap:10px;margin-top:14px;">
-        <button class="bottom-btn" style="flex:1;font-size:13px;" onclick="copyBannerText()">复制内容</button>
-        <button class="modal-submit-btn" style="flex:1;padding:10px;font-size:13px;" onclick="closeBannerDetailModal()">已学习掌握</button>
-      </div>
     </div>
   </div>
 
@@ -2959,309 +2962,30 @@
 
   <script>
     // ==========================================
-    // 需求1: 每日动态汇总与重要金句库 (不显过期年份，支持联网检索/AI更新)
+    // 每日从答案解析中选取一个考点
     // ==========================================
-    let DAILY_BANNER_DATA = [
-      {
-        id: "news_1",
-        type: "news",
-        typeLabel: "重要会议精神",
-        tag: "教育强国战略",
-        title: "全国教育大会重要讲话精神",
-        summary: "紧紧围绕立德树人根本任务，朝着建成教育强国战略目标扎实迈进。坚持把立德树人作为检验学校一切工作的根本标准。",
-        source: "新华社 · 全国教育大会",
-        content: `全国教育大会重要讲话精神指引：
-1. 教育是强国建设、民族复兴之基。我们要建成的教育强国，是中国特色社会主义教育强国，应当具有强大的思政引领力、人才竞争力、科技支撑力、民生保障力、社会协同力、国际影响力。
-2. 紧紧围绕立德树人根本任务，着眼于培养德智体美劳全面发展的社会主义建设者和接班人。坚持把立德树人作为检验学校一切工作的根本标准。
-3. 统筹实施科教兴国战略、人才强国战略、创新驱动发展战略，一体推进教育发展、科技创新、人才培养。
-4. 实施教育家精神铸魂强师行动，加强师德师风建设，提高教师培养培训质量，培养造就新时代高水平教师队伍。`,
-        examPoints: `【高校教资与综合素质核心考点】
-1. 教育的根本任务：立德树人（单选、辨析高频考点）。
-2. 教育强国六大特质：思政引领力、人才竞争力、科技支撑力、民生保障力、社会协同力、国际影响力。
-3. 教师队伍建设要求：大力弘扬教育家精神，坚持师德师风第一标准。`
-      },
-      {
-        id: "quote_1",
-        type: "quote",
-        typeLabel: "新时代金句",
-        tag: "师德素养",
-        title: "做学生为学、为事、为人的“大先生”",
-        summary: "“教师不能只做传授书本知识的教书匠，而要成为塑造学生品格、品行、品味的‘大先生’。”",
-        source: "高校教师队伍建设重要论述",
-        content: `重要论述与谆谆嘱托：
-“老师应该有言为士则、行为世范的自觉，不断提高自身道德修养，以模范行为影响和带动学生，做学生为学、为事、为人的大先生，致力于成为具有方向明、主义真、学问高、德行正的‘经师’和‘人师’的统一者。”
-
-“好的学校特色各不过，但有一条是共同的，那就是都有一支优秀教师队伍。对教师来说，想把学生培养成什么样的人，自己首先就应该成为什么样的人。”`,
-        examPoints: `【高校教师职业道德高频考点】
-1. 教师角色的升华：从“教书匠”到“大先生”、“经师”与“人师”相统一。
-2. 示范性与榜样力量：言为士则、行为世范，为人师表，以身作则。
-3. 主观题踩分词：道德修养、言传身教、为人师表、立德树人。`
-      },
-      {
-        id: "news_2",
-        type: "news",
-        typeLabel: "重要政策文件",
-        tag: "高素质专业化",
-        title: "大力弘扬教育家精神 加强新时代教师队伍建设",
-        summary: "将教育家精神融入教师培养全过程，坚持师德师风第一标准，深化教师评价改革，强化教师待遇保障。",
-        source: "权威指导意见 · 教师队伍建设部署",
-        content: `新时代教师队伍建设核心指导意见：
-1. 总体要求：全面贯彻党的教育方针，把加强教师队伍建设作为建设教育强国最重要的基础工作来抓。
-2. 弘扬教育家精神的六大内涵：
-   - 心有大我、至诚报国的理想信念；
-   - 言为士则、行为世范的道德情操；
-   - 启智润心、因材施教的育人智慧；
-   - 勤学笃行、求是创新的躬耕态度；
-   - 乐教爱生、甘于奉献的仁爱之心；
-   - 胸怀天下、以文化人的弘道追求。
-3. 健全师德师风长效机制，强化师德考评与师德失范“零容忍”。`,
-        examPoints: `【综合素质与师德高频必背】
-1. 教育家精神六个维度：理想信念、道德情操、育人智慧、躬耕态度、仁爱之心、弘道追求（简答、案例分析必考！）。
-2. 师德评价机制：师德表现为第一标准，实行师德表现一票否决制。`
-      },
-      {
-        id: "quote_2",
-        type: "quote",
-        typeLabel: "新时代金句",
-        tag: "立德树人",
-        title: "做好老师的“四有”标准与仁爱之心",
-        summary: "“一个人遇到好老师是人生的幸运，一个学校拥有好老师是学校的光荣，一个民族源源不断涌现出一批又一批好老师是民族的希望。”",
-        source: "新时代教育思想论述",
-        content: `做好老师的四条标准：
-第一，做好老师，要有理想信念。广大教师要用好课堂讲坛，用好校园阵地，用自己的行动倡导社会主义核心价值观。
-第二，做好老师，要有道德情操。老师的人格力量和人格魅力是成功教育的重要基础。
-第三，做好老师，要有扎实学识。水之积也不厚，则其负大舟也无力。教师必须具备扎实深厚的学识。
-第四，做好老师，要有仁爱之心。爱是教育的灵魂，没有爱就没有教育。好老师应该是仁师，用爱培育爱、激发爱、传播爱。`,
-        examPoints: `【高校教资《教师职业道德规范》核心考点】
-1. 四有好老师标准：有理想信念、有道德情操、有扎实学识、有仁爱之心。
-2. “爱是教育的灵魂”：对应“关爱学生”职业道德规范。
-3. 综合素质作文与材料分析题万能金句。`
-      },
-      {
-        id: "news_3",
-        type: "news",
-        typeLabel: "重要会议精神",
-        tag: "高等教育龙头",
-        title: "中央政治局会议：加快建设高质量教育体系",
-        summary: "建设教育强国，基点在基础教育，龙头是高等教育。把服务高质量发展作为建设教育强国的重要任务。",
-        source: "权威发布 · 教育战略前沿",
-        content: `加快建设教育强国战略部署：
-1. 建设教育强国，是全面建成社会主义现代化强国的战略先导，是实现高水平科技自立自强的重要支撑，是促进全体人民共同富裕的有效途径。
-2. 建设教育强国，基点在基础教育，龙头是高等教育。要把加快建设中国特色、世界一流的大学和优势学科作为重中之重。
-3. 推进教育数字化，建设全民终身学习的学习型社会、学习型大国。`,
-        examPoints: `【高等教育学与教育政策考点】
-1. 教育强国的“基点”与“龙头”：基点在基础教育，龙头在高等教育（单选核心考点）。
-2. 高等教育的核心任务：服务国家战略需求与高质量发展，建设中国特色、世界一流大学和优势学科（双一流）。`
-      }
-    ];
-
-    let currentBannerIndex = 0;
-    let bannerTimer = null;
-
-    function renderBannerCarousel() {
-      const track = document.getElementById("bannerTrack");
-      const dotsRow = document.getElementById("bannerDotsRow");
-      if (!track || !dotsRow) return;
-
-      track.innerHTML = "";
-      dotsRow.innerHTML = "";
-
-      DAILY_BANNER_DATA.forEach((item, idx) => {
-        const slide = document.createElement("div");
-        slide.className = "banner-slide";
-        slide.onclick = () => openBannerDetailModal(idx);
-
-        const isNews = (item.type === "news");
-        slide.innerHTML = `
-          <div class="banner-badge-row">
-            <span class="banner-tag ${isNews ? 'news' : ''}">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px;"><use href="${isNews ? '#icon-news' : '#icon-quote'}"/></svg>
-              ${item.typeLabel}
-            </span>
-            <span class="banner-date">${item.tag || '重点研学'}</span>
-          </div>
-          <div class="banner-title">${item.title}</div>
-          <div class="banner-summary">${item.summary}</div>
-          <div class="banner-foot-row">
-            <span>${item.source}</span>
-            <span class="banner-action-link">研读详情 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg></span>
-          </div>
-        `;
-        track.appendChild(slide);
-
-        const dot = document.createElement("div");
-        dot.className = `banner-dot ${idx === currentBannerIndex ? 'active' : ''}`;
-        dot.onclick = (e) => {
-          e.stopPropagation();
-          goToBannerSlide(idx);
-        };
-        dotsRow.appendChild(dot);
-      });
-
-      updateBannerPosition();
-      initBannerSwiper();
-      startBannerAutoPlay();
-    }
-
-    function updateBannerPosition() {
-      const track = document.getElementById("bannerTrack");
-      if (track) {
-        track.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
-      }
-      const dots = document.querySelectorAll(".banner-dot");
-      dots.forEach((d, i) => d.classList.toggle("active", i === currentBannerIndex));
-    }
-
-    function goToBannerSlide(idx) {
-      currentBannerIndex = (idx + DAILY_BANNER_DATA.length) % DAILY_BANNER_DATA.length;
-      updateBannerPosition();
-    }
-
-    function startBannerAutoPlay() {
-      if (bannerTimer) clearInterval(bannerTimer);
-      bannerTimer = setInterval(() => {
-        goToBannerSlide(currentBannerIndex + 1);
-      }, 6000);
-    }
-
-    function stopBannerAutoPlay() {
-      if (bannerTimer) {
-        clearInterval(bannerTimer);
-        bannerTimer = null;
-      }
-    }
-
-    // Banner 左右触摸滑动手势
-    function initBannerSwiper() {
-      const viewport = document.getElementById("bannerViewport");
-      if (!viewport || viewport.dataset.swipeBound) return;
-      viewport.dataset.swipeBound = "1";
-
-      let startX = 0, startY = 0, currentX = 0, isTouching = false;
-
-      viewport.addEventListener("touchstart", (e) => {
-        isTouching = true;
-        stopBannerAutoPlay();
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      }, { passive: true });
-
-      viewport.addEventListener("touchmove", (e) => {
-        if (!isTouching) return;
-        currentX = e.touches[0].clientX;
-      }, { passive: true });
-
-      viewport.addEventListener("touchend", (e) => {
-        if (!isTouching) return;
-        isTouching = false;
-        const diffX = currentX - startX;
-        const diffY = (e.changedTouches[0].clientY) - startY;
-        if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
-          if (diffX < 0) {
-            goToBannerSlide(currentBannerIndex + 1);
-          } else {
-            goToBannerSlide(currentBannerIndex - 1);
-          }
-        }
-        startBannerAutoPlay();
-      }, { passive: true });
-    }
-
-    // 查看 Banner 详情模态框 (不显示固定过期年份)
-    let activeBannerIdx = 0;
-    function openBannerDetailModal(idx) {
-      stopBannerAutoPlay();
-      activeBannerIdx = idx;
-      const item = DAILY_BANNER_DATA[idx];
-      if (!item) return;
-
-      const isNews = (item.type === "news");
-      const tagEl = document.getElementById("modalBannerTypeTag");
-      tagEl.textContent = item.typeLabel;
-      tagEl.className = `banner-tag ${isNews ? 'news' : ''}`;
-      
-      document.getElementById("modalBannerDate").textContent = item.tag || '重点研学';
-      document.getElementById("modalBannerTitle").textContent = item.title;
-      document.getElementById("modalBannerSource").textContent = `出处：${item.source}`;
-      document.getElementById("modalBannerContent").textContent = item.content;
-      document.getElementById("modalBannerExamPoints").textContent = item.examPoints;
-
-      document.getElementById("bannerDetailModal").classList.add("open");
-    }
-
-    function closeBannerDetailModal() {
-      document.getElementById("bannerDetailModal").classList.remove("open");
-      startBannerAutoPlay();
-    }
-
-    function copyBannerText() {
-      const item = DAILY_BANNER_DATA[activeBannerIdx];
-      if (!item) return;
-      const textToCopy = `【${item.title}】\n来源：${item.source}\n\n${item.content}\n\n${item.examPoints}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          alert("已成功复制重要论述与考点解析到剪贴板！");
-        }).catch(() => {
-          alert("复制成功！");
-        });
-      } else {
-        alert("已选取内容！");
-      }
-    }
-
-    // 需求1: 联网检索或使用 AI 提取最新重要会议金句
-    async function searchOnlineLatestMottoAndNews() {
-      const activeProv = userStore.activeProvider || "deepseek";
-      const cfg = userStore.providersConfig[activeProv] || {};
-
-      if (cfg.apiKey) {
-        const btn = event?.currentTarget;
-        let origTxt = "";
-        if (btn) {
-          origTxt = btn.innerHTML;
-          btn.innerHTML = `<svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-clock"/></svg>`;
-        }
-
-        try {
-          const prompt = `请作为时政与教育学专家，输出1条针对2026年高校教资与新时代教育强国建设最新的重要会议论述或习近平总书记关于教师、立德树人的核心金句。严格按以下 JSON 格式输出，不要输出任何其他文本：
-{"type":"news","typeLabel":"最新时政要点","tag":"2026前沿热点","title":"标题","summary":"2句话核心摘要","source":"权威出处","content":"完整讲话论述","examPoints":"考试关联考点"}`;
-
-          const resp = await fetch(`${cfg.baseUrl.replace(/\/+$/, '')}/chat/completions`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${cfg.apiKey}`
-            },
-            body: JSON.stringify({
-              model: cfg.model,
-              messages: [{ role: "user", content: prompt }],
-              temperature: 0.7
-            })
-          });
-
-          if (resp.ok) {
-            const data = await resp.json();
-            const raw = data.choices?.[0]?.message?.content || "";
-            const cleanJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(cleanJson);
-            if (parsed.title) {
-              DAILY_BANNER_DATA.unshift(parsed);
-              renderBannerCarousel();
-              alert(`已通过 ${PROVIDERS[activeProv].name} 在线检索并更新最新时政金句！`);
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn("AI 生成最新金句失败，回退到本地轮换", e);
-        } finally {
-          if (btn) btn.innerHTML = origTxt;
-        }
-      }
-
-      // 本地智能轮换
-      DAILY_BANNER_DATA.push(DAILY_BANNER_DATA.shift());
-      renderBannerCarousel();
-      alert("已更新并置顶最新一条研学论述与重要金句！");
+    function renderDailyPoint() {
+      const points = Object.entries(allSubjectsData).flatMap(([subject, questions]) =>
+        questions.flatMap(q => {
+          const analysis = String(q.analysis || '').replace(/\s+/g, ' ').trim();
+          const sentence = analysis.match(/[^。！？]{15,90}[。！？]/)?.[0]?.trim();
+          return sentence ? [{subject, sentence}] : [];
+        })
+      );
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      let seed = 0;
+      for (const char of dayKey) seed = (seed * 31 + char.charCodeAt(0)) >>> 0;
+      const point = points[seed % points.length];
+      const track = document.getElementById('bannerTrack');
+      const slide = document.createElement('div');
+      slide.className = 'banner-slide';
+      slide.innerHTML = '<div class="banner-badge-row"><span class="banner-tag">每日一句</span><span class="banner-date">来自答案解析</span></div><div class="banner-title">今日考点</div><div class="banner-summary"></div><div class="banner-foot-row"><span></span><span>每天更新</span></div>';
+      slide.querySelector('.banner-summary').textContent = point?.sentence || '题库加载后将在这里展示今日考点。';
+      slide.querySelector('.banner-foot-row span').textContent = point?.subject || '';
+      track.replaceChildren(slide);
+      track.style.transform = 'none';
+      document.getElementById('bannerDotsRow').replaceChildren();
     }
 
     // ==========================================
@@ -3505,21 +3229,24 @@
 
     function loadUserStore() {
       // 1. 尝试读取当前标准 key
-      const s = localStorage.getItem("file2quiz_v3_store");
+      const s = localStorage.getItem("jsgsMock_v3_store") || localStorage.getItem("file2quiz_v3_store");
       if (s) {
         try { userStore = { ...userStore, ...JSON.parse(s) }; } catch (e) {}
       }
-      const c = localStorage.getItem("file2quiz_v3_cfg");
+      const c = localStorage.getItem("jsgsMock_v3_cfg") || localStorage.getItem("file2quiz_v3_cfg");
       if (c) {
         try { appConfig = { ...appConfig, ...JSON.parse(c) }; } catch (e) {}
       }
 
       // 2. 深度扫描并自动迁移可能存在的历史存储版本 (包括 v2, core, duxue 等)
       const legacyCandidateKeys = [
+        "jsgsMock_v2_store",
+        "jsgsMock_core_store",
         "file2quiz_v2_store",
         "file2quiz_core_store",
+        "file2quiz_user_state",
         "duxue_quiz_store",
-        "file2quiz_user_state"
+        "jsgsMock_user_state"
       ];
       legacyCandidateKeys.forEach(ck => {
         const legacyVal = localStorage.getItem(ck);
@@ -3638,8 +3365,8 @@
     }
 
     function saveUserStore(skipCloudSync = false) {
-      localStorage.setItem("file2quiz_v3_store", JSON.stringify(userStore));
-      localStorage.setItem("file2quiz_v3_cfg", JSON.stringify(appConfig));
+      localStorage.setItem("jsgsMock_v3_store", JSON.stringify(userStore));
+      localStorage.setItem("jsgsMock_v3_cfg", JSON.stringify(appConfig));
       if (!skipCloudSync) {
         debouncedCloudSync();
       }
@@ -3776,7 +3503,7 @@
       try {
         let gistId = cfg.gistId;
 
-        // 如果没有记录过 gistId，先搜索用户的 gist 列表寻找名为 file2quiz_sync_store 的已有备份
+        // 如果没有记录过 gistId，先搜索用户的 gist 列表寻找名为 jsgsMock_sync_store 的已有备份
         if (!gistId) {
           const listResp = await fetch("https://api.github.com/gists?per_page=30", {
             headers: {
@@ -3786,7 +3513,7 @@
           });
           if (listResp.ok) {
             const listData = await listResp.json();
-            const found = listData.find(g => g.description && g.description.includes("file2quiz_sync_store"));
+            const found = listData.find(g => g.description && (g.description.includes("jsgsMock_sync_store") || g.description.includes("file2quiz_sync_store")));
             if (found) {
               gistId = found.id;
               cfg.gistId = gistId;
@@ -3797,7 +3524,7 @@
         }
 
         const payloadFiles = {
-          "file2quiz_store.json": {
+          "jsgsMock_store.json": {
             content: JSON.stringify(userStore, null, 2)
           }
         };
@@ -3812,7 +3539,7 @@
           });
           if (getResp.ok) {
             const gistData = await getResp.json();
-            const f = gistData.files && gistData.files["file2quiz_store.json"];
+            const f = gistData.files && (gistData.files["jsgsMock_store.json"] || gistData.files["file2quiz_store.json"]);
             if (f && f.content) {
               try {
                 const remoteStore = JSON.parse(f.content);
@@ -3824,7 +3551,7 @@
           }
 
           // 2. 将最新本地合并结果更新回 Gist
-          payloadFiles["file2quiz_store.json"].content = JSON.stringify(userStore, null, 2);
+          payloadFiles["jsgsMock_store.json"].content = JSON.stringify(userStore, null, 2);
           const patchResp = await fetch(`https://api.github.com/gists/${gistId}`, {
             method: "PATCH",
             headers: {
@@ -3833,7 +3560,7 @@
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              description: "file2quiz_sync_store (多端同步数据云端备份)",
+              description: "jsgsMock_sync_store (多端同步数据云端备份)",
               files: payloadFiles
             })
           });
@@ -3848,7 +3575,7 @@
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              description: "file2quiz_sync_store (多端同步数据云端备份)",
+              description: "jsgsMock_sync_store (多端同步数据云端备份)",
               public: false,
               files: payloadFiles
             })
@@ -4019,11 +3746,11 @@
       try {
         const jsonStr = JSON.stringify(snapshot);
         const token = btoa(unescape(encodeURIComponent(jsonStr)));
-        navigator.clipboard.writeText("FILE2QUIZ_SYNC:" + token).then(() => {
+        navigator.clipboard.writeText("JSGSMOCK_SYNC:" + token).then(() => {
           showToast("已成功复制同步口令到剪贴板！");
           alert("同步口令已复制！\n\n请在另一台设备（如手机）的【粘贴口令合并】中粘贴，即可瞬间完成合并。");
         }).catch(() => {
-          prompt("请手动复制下方同步口令：", "FILE2QUIZ_SYNC:" + token);
+          prompt("请手动复制下方同步口令：", "JSGSMOCK_SYNC:" + token);
         });
       } catch (e) {
         alert("生成同步口令失败: " + e.message);
@@ -4032,9 +3759,9 @@
 
     // 粘贴口令合并
     function importSyncToken() {
-      const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 FILE2QUIZ_SYNC: 开头)：");
+      const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 JSGSMOCK_SYNC: 开头)：");
       if (!input) return;
-      const clean = input.trim().replace(/^FILE2QUIZ_SYNC:/, '');
+      const clean = input.trim().replace(/^(JSGSMOCK|FILE2QUIZ)_SYNC:/, '');
       try {
         const jsonStr = decodeURIComponent(escape(atob(clean)));
         const data = JSON.parse(jsonStr);
@@ -4134,13 +3861,13 @@
         Object.assign(allSubjectsData, userStore.customSubjects);
       }
 
-      // 初始化日期与研学副标题
+      // 初始化首页日期
       const now = new Date();
       const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
       const subEl = document.getElementById("homeDateSub");
-      if (subEl) subEl.textContent = `${dateStr} · 左右滑动浏览最新会议动态与金句`;
+      if (subEl) subEl.textContent = `${dateStr} · 每日一条答案解析`;
 
-      renderBannerCarousel();
+      renderDailyPoint();
       renderSubjectList();
       updateCheckinUI();
       initDraftCanvasWithUndo();
@@ -4148,6 +3875,7 @@
       initPcNavigation();
       renderSavedExams();
       renderTextbookCards();
+      renderTutorialVideos();
       updateSettingsUI();
 
       // 启动时后台静默同步一次局域网历史记录
@@ -4477,6 +4205,7 @@
     // 底部 5 栏导航切换
     // ==========================================
     function switchBottomTab(tab) {
+      if (tab !== 'textbook') document.getElementById('tutorialVideoPlayer')?.pause();
       ['panePractice', 'paneTextbook', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -4494,6 +4223,7 @@
         document.getElementById('paneTextbook').style.display = 'flex';
         document.getElementById('tabBtnTextbook').classList.add('active');
         renderTextbookCards();
+        renderTutorialVideos();
       } else if (tab === 'wrong') {
         document.getElementById('paneWrong').style.display = 'flex';
         document.getElementById('tabBtnWrong').classList.add('active');
@@ -4510,7 +4240,106 @@
         document.getElementById('paneSettings').style.display = 'flex';
         document.getElementById('tabBtnSettings').classList.add('active');
         updateSettingsUI();
+        openSettingsSection('menu');
       }
+    }
+
+    const SETTINGS_SECTIONS = [
+      ['checkin','学习记录','打卡日历与学习热力图'],
+      ['mode','做题偏好','默认答题模式'],
+      ['ai','AI 助教','模型、密钥与悬浮助教'],
+      ['theme','外观','跟随系统主题'],
+      ['sync','同步','跨设备合并学习进度'],
+      ['bank','题库管理','导入与导出题目'],
+      ['export','做题记录导出','下载 CSV 表格'],
+      ['restore','记录恢复','找回本机历史记录'],
+      ['reset','重置数据','清空本机学习进度']
+    ];
+    function openSettingsSection(section) {
+      const pane = document.getElementById('paneSettings');
+      const host = pane.querySelector('.home-top-header + div');
+      let menu = document.getElementById('settingsMenu');
+      if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'settingsMenu';
+        menu.innerHTML = SETTINGS_SECTIONS.map(([id,title,desc]) =>
+          `<button class="settings-menu-row" onclick="openSettingsSection('${id}')"><span><strong>${title}</strong><small>${desc}</small></span><span aria-hidden="true">›</span></button>`).join('');
+        host.prepend(menu);
+      }
+      const heading = pane.querySelector('.home-top-header');
+      heading.innerHTML = section === 'menu'
+        ? '<span style="font-size:18px;font-weight:800">设置</span>'
+        : `<button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回设置">‹ 返回</button><span style="font-size:18px;font-weight:800">${SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置'}</span>`;
+      menu.style.display = section === 'menu' ? 'block' : 'none';
+      SETTINGS_SECTIONS.forEach(([id], index) => {
+        const item = host.children[index + 1];
+        if (item) item.style.display = id === section ? '' : 'none';
+      });
+      if (section === 'sync') {
+        const syncCard = host.children[5];
+        syncCard.querySelectorAll(':scope > div').forEach((part, i) => {
+          if (i === 4 || i === 5) part.style.display = 'none';
+        });
+        if (!document.getElementById('syncMoreButton')) {
+          const more = document.createElement('button');
+          more.id = 'syncMoreButton'; more.className = 'settings-menu-row';
+          more.innerHTML = '<span><strong>其他同步方式</strong><small>局域网与离线口令</small></span><span aria-hidden="true">›</span>';
+          more.onclick = () => { syncCard.querySelectorAll(':scope > div').forEach((part, i) => { if (i === 4 || i === 5) part.style.display = part.style.display === 'none' ? '' : 'none'; }); };
+          syncCard.appendChild(more);
+        }
+      }
+      pane.scrollTop = 0;
+    }
+
+    function exportAnswerRecords() {
+      const rows = [['题目ID','作答','是否正确','作答时间']];
+      Object.entries(userStore.answers || {}).forEach(([key, record]) => {
+        rows.push([key, Array.isArray(record.chosen) ? record.chosen.join('|') : (record.chosen ?? ''), record.isCorrect ? '正确' : '错误', record.time ? new Date(record.time).toLocaleString('zh-CN') : '']);
+      });
+      const csv = '\uFEFF' + rows.map(row => row.map(value => `"${String(value).replaceAll('"','""')}"`).join(',')).join('\r\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+      link.download = 'jsgsMock-做题记录.csv'; link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }
+
+    function openTutorialVideos() {
+      switchBottomTab('textbook');
+      document.getElementById('tutorialVideosPane').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function renderTutorialVideos() {
+      const catalog = document.getElementById('tutorialVideoCatalog');
+      if (catalog.dataset.ready) return;
+      catalog.dataset.ready = '1';
+      const courses = window.COURSE_VIDEOS || [];
+      document.getElementById('tutorialVideoNotice').textContent = courses.length
+        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节视频 · ${courses.some(c => c.lessons.some(l => l.url)) ? '播放时需要网络连接' : '压缩与部署完成后可在线播放'}`
+        : '尚未部署课程视频，请先生成并上传压缩视频。';
+      courses.forEach(course => {
+        const group = document.createElement('details');
+        group.style.cssText = 'border-bottom:1px solid var(--border);padding:12px 0';
+        const summary = document.createElement('summary');
+        summary.style.cssText = 'cursor:pointer;font-weight:700;font-size:14px';
+        summary.textContent = `${course.title} · ${course.lessons.length} 节`;
+        group.appendChild(summary);
+        course.lessons.forEach(lesson => {
+          const button = document.createElement('button');
+          button.className = 'video-lesson-row'; button.textContent = lesson.title;
+          button.onclick = () => {
+            if (!lesson.url) {
+              showToast('视频尚未部署，请稍后观看');
+              return;
+            }
+            const player = document.getElementById('tutorialVideoPlayer');
+            player.src = lesson.url; player.style.display = 'block';
+            document.getElementById('tutorialVideoTitle').textContent = `${course.title} · ${lesson.title}`;
+            player.load(); player.play().catch(() => {});
+            player.scrollIntoView({behavior:'smooth',block:'start'});
+          };
+          group.appendChild(button);
+        });
+        catalog.appendChild(group);
+      });
     }
 
 
@@ -5998,6 +5827,7 @@
       if (dd) dd.classList.remove("open");
       exitQuizToHome();
       switchBottomTab('settings');
+      openSettingsSection('ai');
     }
 
     // 全局点击空白处收起顶部 AI 下拉菜单
@@ -6511,19 +6341,23 @@
     }
 
     function renderSettingsProviderPills() {
-      const grid = document.getElementById("settingsProviderBtnGrid");
-      if (!grid) return;
-      grid.innerHTML = "";
-      Object.keys(PROVIDERS).forEach(k => {
-        const btn = document.createElement("div");
-        btn.className = `text-name-btn ${k === editingSettingsProviderKey ? 'active' : ''}`;
-        btn.textContent = PROVIDERS[k].name;
-        btn.onclick = () => {
-          editingSettingsProviderKey = k;
-          renderSettingsProviderPills();
-          loadSettingsProviderForm(k);
-        };
-        grid.appendChild(btn);
+      const select = document.getElementById('settingsProviderSelect');
+      if (!select) return;
+      select.replaceChildren(...Object.keys(PROVIDERS).map(key => new Option(PROVIDERS[key].name, key)));
+      select.value = editingSettingsProviderKey;
+    }
+
+    function changeSettingsProvider(key) {
+      editingSettingsProviderKey = key;
+      loadSettingsProviderForm(key);
+    }
+
+    function toggleAiAdvancedOptions(button) {
+      const expanded = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(expanded));
+      button.textContent = expanded ? '收起高级设置 ∧' : '高级设置：端点与模型管理 ›';
+      document.querySelectorAll('.ai-settings-panel .ai-advanced-option').forEach(el => {
+        el.style.display = expanded ? (el.querySelector('#settingsNewModelInput') ? 'flex' : 'block') : 'none';
       });
     }
 
@@ -7149,7 +6983,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allSubjectsData, null, 2));
       const a = document.createElement('a');
       a.setAttribute("href", dataStr);
-      a.setAttribute("download", `file2quiz_backup_${Date.now()}.json`);
+      a.setAttribute("download", `jsgsMock_backup_${Date.now()}.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -7266,20 +7100,7 @@
           const qKey = getQKey(q);
           const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
           const revCnt = eb.reviewCount || 0;
-          const badge = q.isAnswerUpdated ? '<span class="badge-tag update-tag">答案订正</span> ' : (q.isNew ? '<span class="badge-tag new-tag">全新考题</span> ' : '');
-          const card = document.createElement("div");
-          card.className = "exam-paper-card";
-          card.innerHTML = `
-            <div>
-              <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${badge}${q.question.slice(0, 30)}...</div>
-              <div class="exam-paper-desc">题型: ${q.typeName} | 艾宾浩斯复习: ${revCnt} 轮</div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="toggleFavoriteFromList('${qKey}', event)">移出</button>
-              <button class="bottom-btn primary" style="padding:4px 12px;font-size:12px;" onclick="startSingleFavQuiz('${qKey}')">做题</button>
-            </div>
-          `;
-          container.appendChild(card);
+          appendCompactQuestion(container, q, idx, revCnt, () => startSingleFavQuiz(qKey));
         });
         return;
       }
@@ -7310,22 +7131,20 @@
         const qKey = getQKey(q);
         const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
         const revCnt = eb.reviewCount || 0;
-        const badge = q.isAnswerUpdated ? '<span class="badge-tag update-tag">答案订正</span> ' : (q.isNew ? '<span class="badge-tag new-tag">全新考题</span> ' : '');
-        const card = document.createElement("div");
-        card.className = "exam-paper-card";
-        // 需求4: 错题本不直接出答案，避免提前剧透
-        card.innerHTML = `
-          <div>
-            <div class="exam-paper-title">${idx + 1}. [${q.subject}] ${badge}${q.question.slice(0, 30)}...</div>
-            <div class="exam-paper-desc">题型: ${q.typeName} | 艾宾浩斯复习: ${revCnt} 轮</div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="removeSingleWrong('${qKey}', event)">移出</button>
-            <button class="bottom-btn primary" style="padding:4px 12px;font-size:12px;" onclick="startSingleWrongQuiz('${qKey}')">做题</button>
-          </div>
-        `;
-        container.appendChild(card);
+        appendCompactQuestion(container, q, idx, revCnt, () => startSingleWrongQuiz(qKey));
       });
+    }
+
+    function appendCompactQuestion(container, q, index, reviews, open) {
+      const row = document.createElement('button');
+      row.className = 'wrong-compact-row'; row.type = 'button';
+      row.setAttribute('aria-label', `复习第${index + 1}题：${q.question}`);
+      const number = document.createElement('span'); number.className = 'row-index'; number.textContent = index + 1;
+      const main = document.createElement('span'); main.className = 'row-main';
+      const title = document.createElement('span'); title.className = 'row-title'; title.textContent = q.question;
+      const meta = document.createElement('span'); meta.className = 'row-meta'; meta.textContent = `${q.subject} · ${q.typeName} · 复习 ${reviews} 轮`;
+      main.append(title, meta); row.append(number, main);
+      row.onclick = open; container.appendChild(row);
     }
 
     function toggleFavoriteFromList(qKey, evt) {
@@ -7582,7 +7401,7 @@
           <div style="font-weight:800;margin-bottom:4px;color:var(--primary);">3. 终极免电脑方案：GitHub Pages (随时随地秒开)</div>
           <div style="font-size:12px;color:var(--text-sub);">
             在线公网访问地址：<br>
-            <a href="https://simple53.github.io/file2quiz/" target="_blank" style="color:var(--primary);font-weight:700;text-decoration:none;">https://simple53.github.io/file2quiz/</a><br>
+            <a href="https://simple53.github.io/jsgsMock/" target="_blank" style="color:var(--primary);font-weight:700;text-decoration:none;">https://simple53.github.io/jsgsMock/</a><br>
             手机无需电脑开机、4G/5G 均能秒开，且支持离线添加到主屏幕！
           </div>
         </div>

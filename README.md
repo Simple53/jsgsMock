@@ -1,21 +1,44 @@
-# file2quiz
+# jsgsMock
 
-> 将各种文档/题库（PDF）转换为现代化移动端离线刷题应用。**纯扁平化设计、无渐变、无任何阴影、杜绝任何 Emoji**，采用全套精巧原生 SVG 矢量图标。深度支持时政金句联网与无过期年份展示、做题模式顶栏 AI 纯文字菜单、一键 AI 解析按钮与悬浮名师助教多轮对话、设置板块内置完整 AI 配置、每日打卡统计、全局题目搜索、艾宾浩斯遗忘曲线复习、全真模拟组卷保存、学情考分预测、AI 品牌多服务商与外部题库导入。
+## Cloudflare 免费托管：Pages 网页 + R2 视频
 
-- 📦 **GitHub 仓库**：[Simple53/file2quiz](https://github.com/Simple53/file2quiz)
-- 📱 **安卓客户端下载**：前往 [Releases 页面](https://github.com/Simple53/file2quiz/releases) 即可直接下载并安装 `file2quiz.apk`，离线秒开刷题！
+教程页已收录本地课程视频目录中的 5 门课程、123 节视频。仓库仅保存课程目录；视频文件不提交到 Git，也不由 PWA 离线缓存。
+
+先安装 `uv`，在项目根目录执行：
+
+```powershell
+uv run --with imageio-ffmpeg python build_course_videos.py --source "G:\onedrive\smallprjs\test\course_video_webbook\videos" --output web/videos --base-url ./videos
+```
+
+脚本将视频转换为 480p H.264 / AAC 单声道，完成后生成 `web/course_videos.js`。压缩期间可中断并重跑，已完成文件会跳过。`web/videos` 可用于本地预览。
+
+1. 注册 Cloudflare，进入 **R2 object storage**，完成 R2 开通流程。创建 `jsgsmock-videos` 存储桶，选择 **Standard** 存储类别。免费额度是每月 10 GB 存储、100 万次写入操作、1000 万次读取操作；超额会计费。
+2. 在 R2 中创建可写入该桶的 API Token，记录 Account ID、Access Key ID、Secret Access Key。安装 AWS CLI 后，运行 `aws configure --profile jsgsmock-r2`，按提示输入这两个密钥，region 填 `auto`。不要把密钥提交到仓库。
+3. 在项目根目录上传压缩视频，保留原有课程文件夹和文件名：
+
+```powershell
+aws s3 sync web/videos s3://jsgsmock-videos/ --endpoint-url https://<ACCOUNT_ID>.r2.cloudflarestorage.com --profile jsgsmock-r2 --content-type video/mp4
+```
+
+4. 在桶的 **Settings → Public Development URL** 启用公开测试地址，取得形如 `https://...r2.dev` 的 URL。该地址适合测试；正式大量访问应给 R2 绑定自有域名。确认一个视频 URL 可直接打开后，重新运行上面的压缩命令，把 `--base-url ./videos` 换为桶的公开 HTTPS 地址。已压缩文件会跳过，此次只更新课程目录 URL。
+5. 将更新后的 `web/course_videos.js` 提交到 GitHub。Cloudflare **Workers & Pages → Create → Pages → Connect to Git** 选择 `Simple53/jsgsMock`，不填构建命令，输出目录填 `web`。首次部署后可用 `*.pages.dev` 域名访问。后续推送会自动部署。
+
+网页和视频分开托管：Pages 单文件上限 25 MiB，压缩视频放 R2 更合适。打开网页后在教程页点视频测试播放及拖动进度条。
+
+请确认拥有这些课程视频的公开分发权限后再启用公开存储。
+
+> 江苏高校教师岗前培训刷题应用。首页展示从题库答案解析中选出的每日考点，并提供视频课程入口；支持做题、错题复习、教材阅读、AI 助教和学习记录导出。
+
+- 📦 **GitHub 仓库**：[Simple53/jsgsMock](https://github.com/Simple53/jsgsMock)
+- 📱 **安卓客户端下载**：前往 [Releases 页面](https://github.com/Simple53/jsgsMock/releases) 即可直接下载并安装 `jsgsMock.apk`，离线秒开刷题！
 - 🛠 **开发与运行环境**：现代极速包管理器 **uv** (Python 3.13) / Android SDK (Gradle 8.5)
 
 ---
 
 ## 一、 核心功能特色
 
-### 1. 首页与时政研学 Banner
-- 📰 **重要会议精神与金句轮播 Banner (不显过期年份，支持 2026 最新联网检索)**：
-  - 彻底去除过去写死的年份日期，采用“新时代金句”、“高等教育龙头”等专题研学标签；
-  - 顶栏配备检索更新按钮，调用配置的 AI 模型在线提取针对 2026 年高校教资与新时代教育强国建设最新的核心讲话与会议精神；
-  - 支持**手指触摸左右滑动**平滑切屏与 6 秒自动循环轮播；
-  - 点击卡片弹出全景研读弹窗，深入研读会议原文与**高校教资与综合素质考试核心考点结合解析**，支持一键复制。
+### 1. 首页与每日考点
+- 每天从题库答案解析中选出一句考点，同一天保持一致；首页直达视频课程。
 - 📅 **纯矢量 Icon 打卡、星标收藏与全局题目搜索**：
   - 每日打卡图标（未完成带提示红点）；
   - 星标收藏专属入口（点击一键聚合全部收藏题目并载入练习工作台）；
@@ -53,9 +76,9 @@
 - 📊 **学情数据与考分预测**：根据已练题量和正确率，给出 100 分制 AI 智能预测分与等级建议。
 - 👤 **个人设置**：打卡统计看板（连续天数、总天数与近 7 天打卡点阵）、默认做题模式、外观跟随系统、题库导入/导出。
 
-### 5. 权威教材专区与 EPUB 沉浸式阅读考点检索
+### 5. 教程专区：教材阅读与视频课程
 - 📚 **权威教材全景书架**：
-  - 底部专属【教材】导航栏，收录《高等教育学》、《高等教育心理学》、《高校教师职业道德修养》、《高等教育法规概论》等核心统编教材；
+  - 底部【教程】导航栏，集中展示教材与视频课程，收录《高等教育学》、《高等教育心理学》、《高校教师职业道德修养》、《高等教育法规概论》等核心统编教材；
   - 支持导入本地 `.epub` 电子书或联网检索匹配对应专业教材。
 - 📖 **沉浸式 EPUB 考点阅读器**：
   - 支持纯前端解析 EPUB 章节目录树、字号缩放调节、翻页与阅读进度记录；
@@ -86,7 +109,7 @@
 
 ### 1. 为什么在 GitHub 网页上做题无法直接连局域网电脑？
 - 电脑控制台显示的 `10.x.x.x:8080` 是**局域网私网 IP**，仅在手机和电脑连接同一个 Wi-Fi 或热点时可达；
-- 当在 GitHub Pages（`https://simple53.github.io/file2quiz/`）公网访问时，手机可能处于 4G/5G 移动网络，且浏览器因安全策略（Mixed Content）会禁止从 HTTPS 公网直接向 HTTP 内网发请求。
+- 当在 GitHub Pages（`https://simple53.github.io/jsgsMock/`）公网访问时，手机可能处于 4G/5G 移动网络，且浏览器因安全策略（Mixed Content）会禁止从 HTTPS 公网直接向 HTTP 内网发请求。
 
 ### 2. 全场景多端双向同步方案（手机与电脑实时互通）
 为满足不同场景，设置板块提供了 **3 大多端同步通道**：
@@ -107,10 +130,10 @@
 - **原生添加到主屏幕 (PWA)**：在 Safari 或 Chrome 点击“添加到主屏幕”，无需开启电脑，甚至**在手机断网、完全无信号的情况下也能离线秒开刷题**！
 
 #### 开启步骤：
-1. 打开您的 GitHub 仓库：[Simple53/file2quiz](https://github.com/Simple53/file2quiz)；
+1. 打开您的 GitHub 仓库：[Simple53/jsgsMock](https://github.com/Simple53/jsgsMock)；
 2. 进入 **Settings** ➔ **Pages**；
 3. 在 **Build and deployment** 下方的 **Source** 选择：
    - **GitHub Actions**（推荐，仓库内已内置 `.github/workflows/deploy.yml` 自动打包发布 `web/`）；
    - 或选择 **Deploy from a branch** ➔ 分支选 `main` ➔ 目录选 `/ (root)`。
 4. 部署完成后，即可在手机浏览器打开专属的全球公网链接：
-   `https://simple53.github.io/file2quiz/`
+   `https://simple53.github.io/jsgsMock/`

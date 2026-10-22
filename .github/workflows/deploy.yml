@@ -1,8 +1,6 @@
-name: Deploy file2quiz to GitHub Pages
+name: Deploy jsgsMock to GitHub Pages
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
 
 permissions:

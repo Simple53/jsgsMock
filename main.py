@@ -1,5 +1,5 @@
 def main():
-    print("Hello from dev-file2quiz!")
+    print("Hello from dev-jsgsMock!")
 
 
 if __name__ == "__main__":

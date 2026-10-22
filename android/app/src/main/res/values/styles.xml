@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.File2Quiz" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.JsgsMock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">#f8fafc</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">#ffffff</item>

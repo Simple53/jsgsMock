@@ -1,9 +1,10 @@
-const CACHE_NAME = 'file2quiz-v19';
+const CACHE_NAME = 'jsgsMock-v21';
 const ASSETS = [
   './',
   './index.html',
   './quiz_data.json',
   './quiz_data.js',
+  './course_videos.js',
   './manifest.json',
   './icon.svg'
 ];
@@ -33,6 +34,9 @@ self.addEventListener('activate', (event) => {
 // HTML 页面采用网络优先 (Network-First)，断网时回退离线缓存；静态资源缓存优先
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
+
+  // 视频体积较大，交给浏览器原生流式播放，不进入 PWA 离线缓存。
+  if (event.request.destination === 'video' || /\.mp4(?:\?|$)/i.test(url)) return;
 
   // 外部 AI API 及后端同步接口 /api/ 请求直接穿透
   if (url.includes('/api/') || url.includes('/chat/completions') || url.includes('/models') || url.includes('openrouter.ai')) {

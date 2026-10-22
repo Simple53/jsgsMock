@@ -8,6 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+.uv-cache/
+web/videos/
+sample_*.mp4
+video-compress*.log
 
 # User sync state
 user_sync_store.json

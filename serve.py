@@ -248,7 +248,7 @@ def main():
     ips = get_all_ips()
 
     print("=" * 60)
-    print("  file2quiz 移动端刷题助手服务已就绪！")
+    print("  jsgsMock 移动端刷题助手服务已就绪！")
     print("=" * 60)
     print("  电脑本机访问:  http://localhost:%d" % PORT)
     print("  手机局域网/Wi-Fi 请访问:")
