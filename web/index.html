@@ -2517,6 +2517,17 @@
           <div style="font-size:11px;color:var(--text-muted);margin-top:12px;" id="lastSyncTimeText">上次同步：未进行</div>
         </div>
 
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+          <div style="font-size:14px;font-weight:700;">学习记录备份与恢复</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">导入旧 file2quiz 的备份文件，合并做题、错题、收藏与打卡记录；不包含 AI 密钥。</div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="bottom-btn" style="flex:1;padding:9px;font-size:13px;" onclick="exportLearningBackup()">下载备份</button>
+            <label class="bottom-btn primary" style="flex:1;padding:9px;font-size:13px;text-align:center;cursor:pointer;">导入备份
+              <input type="file" accept=".json,application/json" style="display:none;" onchange="importLearningBackup(event)">
+            </label>
+          </div>
+        </div>
+
         <!-- 题库导入与更新 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">题库导入与更新</div>
@@ -3731,6 +3742,43 @@
       }
     }
 
+    // 跨站点备份仅包含学习进度，不导出同步令牌或 AI 密钥。
+    function exportLearningBackup() {
+      const fields = ['answers', 'favorites', 'wrongBook', 'ebbinghausWrong', 'checkin', 'dailyActivity', 'unfinishedSessions'];
+      const store = Object.fromEntries(fields.map(key => [key, userStore[key] ?? (key === 'favorites' ? [] : {})]));
+      const payload = { format: 'file2quiz-learning-backup', version: 1, exportedAt: new Date().toISOString(), store };
+      const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `jsgsMock-learning-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function importLearningBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        if (file.size > 20 * 1024 * 1024) throw new Error('备份文件超过 20 MB');
+        const payload = JSON.parse(await file.text());
+        const store = payload?.store;
+        if (payload.format !== 'file2quiz-learning-backup' || payload.version !== 1 || !store ||
+            !store.answers || typeof store.answers !== 'object' || Array.isArray(store.answers) ||
+            Object.values(store.answers).some(value => !value || typeof value !== 'object' || Array.isArray(value))) {
+          throw new Error('不是有效的学习记录备份');
+        }
+        mergeRemoteUserStore(store);
+        normalizeUserStoreKeys();
+        saveUserStore(true);
+        alert(`已合并备份中的 ${Object.keys(store.answers).length} 条做题记录，页面将刷新。`);
+        location.reload();
+      } catch (error) {
+        alert(`导入失败：${error.message}`);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
     // 复制同步口令 (离线快照)
     function exportSyncToken() {
       const snapshot = {
@@ -4250,6 +4298,7 @@
       ['ai','AI 助教','模型、密钥与悬浮助教'],
       ['theme','外观','跟随系统主题'],
       ['sync','同步','跨设备合并学习进度'],
+      ['backup','备份与恢复','迁移旧站学习记录'],
       ['bank','题库管理','导入与导出题目'],
       ['export','做题记录导出','下载 CSV 表格'],
       ['restore','记录恢复','找回本机历史记录'],
