@@ -2548,13 +2548,6 @@
           <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="exportAnswerRecords()">导出 CSV</button>
         </div>
 
-        <!-- 历史做题记录深度恢复 -->
-        <div style="border:1.5px solid var(--primary);border-radius:12px;padding:14px;margin-bottom:14px;background:rgba(37,99,235,0.03);">
-          <div style="font-size:14px;font-weight:700;color:var(--primary);">历史做题记录深度恢复</div>
-          <div style="font-size:12px;color:var(--text-sub);margin-top:2px;line-height:1.5;">若因版本升级或切换环境导致本地做题记录未展示，点击此按钮可全盘检索本地浏览器所有历史缓存并无损恢复。</div>
-          <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="scanAndRestoreAllLocalHistory()">一键扫描并恢复本地历史记录</button>
-        </div>
-
         <!-- 清空重置数据 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;color:var(--wrong);">重置数据</div>
@@ -5247,13 +5240,17 @@
       const isExam = (appConfig.quizMode === 'exam');
 
       // 错题本做题：不直接出答案，需作答或点击模糊/忘记反馈后才展开答案与解析
+      // 背题模式 (study)：直接高亮显示正确答案并展开权威解析
+      const isStudyMode = (appConfig.quizMode === 'study');
       let showAnswer = false;
       if (isWrongSession) {
         showAnswer = !!wrongSessionRevealed[qKey];
       } else if (isExam) {
         showAnswer = isExamSubmitted;
+      } else if (isStudyMode) {
+        showAnswer = true;
       } else {
-        showAnswer = (userAnsRec !== undefined);
+        showAnswer = (userAnsRec !== undefined && userAnsRec !== null);
       }
 
       const isMulti = (q.type === 'multiple' || q.type === 'multi' || (q.answer && q.answer.length > 1 && q.type !== 'judge'));
@@ -5272,16 +5269,14 @@
       if (q.type === 'judge') {
         let yesClass = "judge-flat-btn";
         let noClass = "judge-flat-btn";
-        if (userAnsRec) {
-          if (showAnswer) {
-            if (q.answer === '对') yesClass += " status-correct";
-            else if (userAnsRec.chosen === '对') yesClass += " status-wrong";
-            if (q.answer === '错') noClass += " status-correct";
-            else if (userAnsRec.chosen === '错') noClass += " status-wrong";
-          } else {
-            if (userAnsRec.chosen === '对') yesClass += " exam-selected";
-            if (userAnsRec.chosen === '错') noClass += " exam-selected";
-          }
+        if (showAnswer) {
+          if (q.answer === '对') yesClass += " status-correct";
+          else if (userAnsRec && userAnsRec.chosen === '对') yesClass += " status-wrong";
+          if (q.answer === '错') noClass += " status-correct";
+          else if (userAnsRec && userAnsRec.chosen === '错') noClass += " status-wrong";
+        } else if (userAnsRec) {
+          if (userAnsRec.chosen === '对') yesClass += " exam-selected";
+          if (userAnsRec.chosen === '错') noClass += " exam-selected";
         }
         optionsHtml = `
           <div class="judge-btn-grid">
@@ -5290,29 +5285,28 @@
           </div>
         `;
       } else if (isMulti) {
-        // 多选题：复选框架构，未点击确认提交前绝不提前判题
+        // 多选题：复选框架构，严格按 A, B, C, D 顺序渲染
         optionsHtml = `<div class="quiz-options-col">`;
         const ansLetters = (q.answer || '').split('');
         const chosenLetters = userAnsRec ? (userAnsRec.chosen || '').split('') : Array.from(currentMultiSelection);
 
-        for (const [letter, text] of Object.entries(q.options || {})) {
+        const optKeys = ['A', 'B', 'C', 'D'].filter(k => q.options && q.options[k] !== undefined);
+        for (const letter of optKeys) {
+          const text = q.options[letter];
           let rowClass = "option-row";
           let isChecked = false;
 
-          if (userAnsRec) {
-            // 已作答 (已提交)
-            isChecked = chosenLetters.includes(letter);
-            if (showAnswer) {
-              if (ansLetters.includes(letter)) {
-                rowClass += " status-correct";
-              } else if (isChecked) {
-                rowClass += " status-wrong";
-              }
-            } else {
-              if (isChecked) rowClass += " exam-selected";
+          if (showAnswer) {
+            isChecked = chosenLetters.includes(letter) || (isStudyMode && ansLetters.includes(letter));
+            if (ansLetters.includes(letter)) {
+              rowClass += " status-correct";
+            } else if (userAnsRec && chosenLetters.includes(letter)) {
+              rowClass += " status-wrong";
             }
+          } else if (userAnsRec) {
+            isChecked = chosenLetters.includes(letter);
+            if (isChecked) rowClass += " exam-selected";
           } else {
-            // 答题中 (未提交)：自由勾选/反选
             isChecked = currentMultiSelection.has(letter);
             if (isChecked) rowClass += " multi-selected";
           }
@@ -5345,17 +5339,17 @@
           `;
         }
       } else {
-        // 单选题
+        // 单选题：严格按 A, B, C, D 顺序渲染
         optionsHtml = `<div class="quiz-options-col">`;
-        for (const [letter, text] of Object.entries(q.options || {})) {
+        const optKeys = ['A', 'B', 'C', 'D'].filter(k => q.options && q.options[k] !== undefined);
+        for (const letter of optKeys) {
+          const text = q.options[letter];
           let rowClass = "option-row";
-          if (userAnsRec) {
-            if (showAnswer) {
-              if (q.answer.includes(letter)) rowClass += " status-correct";
-              else if (userAnsRec.chosen.includes(letter)) rowClass += " status-wrong";
-            } else {
-              if (userAnsRec.chosen.includes(letter)) rowClass += " exam-selected";
-            }
+          if (showAnswer) {
+            if (q.answer.includes(letter)) rowClass += " status-correct";
+            else if (userAnsRec && userAnsRec.chosen && userAnsRec.chosen.includes(letter)) rowClass += " status-wrong";
+          } else if (userAnsRec) {
+            if (userAnsRec.chosen && userAnsRec.chosen.includes(letter)) rowClass += " exam-selected";
           }
           optionsHtml += `
             <div class="${rowClass}" onclick="handleAnswerSelect('${letter}')">
