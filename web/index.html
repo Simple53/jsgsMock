@@ -10,6 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="quiz_data_official_2026.js"></script>
   <script src="quiz_data.js"></script>
   <script src="course_videos.js"></script>
   <style>
@@ -732,6 +733,45 @@
       color: #b91c1c;
       border-color: #fecaca;
     }
+    
+    .badge-tag.ai-tag {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .bank-switch-wrap {
+      margin: 10px 0 12px;
+    }
+    .bank-switch-segmented {
+      display: flex;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .bank-switch-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .bank-switch-btn.active {
+      background: var(--primary) !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+    
     .badge-tag.new-tag {
       background: #eff6ff;
       color: #1d4ed8;
@@ -2144,6 +2184,23 @@
         <span aria-hidden="true">›</span>
       </button>
 
+      <!-- 题库模式切换条 (2026官网全真模拟题库 / 历年官方真题库) -->
+      <div class="bank-switch-wrap">
+        <div class="bank-switch-segmented">
+          <button class="bank-switch-btn active" id="btnBank_official_2026" onclick="switchActiveBank('official_2026')">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-sparkles"/></svg>
+            <span>2026官网全真模拟</span>
+            <span class="sub-new-pill" id="badgeBankOfficial" style="background:#ef4444;color:#fff;border-radius:6px;padding:1px 5px;font-size:10px;">最新</span>
+          </button>
+          <button class="bank-switch-btn" id="btnBank_word_legacy" onclick="switchActiveBank('word_legacy')">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-book"/></svg>
+            <span>历年官方真题库</span>
+            <span class="sub-new-pill" id="badgeBankLegacy" style="background:var(--border);color:var(--text-muted);border-radius:6px;padding:1px 5px;font-size:10px;">前期</span>
+          </button>
+        </div>
+      </div>
+
+
       <nav class="capsule-nav">
         <span class="capsule-item active" onclick="filterCategory('all', this)">全部科目 (5科)</span>
         <span class="capsule-item" onclick="filterCategory('theory', this)">教育理论</span>
@@ -3109,6 +3166,9 @@
     let timerInterval = null;
 
     function getQKey(q) {
+      if (activeBankId === 'official_2026') {
+        return `off26_${q.subject}_${q.type}_${q.num}`;
+      }
       return `${q.subject}_${q.type}_${q.num}`;
     }
 
@@ -3817,58 +3877,82 @@
     // ==========================================
     // 题库数据加载保障引擎 (解决 Android APK / 本地 file:// 协议 CORS 限制)
     // ==========================================
+    let activeBankId = localStorage.getItem("jsgsMock_active_bank") || "official_2026";
+    let official2026QuizData = null;
+    let legacyWordQuizData = null;
+
     async function loadDefaultQuizData() {
-      // 1. 优先读取静态注入的 window.DEFAULT_QUIZ_DATA (APK/离线环境秒开，绝对零失败)
-      if (typeof window.DEFAULT_QUIZ_DATA === 'object' && window.DEFAULT_QUIZ_DATA && Object.keys(window.DEFAULT_QUIZ_DATA).length > 0) {
+      // 1. 尝试载入 2026 官网全真模拟题库
+      if (typeof window.OFFICIAL_2026_QUIZ_DATA === 'object' && window.OFFICIAL_2026_QUIZ_DATA && Object.keys(window.OFFICIAL_2026_QUIZ_DATA).length > 0) {
+        official2026QuizData = window.OFFICIAL_2026_QUIZ_DATA;
+      } else {
         try {
-          allSubjectsData = JSON.parse(JSON.stringify(window.DEFAULT_QUIZ_DATA));
-          return true;
-        } catch (e) {
-          allSubjectsData = window.DEFAULT_QUIZ_DATA;
-          return true;
-        }
+          const resp = await fetch("quiz_data_official_2026.json");
+          if (resp.ok) official2026QuizData = await resp.json();
+        } catch (e) {}
       }
 
-      // 2. 次选 Fetch API (网络服务器/GitHub Pages/HTTP 调试环境)
-      try {
-        const resp = await fetch("quiz_data.json");
-        if (resp.ok) {
-          allSubjectsData = await resp.json();
-          return true;
-        }
-      } catch (fetchErr) {
-        console.warn("Fetch 题库失败 (常见于本地 file:// 协议受限)，启动 XHR 深度加载:", fetchErr);
+      // 2. 尝试载入历年官方真题库 (Word版)
+      if (typeof window.DEFAULT_QUIZ_DATA === 'object' && window.DEFAULT_QUIZ_DATA && Object.keys(window.DEFAULT_QUIZ_DATA).length > 0) {
+        legacyWordQuizData = window.DEFAULT_QUIZ_DATA;
+      } else {
+        try {
+          const resp = await fetch("quiz_data.json");
+          if (resp.ok) legacyWordQuizData = await resp.json();
+        } catch (e) {}
       }
 
-      // 3. 终极兜底: 使用 XMLHttpRequest 读取本地文件 (支持在 file:// 环境下读取)
-      try {
-        const xhrData = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", "quiz_data.json", true);
-          xhr.onload = () => {
-            if (xhr.status === 200 || xhr.status === 0) {
-              try {
-                const res = (xhr.responseType === 'json' && xhr.response) ? xhr.response : JSON.parse(xhr.responseText);
-                resolve(res);
-              } catch (parseErr) {
-                reject(parseErr);
-              }
-            } else {
-              reject(new Error("XHR 状态码异常: " + xhr.status));
-            }
-          };
-          xhr.onerror = () => reject(new Error("XHR 网络/文件读取错误"));
-          xhr.send();
-        });
-        if (xhrData && Object.keys(xhrData).length > 0) {
-          allSubjectsData = xhrData;
-          return true;
-        }
-      } catch (xhrErr) {
-        console.error("XHR 本地题库读取亦失败:", xhrErr);
+      // 互相兜底
+      if (!official2026QuizData && legacyWordQuizData) official2026QuizData = legacyWordQuizData;
+      if (!legacyWordQuizData && official2026QuizData) legacyWordQuizData = official2026QuizData;
+
+      // 根据当前活跃题库设定 allSubjectsData
+      if (activeBankId === 'official_2026' && official2026QuizData) {
+        allSubjectsData = official2026QuizData;
+      } else if (legacyWordQuizData) {
+        allSubjectsData = legacyWordQuizData;
+      } else if (official2026QuizData) {
+        allSubjectsData = official2026QuizData;
       }
 
-      return false;
+      updateBankSwitcherUI();
+      return true;
+    }
+
+    function switchActiveBank(bankId) {
+      if (activeBankId === bankId) return;
+      activeBankId = bankId;
+      localStorage.setItem("jsgsMock_active_bank", activeBankId);
+      if (activeBankId === 'official_2026' && official2026QuizData) {
+        allSubjectsData = official2026QuizData;
+      } else if (legacyWordQuizData) {
+        allSubjectsData = legacyWordQuizData;
+      }
+      updateBankSwitcherUI();
+      renderSubjectList();
+      renderBannerCarousel();
+      showToast(bankId === 'official_2026' ? "已切换至【2026官网全真模拟题库】" : "已切换至【历年官方真题库】");
+    }
+
+    function updateBankSwitcherUI() {
+      const btnOff = document.getElementById("btnBank_official_2026");
+      const btnLeg = document.getElementById("btnBank_word_legacy");
+      if (!btnOff || !btnLeg) return;
+      if (activeBankId === 'official_2026') {
+        btnOff.classList.add("active");
+        btnLeg.classList.remove("active");
+        btnOff.style.background = "var(--primary)";
+        btnOff.style.color = "#ffffff";
+        btnLeg.style.background = "transparent";
+        btnLeg.style.color = "var(--text-sub)";
+      } else {
+        btnLeg.classList.add("active");
+        btnOff.classList.remove("active");
+        btnLeg.style.background = "var(--primary)";
+        btnLeg.style.color = "#ffffff";
+        btnOff.style.background = "transparent";
+        btnOff.style.color = "var(--text-sub)";
+      }
     }
 
     async function reloadQuizData() {
@@ -5415,6 +5499,18 @@
             </div>
           </div>
         `;
+      } else if (q.isAiAnswer) {
+        updateAlertHtml = `
+          <div class="answer-update-alert-card" style="background:#fffbeb;border-color:#fde68a;color:#92400e;">
+            <div class="answer-update-alert-title" style="color:#b45309;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#b45309;"><use href="#icon-chip"/></svg>
+              <span>2026官网模拟题 · AI推导参考答案</span>
+            </div>
+            <div class="answer-update-alert-desc" style="color:#92400e;">
+              本题取自2026官网机考模拟卷，答案由教研AI结合考纲推导生成，待官网模拟考试交卷后将实时校准为官方标准答案！
+            </div>
+          </div>
+        `;
       }
 
       let analysisBlock = "";
@@ -5423,9 +5519,9 @@
           ${updateAlertHtml}
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
-              <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
+              <div><span>${q.isAiAnswer ? '参考答案(AI)' : '正确答案'}</span><span class="ans-badge-text"${q.isAiAnswer ? ' style="background:#f59e0b;"' : ''}>${q.answer}</span></div>
               <span style="font-size:12px;color:var(--primary);display:flex;align-items:center;gap:2px;">
-                官方考点精解
+                ${q.isAiAnswer ? 'AI考点精解(待交卷校准)' : '官方考点精解'}
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
               </span>
             </div>
@@ -5465,6 +5561,8 @@
         badgeHtml = `<span class="badge-tag update-tag">答案订正</span>`;
       } else if (q.isNew) {
         badgeHtml = `<span class="badge-tag new-tag">全新考题</span>`;
+      } else if (q.isAiAnswer) {
+        badgeHtml = `<span class="badge-tag ai-tag">AI参考答案</span>`;
       }
 
       container.innerHTML = `

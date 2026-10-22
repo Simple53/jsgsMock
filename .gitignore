@@ -15,3 +15,5 @@ video-compress*.log
 
 # User sync state
 user_sync_store.json
+chunks/
+raw_official_*.json

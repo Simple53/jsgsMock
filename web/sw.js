@@ -1,7 +1,9 @@
-const CACHE_NAME = 'jsgsMock-v23';
+const CACHE_NAME = 'jsgsMock-v24';
 const ASSETS = [
   './',
   './index.html',
+  './quiz_data_official_2026.json',
+  './quiz_data_official_2026.js',
   './quiz_data.json',
   './quiz_data.js',
   './course_videos.js',
