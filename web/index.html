@@ -523,20 +523,34 @@
       font-weight: 600;
       color: var(--text-main);
       word-break: break-word;
-    }
-    .quiz-blank-underline {
-      display: inline-block;
-      min-width: 48px;
-      border-bottom: 2px solid var(--primary);
-      margin: 0 4px;
-      vertical-align: baseline;
-      background: rgba(37, 99, 235, 0.08);
-      border-radius: 2px 2px 0 0;
-      padding: 0 4px;
-      line-height: 1.2;
-      text-align: center;
-      color: var(--primary);
-      font-weight: 700;
+    }
+
+    .quiz-blank-underline {
+
+      display: inline-block;
+
+      min-width: 48px;
+
+      border-bottom: 2px solid var(--primary);
+
+      margin: 0 4px;
+
+      vertical-align: baseline;
+
+      background: rgba(37, 99, 235, 0.08);
+
+      border-radius: 2px 2px 0 0;
+
+      padding: 0 4px;
+
+      line-height: 1.2;
+
+      text-align: center;
+
+      color: var(--primary);
+
+      font-weight: 700;
+
     }
 
     /* 选项 */
@@ -2485,6 +2499,13 @@
           </div>
         </div>
 
+        <!-- 历史做题记录深度恢复 -->
+        <div style="border:1.5px solid var(--primary);border-radius:12px;padding:14px;margin-bottom:14px;background:rgba(37,99,235,0.03);">
+          <div style="font-size:14px;font-weight:700;color:var(--primary);">历史做题记录深度恢复</div>
+          <div style="font-size:12px;color:var(--text-sub);margin-top:2px;line-height:1.5;">若因版本升级或切换环境导致本地做题记录未展示，点击此按钮可全盘检索本地浏览器所有历史缓存并无损恢复。</div>
+          <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="scanAndRestoreAllLocalHistory()">一键扫描并恢复本地历史记录</button>
+        </div>
+
         <!-- 清空重置数据 -->
         <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;color:var(--wrong);">重置数据</div>
@@ -3363,7 +3384,127 @@
       return `${q.subject}_${q.type}_${q.num}`;
     }
 
+    // 双向兼容读取用户作答记录 (兼容 1..20 与 161..180 跨版本编号)
+    function getUserAnswerRecord(q) {
+      if (!userStore || !userStore.answers) return null;
+      const k1 = getQKey(q);
+      if (userStore.answers[k1]) return userStore.answers[k1];
+
+      // 兼容多选题 1 <-> 161
+      if (q.type === 'multi') {
+        const altNum = q.num > 100 ? (q.num - 160) : (q.num + 160);
+        const kAlt = `${q.subject}_${q.type}_${altNum}`;
+        if (userStore.answers[kAlt]) return userStore.answers[kAlt];
+      }
+      // 兼容判断题 1 <-> 181
+      if (q.type === 'judge') {
+        const altNum = q.num > 100 ? (q.num - 180) : (q.num + 180);
+        const kAlt = `${q.subject}_${q.type}_${altNum}`;
+        if (userStore.answers[kAlt]) return userStore.answers[kAlt];
+      }
+      return null;
+    }
+
+    // 跨版本 key 匹配判定
+    function isKeyMatched(storedKey, q) {
+      if (storedKey === getQKey(q)) return true;
+      if (q.type === 'multi') {
+        const altNum = q.num > 100 ? (q.num - 160) : (q.num + 160);
+        if (storedKey === `${q.subject}_${q.type}_${altNum}`) return true;
+      }
+      if (q.type === 'judge') {
+        const altNum = q.num > 100 ? (q.num - 180) : (q.num + 180);
+        if (storedKey === `${q.subject}_${q.type}_${altNum}`) return true;
+      }
+      return false;
+    }
+
+    // 跨版本数据键名双向自动归一化与对齐
+    function normalizeUserStoreKeys() {
+      if (!userStore) return;
+
+      // 1. 规范化 answers
+      if (userStore.answers && typeof userStore.answers === 'object') {
+        const toAdd = {};
+        for (const [k, v] of Object.entries(userStore.answers)) {
+          if (k.includes('_multi_')) {
+            const parts = k.split('_multi_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              if (num > 100) {
+                const altK = `${parts[0]}_multi_${num - 160}`;
+                if (!userStore.answers[altK]) toAdd[altK] = v;
+              } else {
+                const altK = `${parts[0]}_multi_${num + 160}`;
+                if (!userStore.answers[altK]) toAdd[altK] = v;
+              }
+            }
+          } else if (k.includes('_judge_')) {
+            const parts = k.split('_judge_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              if (num > 100) {
+                const altK = `${parts[0]}_judge_${num - 180}`;
+                if (!userStore.answers[altK]) toAdd[altK] = v;
+              } else {
+                const altK = `${parts[0]}_judge_${num + 180}`;
+                if (!userStore.answers[altK]) toAdd[altK] = v;
+              }
+            }
+          }
+        }
+        Object.assign(userStore.answers, toAdd);
+      }
+
+      // 2. 规范化 ebbinghausWrong
+      if (userStore.ebbinghausWrong && typeof userStore.ebbinghausWrong === 'object') {
+        const toAddEb = {};
+        for (const [k, v] of Object.entries(userStore.ebbinghausWrong)) {
+          if (k.includes('_multi_')) {
+            const parts = k.split('_multi_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              const altK = num > 100 ? `${parts[0]}_multi_${num - 160}` : `${parts[0]}_multi_${num + 160}`;
+              if (!userStore.ebbinghausWrong[altK]) toAddEb[altK] = v;
+            }
+          } else if (k.includes('_judge_')) {
+            const parts = k.split('_judge_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              const altK = num > 100 ? `${parts[0]}_judge_${num - 180}` : `${parts[0]}_judge_${num + 180}`;
+              if (!userStore.ebbinghausWrong[altK]) toAddEb[altK] = v;
+            }
+          }
+        }
+        Object.assign(userStore.ebbinghausWrong, toAddEb);
+      }
+
+      // 3. 规范化 favorites
+      if (Array.isArray(userStore.favorites)) {
+        const toAddFav = [];
+        userStore.favorites.forEach(k => {
+          if (k.includes('_multi_')) {
+            const parts = k.split('_multi_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              const altK = num > 100 ? `${parts[0]}_multi_${num - 160}` : `${parts[0]}_multi_${num + 160}`;
+              if (!userStore.favorites.includes(altK)) toAddFav.push(altK);
+            }
+          } else if (k.includes('_judge_')) {
+            const parts = k.split('_judge_');
+            const num = parseInt(parts[1], 10);
+            if (!isNaN(num)) {
+              const altK = num > 100 ? `${parts[0]}_judge_${num - 180}` : `${parts[0]}_judge_${num + 180}`;
+              if (!userStore.favorites.includes(altK)) toAddFav.push(altK);
+            }
+          }
+        });
+        userStore.favorites.push(...toAddFav);
+      }
+    }
+
     function loadUserStore() {
+      // 1. 尝试读取当前标准 key
       const s = localStorage.getItem("file2quiz_v3_store");
       if (s) {
         try { userStore = { ...userStore, ...JSON.parse(s) }; } catch (e) {}
@@ -3372,6 +3513,52 @@
       if (c) {
         try { appConfig = { ...appConfig, ...JSON.parse(c) }; } catch (e) {}
       }
+
+      // 2. 深度扫描并自动迁移可能存在的历史存储版本 (包括 v2, core, duxue 等)
+      const legacyCandidateKeys = [
+        "file2quiz_v2_store",
+        "file2quiz_core_store",
+        "duxue_quiz_store",
+        "file2quiz_user_state"
+      ];
+      legacyCandidateKeys.forEach(ck => {
+        const legacyVal = localStorage.getItem(ck);
+        if (legacyVal) {
+          try {
+            const legacyData = JSON.parse(legacyVal);
+            if (legacyData && typeof legacyData === 'object') {
+              if (legacyData.answers && typeof legacyData.answers === 'object') {
+                if (!userStore.answers) userStore.answers = {};
+                for (const [k, v] of Object.entries(legacyData.answers)) {
+                  if (!userStore.answers[k]) userStore.answers[k] = v;
+                }
+              }
+              if (legacyData.ebbinghausWrong && typeof legacyData.ebbinghausWrong === 'object') {
+                if (!userStore.ebbinghausWrong) userStore.ebbinghausWrong = {};
+                for (const [k, v] of Object.entries(legacyData.ebbinghausWrong)) {
+                  if (!userStore.ebbinghausWrong[k]) userStore.ebbinghausWrong[k] = v;
+                }
+              }
+              if (Array.isArray(legacyData.favorites)) {
+                if (!userStore.favorites) userStore.favorites = [];
+                legacyData.favorites.forEach(f => {
+                  if (!userStore.favorites.includes(f)) userStore.favorites.push(f);
+                });
+              }
+              if (legacyData.dailyActivity && typeof legacyData.dailyActivity === 'object') {
+                if (!userStore.dailyActivity) userStore.dailyActivity = {};
+                for (const [k, v] of Object.entries(legacyData.dailyActivity)) {
+                  userStore.dailyActivity[k] = Math.max(userStore.dailyActivity[k] || 0, Number(v) || 0);
+                }
+              }
+            }
+          } catch (e) {}
+        }
+      });
+
+      // 3. 执行跨版本编号双向对齐
+      normalizeUserStoreKeys();
+      saveUserStore();
 
       if (!userStore.openedSubjects) userStore.openedSubjects = {};
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
@@ -4767,7 +4954,7 @@
         let answeredCount = 0;
         let correctCount = 0;
         qList.forEach(q => {
-          const rec = userStore.answers[getQKey(q)];
+          const rec = getUserAnswerRecord(q);
           if (rec) {
             answeredCount++;
             if (rec.isCorrect) correctCount++;
@@ -5178,7 +5365,7 @@
 
       const qKey = getQKey(q);
       const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
-      const userAnsRec = isWrongSession ? wrongSessionAnswers[qKey] : userStore.answers[qKey];
+      const userAnsRec = isWrongSession ? wrongSessionAnswers[qKey] : getUserAnswerRecord(q);
       const isExam = (appConfig.quizMode === 'exam');
 
       // 错题本做题：不直接出答案，需作答或点击模糊/忘记反馈后才展开答案与解析
@@ -5999,12 +6186,18 @@
 
     function escapeHtml(str) {
       return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    function renderQuestionText(str) {
-      if (!str) return "";
-      const escaped = escapeHtml(str);
-      return escaped.replace(/_{2,}/g, '<span class="quiz-blank-underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+    }
+
+
+
+    function renderQuestionText(str) {
+
+      if (!str) return "";
+
+      const escaped = escapeHtml(str);
+
+      return escaped.replace(/_{2,}/g, '<span class="quiz-blank-underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+
     }
 
     // 需求2: 点击首页顶栏收藏 icon，直接加载所有收藏题目并进入练习版面
@@ -6962,6 +7155,64 @@
       a.remove();
     }
 
+    function scanAndRestoreAllLocalHistory() {
+      let restoredAnswers = 0;
+      let restoredWrong = 0;
+      let restoredFavs = 0;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw || !raw.startsWith('{')) continue;
+          const data = JSON.parse(raw);
+          if (!data || typeof data !== 'object') continue;
+
+          if (data.answers && typeof data.answers === 'object') {
+            if (!userStore.answers) userStore.answers = {};
+            for (const [k, v] of Object.entries(data.answers)) {
+              if (!userStore.answers[k]) {
+                userStore.answers[k] = v;
+                restoredAnswers++;
+              }
+            }
+          }
+          if (data.ebbinghausWrong && typeof data.ebbinghausWrong === 'object') {
+            if (!userStore.ebbinghausWrong) userStore.ebbinghausWrong = {};
+            for (const [k, v] of Object.entries(data.ebbinghausWrong)) {
+              if (!userStore.ebbinghausWrong[k]) {
+                userStore.ebbinghausWrong[k] = v;
+                restoredWrong++;
+              }
+            }
+          }
+          if (Array.isArray(data.favorites)) {
+            if (!userStore.favorites) userStore.favorites = [];
+            data.favorites.forEach(f => {
+              if (!userStore.favorites.includes(f)) {
+                userStore.favorites.push(f);
+                restoredFavs++;
+              }
+            });
+          }
+          if (data.dailyActivity && typeof data.dailyActivity === 'object') {
+            if (!userStore.dailyActivity) userStore.dailyActivity = {};
+            for (const [k, v] of Object.entries(data.dailyActivity)) {
+              userStore.dailyActivity[k] = Math.max(userStore.dailyActivity[k] || 0, Number(v) || 0);
+            }
+          }
+        } catch (e) {}
+      }
+
+      normalizeUserStoreKeys();
+      saveUserStore();
+      renderSubjectList();
+      updateCheckinUI();
+
+      alert(`扫描恢复完成！\n已成功检索并合并：\n• 补充恢复做题记录：${restoredAnswers} 条\n• 补充恢复错题记录：${restoredWrong} 条\n• 补充恢复收藏题目：${restoredFavs} 条\n当前总做题记录数：${Object.keys(userStore.answers || {}).length} 条！`);
+    }
+
     function clearAllUserData() {
       if (!confirm("确定要重置所有做题记录与错题本吗？")) return;
       userStore.answers = {};
@@ -7004,7 +7255,7 @@
         }
         let favQs = [];
         Object.values(allSubjectsData).forEach(qs => {
-          qs.forEach(q => { if (favKeys.includes(getQKey(q))) favQs.push(q); });
+          qs.forEach(q => { if (favKeys.some(fk => isKeyMatched(fk, q))) favQs.push(q); });
         });
         if (favQs.length === 0) {
           container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无可练的收藏题目！</div>`;
@@ -7040,7 +7291,7 @@
       }
       let wrongQs = [];
       Object.values(allSubjectsData).forEach(qs => {
-        qs.forEach(q => { if (wrongKeys.includes(getQKey(q))) wrongQs.push(q); });
+        qs.forEach(q => { if (wrongKeys.some(wk => isKeyMatched(wk, q))) wrongQs.push(q); });
       });
 
       if (tab === 'ebbinghaus') {

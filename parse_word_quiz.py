@@ -311,14 +311,17 @@ def parse_all_docx():
             if q_num <= 160:
                 type_name = '单选题'
                 type_code = 'single'
+                actual_num = q_num
                 is_choice = True
             elif q_num <= 180:
                 type_name = '多选题'
                 type_code = 'multi'
+                actual_num = q_num - 160
                 is_choice = True
             else:
                 type_name = '判断题'
                 type_code = 'judge'
+                actual_num = q_num - 180
                 is_choice = False
                 
             full_content = '\n'.join([paras[j] for j in range(st, ed + 1)])
@@ -383,7 +386,8 @@ def parse_all_docx():
                 'subject': subject,
                 'type': type_code,
                 'typeName': type_name,
-                'num': q_num,
+                'num': actual_num,
+                'globalNum': q_num,
                 'question': q_text,
                 'options': opts,
                 'answer': ans_val,
