@@ -735,9 +735,9 @@
     }
     
     .badge-tag.ai-tag {
-      background: #fef3c7;
-      color: #92400e;
-      border-color: #fde68a;
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
     }
     .bank-switch-wrap {
       margin: 10px 0 12px;
@@ -5270,6 +5270,7 @@
       document.getElementById("bottomTabbar").style.display = 'none';
       document.getElementById("quizView").style.display = 'flex';
 
+      studySessionAnswered = {};
       startTimer();
       const bubble = document.getElementById("floatingAiBubble");
       if (bubble) {
@@ -5281,6 +5282,7 @@
     let isWrongPracticeActive = false;
     let wrongSessionRevealed = {};
     let wrongSessionAnswers = {};
+    let studySessionAnswered = {};
 
     function exitQuizToHome() {
       stopTimer();
@@ -5324,7 +5326,7 @@
       const isExam = (appConfig.quizMode === 'exam');
 
       // 错题本做题：不直接出答案，需作答或点击模糊/忘记反馈后才展开答案与解析
-      // 背题模式 (study)：直接高亮显示正确答案并展开权威解析
+      // 背题模式 (study)：必须由用户主动点击选择答案之后才展示答案与解析
       const isStudyMode = (appConfig.quizMode === 'study');
       let showAnswer = false;
       if (isWrongSession) {
@@ -5332,7 +5334,7 @@
       } else if (isExam) {
         showAnswer = isExamSubmitted;
       } else if (isStudyMode) {
-        showAnswer = true;
+        showAnswer = !!studySessionAnswered[qKey];
       } else {
         showAnswer = (userAnsRec !== undefined && userAnsRec !== null);
       }
@@ -5381,7 +5383,7 @@
           let isChecked = false;
 
           if (showAnswer) {
-            isChecked = chosenLetters.includes(letter) || (isStudyMode && ansLetters.includes(letter));
+            isChecked = chosenLetters.includes(letter);
             if (ansLetters.includes(letter)) {
               rowClass += " status-correct";
             } else if (userAnsRec && chosenLetters.includes(letter)) {
@@ -5501,12 +5503,12 @@
         `;
       } else if (q.isAiAnswer) {
         updateAlertHtml = `
-          <div class="answer-update-alert-card" style="background:#fffbeb;border-color:#fde68a;color:#92400e;">
-            <div class="answer-update-alert-title" style="color:#b45309;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#b45309;"><use href="#icon-chip"/></svg>
+          <div class="answer-update-alert-card" style="background:#f8fafc;border-color:#e2e8f0;color:#475569;">
+            <div class="answer-update-alert-title" style="color:#334155;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#334155;"><use href="#icon-chip"/></svg>
               <span>2026官网模拟题 · AI推导参考答案</span>
             </div>
-            <div class="answer-update-alert-desc" style="color:#92400e;">
+            <div class="answer-update-alert-desc" style="color:#64748b;">
               本题取自2026官网机考模拟卷，答案由教研AI结合考纲推导生成，待官网模拟考试交卷后将实时校准为官方标准答案！
             </div>
           </div>
@@ -5519,7 +5521,7 @@
           ${updateAlertHtml}
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
-              <div><span>${q.isAiAnswer ? '参考答案(AI)' : '正确答案'}</span><span class="ans-badge-text"${q.isAiAnswer ? ' style="background:#f59e0b;"' : ''}>${q.answer}</span></div>
+              <div><span>${q.isAiAnswer ? '参考答案(AI)' : '正确答案'}</span><span class="ans-badge-text">${q.answer}</span></div>
               <span style="font-size:12px;color:var(--primary);display:flex;align-items:center;gap:2px;">
                 ${q.isAiAnswer ? 'AI考点精解(待交卷校准)' : '官方考点精解'}
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
@@ -5630,6 +5632,9 @@
         wrongSessionAnswers[qKey] = { chosen, isCorrect, time: Date.now() };
         wrongSessionRevealed[qKey] = true;
       } else {
+        if (appConfig.quizMode === 'study') {
+          studySessionAnswered[qKey] = true;
+        }
         userStore.answers[qKey] = { chosen, isCorrect, time: Date.now() };
         if (!isCorrect) {
           const now = Date.now();
@@ -5661,7 +5666,10 @@
         return;
       }
 
-      if (appConfig.quizMode === 'study' && userStore.answers[qKey]) return;
+      if (appConfig.quizMode === 'study') {
+        if (studySessionAnswered[qKey]) return;
+        studySessionAnswered[qKey] = true;
+      }
 
       const isCorrect = (ans === q.answer);
       userStore.answers[qKey] = { chosen: ans, isCorrect, time: Date.now() };
