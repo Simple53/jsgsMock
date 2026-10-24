@@ -713,6 +713,22 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .judge-flat-btn.exam-selected {
+      border-color: var(--primary) !important;
+      background: var(--primary-light) !important;
+      color: var(--primary) !important;
+    }
+    .judge-flat-btn.status-correct {
+      border-color: var(--correct) !important;
+      background: var(--correct-bg) !important;
+      color: #065f46 !important;
+    }
+    .judge-flat-btn.status-wrong {
+      border-color: var(--wrong) !important;
+      background: var(--wrong-bg) !important;
+      color: #991b1b !important;
     }
 
     /* 重点新题与答案订正标签及提示条 (扁平无阴影设计) */
@@ -5322,12 +5338,21 @@
 
       const qKey = getQKey(q);
       const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
-      const userAnsRec = isWrongSession ? wrongSessionAnswers[qKey] : getUserAnswerRecord(q);
+      const isStudyMode = (appConfig.quizMode === 'study');
       const isExam = (appConfig.quizMode === 'exam');
 
-      // 错题本做题：不直接出答案，需作答或点击模糊/忘记反馈后才展开答案与解析
-      // 背题模式 (study)：必须由用户主动点击选择答案之后才展示答案与解析
-      const isStudyMode = (appConfig.quizMode === 'study');
+      // 本轮会话作答状态判定
+      let sessionAns = null;
+      if (isWrongSession) {
+        sessionAns = wrongSessionAnswers[qKey];
+      } else if (isStudyMode) {
+        // 背题模式：必须在本次会话主动点击过才算作答，以支持先做题后看解析
+        sessionAns = studySessionAnswered[qKey] ? userStore.answers[qKey] : null;
+      } else {
+        sessionAns = getUserAnswerRecord(q);
+      }
+
+      // 决定是否展开答案与解析
       let showAnswer = false;
       if (isWrongSession) {
         showAnswer = !!wrongSessionRevealed[qKey];
@@ -5336,14 +5361,14 @@
       } else if (isStudyMode) {
         showAnswer = !!studySessionAnswered[qKey];
       } else {
-        showAnswer = (userAnsRec !== undefined && userAnsRec !== null);
+        showAnswer = (sessionAns !== undefined && sessionAns !== null);
       }
 
       const isMulti = (q.type === 'multiple' || q.type === 'multi' || (q.answer && q.answer.length > 1 && q.type !== 'judge'));
 
-      // 若已有作答记录，恢复已选集合；若没有作答记录，且尚未针对当前题做过勾选，保持或重置
-      if (userAnsRec) {
-        currentMultiSelection = new Set((userAnsRec.chosen || '').split(''));
+      // 若已有当前会话作答记录，恢复已选集合
+      if (sessionAns && sessionAns.chosen) {
+        currentMultiSelection = new Set((sessionAns.chosen || '').split(''));
       }
 
       const activeProv = userStore.activeProvider || "deepseek";
@@ -5355,26 +5380,27 @@
       if (q.type === 'judge') {
         let yesClass = "judge-flat-btn";
         let noClass = "judge-flat-btn";
+        const chosen = sessionAns ? sessionAns.chosen : null;
         if (showAnswer) {
           if (q.answer === '对') yesClass += " status-correct";
-          else if (userAnsRec && userAnsRec.chosen === '对') yesClass += " status-wrong";
+          else if (chosen === '对') yesClass += " status-wrong";
           if (q.answer === '错') noClass += " status-correct";
-          else if (userAnsRec && userAnsRec.chosen === '错') noClass += " status-wrong";
-        } else if (userAnsRec) {
-          if (userAnsRec.chosen === '对') yesClass += " exam-selected";
-          if (userAnsRec.chosen === '错') noClass += " exam-selected";
+          else if (chosen === '错') noClass += " status-wrong";
+        } else if (chosen) {
+          if (chosen === '对') yesClass += " exam-selected";
+          if (chosen === '错') noClass += " exam-selected";
         }
         optionsHtml = `
           <div class="judge-btn-grid">
-            <button class="${yesClass}" onclick="handleAnswerSelect('对')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-check"/></svg> 正确</button>
-            <button class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg> 错误</button>
+            <button type="button" class="${yesClass}" onclick="handleAnswerSelect('对')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-check"/></svg> 正确</button>
+            <button type="button" class="${noClass}" onclick="handleAnswerSelect('错')"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg> 错误</button>
           </div>
         `;
       } else if (isMulti) {
         // 多选题：复选框架构，严格按 A, B, C, D 顺序渲染
         optionsHtml = `<div class="quiz-options-col">`;
         const ansLetters = (q.answer || '').split('');
-        const chosenLetters = userAnsRec ? (userAnsRec.chosen || '').split('') : Array.from(currentMultiSelection);
+        const chosenLetters = sessionAns ? (sessionAns.chosen || '').split('') : Array.from(currentMultiSelection);
 
         const optKeys = ['A', 'B', 'C', 'D'].filter(k => q.options && q.options[k] !== undefined);
         for (const letter of optKeys) {
@@ -5386,10 +5412,10 @@
             isChecked = chosenLetters.includes(letter);
             if (ansLetters.includes(letter)) {
               rowClass += " status-correct";
-            } else if (userAnsRec && chosenLetters.includes(letter)) {
+            } else if (sessionAns && chosenLetters.includes(letter)) {
               rowClass += " status-wrong";
             }
-          } else if (userAnsRec) {
+          } else if (sessionAns && isExam) {
             isChecked = chosenLetters.includes(letter);
             if (isChecked) rowClass += " exam-selected";
           } else {
@@ -5397,7 +5423,9 @@
             if (isChecked) rowClass += " multi-selected";
           }
 
-          const clickHandler = userAnsRec ? '' : `onclick="toggleMultiOption('${letter}')"`;
+          // 允许在未揭晓答案时自由切换勾选；背题模式未揭晓前绝对允许勾选
+          const canClick = !showAnswer || (isExam && !isExamSubmitted);
+          const clickHandler = canClick ? `onclick="toggleMultiOption('${letter}')"` : '';
           const boxContent = isChecked ?
             `<svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-check"/></svg>` : letter;
 
@@ -5410,16 +5438,17 @@
         }
         optionsHtml += `</div>`;
 
-        // 若尚未提交本题答案，展示多选确认提交操作条
-        if (!userAnsRec) {
+        // 若尚未提交本题答案（未揭晓状态），展示多选确认提交操作条
+        const isMultiSubmitted = isWrongSession ? !!wrongSessionAnswers[qKey] : (isStudyMode ? !!studySessionAnswered[qKey] : (isExam ? (!!sessionAns && isExamSubmitted) : !!sessionAns));
+        if (!isMultiSubmitted) {
           const selectedCount = currentMultiSelection.size;
           const isBtnDisabled = (selectedCount === 0);
           optionsHtml += `
             <div class="multi-submit-bar">
               <div class="multi-hint-text">多选题 · 已选 <span style="color:var(--primary);font-weight:700;">${selectedCount}</span> 项</div>
-              <button class="multi-confirm-btn" id="multiConfirmBtn" ${isBtnDisabled ? 'disabled' : ''} onclick="submitMultiAnswer()">
+              <button type="button" class="multi-confirm-btn" id="multiConfirmBtn" ${isBtnDisabled ? 'disabled' : ''} onclick="submitMultiAnswer()">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-check"/></svg>
-                <span>确认提交本题</span>
+                <span>${isStudyMode ? '确认并查看解析' : '确认提交本题'}</span>
               </button>
             </div>
           `;
@@ -5428,14 +5457,15 @@
         // 单选题：严格按 A, B, C, D 顺序渲染
         optionsHtml = `<div class="quiz-options-col">`;
         const optKeys = ['A', 'B', 'C', 'D'].filter(k => q.options && q.options[k] !== undefined);
+        const chosen = sessionAns ? sessionAns.chosen : null;
         for (const letter of optKeys) {
           const text = q.options[letter];
           let rowClass = "option-row";
           if (showAnswer) {
             if (q.answer.includes(letter)) rowClass += " status-correct";
-            else if (userAnsRec && userAnsRec.chosen && userAnsRec.chosen.includes(letter)) rowClass += " status-wrong";
-          } else if (userAnsRec) {
-            if (userAnsRec.chosen && userAnsRec.chosen.includes(letter)) rowClass += " exam-selected";
+            else if (chosen && chosen.includes(letter)) rowClass += " status-wrong";
+          } else if (chosen) {
+            if (chosen.includes(letter)) rowClass += " exam-selected";
           }
           optionsHtml += `
             <div class="${rowClass}" onclick="handleAnswerSelect('${letter}')">
@@ -5501,18 +5531,6 @@
             </div>
           </div>
         `;
-      } else if (q.isAiAnswer) {
-        updateAlertHtml = `
-          <div class="answer-update-alert-card" style="background:#f8fafc;border-color:#e2e8f0;color:#475569;">
-            <div class="answer-update-alert-title" style="color:#334155;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:#334155;"><use href="#icon-chip"/></svg>
-              <span>2026官网模拟题 · AI推导参考答案</span>
-            </div>
-            <div class="answer-update-alert-desc" style="color:#64748b;">
-              本题取自2026官网机考模拟卷，答案由教研AI结合考纲推导生成，待官网模拟考试交卷后将实时校准为官方标准答案！
-            </div>
-          </div>
-        `;
       }
 
       let analysisBlock = "";
@@ -5521,13 +5539,16 @@
           ${updateAlertHtml}
           <div class="fenbi-analysis-box">
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
-              <div><span>${q.isAiAnswer ? '参考答案(AI)' : '正确答案'}</span><span class="ans-badge-text">${q.answer}</span></div>
+              <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
               <span style="font-size:12px;color:var(--primary);display:flex;align-items:center;gap:2px;">
-                ${q.isAiAnswer ? 'AI考点精解(待交卷校准)' : '官方考点精解'}
+                官方考点精解
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
               </span>
             </div>
-            <div class="analysis-detail-body" id="analysisDetail_${qKey}">${q.analysis || '本题暂无详细官方考点解析'}</div>
+            <div class="analysis-detail-body" id="analysisDetail_${qKey}">
+              ${q.knowledgePoint ? `<div style="margin-bottom:8px;padding:6px 10px;background:var(--primary-light);border-left:3px solid var(--primary);border-radius:4px;font-size:12px;color:var(--text-main);"><strong style="color:var(--primary);">官方考点</strong>：${escapeHtml(q.knowledgePoint)}</div>` : ''}
+              ${q.analysis || '本题暂无详细官方考点解析'}
+            </div>
           </div>
 
           <!-- 需求1：保留一键 AI 解析功能 (题目下方直接展示) -->
@@ -5563,8 +5584,6 @@
         badgeHtml = `<span class="badge-tag update-tag">答案订正</span>`;
       } else if (q.isNew) {
         badgeHtml = `<span class="badge-tag new-tag">全新考题</span>`;
-      } else if (q.isAiAnswer) {
-        badgeHtml = `<span class="badge-tag ai-tag">AI参考答案</span>`;
       }
 
       container.innerHTML = `
@@ -5599,8 +5618,13 @@
       if (!q) return;
       const qKey = getQKey(q);
       const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
-      const hasAnswered = isWrongSession ? !!wrongSessionAnswers[qKey] : !!userStore.answers[qKey];
-      if (hasAnswered) return;
+      const isStudyMode = (appConfig.quizMode === 'study');
+      const isExam = (appConfig.quizMode === 'exam');
+
+      // 若处于已揭晓答案状态，不允许修改勾选
+      if (isWrongSession && wrongSessionAnswers[qKey]) return;
+      if (isStudyMode && studySessionAnswered[qKey]) return;
+      if (isExam && isExamSubmitted) return;
 
       if (currentMultiSelection.has(letter)) {
         currentMultiSelection.delete(letter);
@@ -5616,8 +5640,12 @@
       if (!q) return;
       const qKey = getQKey(q);
       const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
-      const hasAnswered = isWrongSession ? !!wrongSessionAnswers[qKey] : !!userStore.answers[qKey];
-      if (hasAnswered) return;
+      const isStudyMode = (appConfig.quizMode === 'study');
+      const isExam = (appConfig.quizMode === 'exam');
+
+      if (isWrongSession && wrongSessionAnswers[qKey]) return;
+      if (isStudyMode && studySessionAnswered[qKey]) return;
+      if (isExam && isExamSubmitted) return;
 
       if (currentMultiSelection.size === 0) {
         showToast("请至少勾选一个选项");
@@ -5632,7 +5660,7 @@
         wrongSessionAnswers[qKey] = { chosen, isCorrect, time: Date.now() };
         wrongSessionRevealed[qKey] = true;
       } else {
-        if (appConfig.quizMode === 'study') {
+        if (isStudyMode) {
           studySessionAnswered[qKey] = true;
         }
         userStore.answers[qKey] = { chosen, isCorrect, time: Date.now() };
@@ -5655,6 +5683,7 @@
       if (!q) return;
       const qKey = getQKey(q);
       const isWrongSession = (isWrongPracticeActive || currentSubject === '错题复习' || currentSubject === '我的收藏');
+      const isStudyMode = (appConfig.quizMode === 'study');
 
       if (isWrongSession) {
         if (wrongSessionAnswers[qKey]) return;
@@ -5666,7 +5695,7 @@
         return;
       }
 
-      if (appConfig.quizMode === 'study') {
+      if (isStudyMode) {
         if (studySessionAnswered[qKey]) return;
         studySessionAnswered[qKey] = true;
       }
