@@ -1809,7 +1809,7 @@
     .settings-menu-row,.wrong-compact-row,.video-lesson-row{width:100%;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--text-main);text-align:left;cursor:pointer}
     .settings-menu-row{display:flex;align-items:center;justify-content:space-between;padding:17px 4px;font:inherit}
     .settings-menu-row strong{font-size:14px}.settings-menu-row small{display:block;color:var(--text-muted);font-size:12px;margin-top:3px}
-    .settings-back{border:0;background:none;color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;margin-right:10px}
+    .settings-back{border:0;background:none;color:var(--text-main);font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;}
     .wrong-compact-row{display:flex;align-items:center;gap:12px;padding:10px 2px;line-height:1.45}
     .wrong-compact-row:focus-visible,.settings-menu-row:focus-visible,.video-lesson-row:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
     .wrong-compact-row .row-index{min-width:24px;color:var(--text-muted);font-size:12px}
@@ -2203,6 +2203,14 @@
           </div>
         </div>
       </header>
+      <!-- 版本更新横幅轻提示 (仅在检测到新版本时展示) -->
+      <div id="homeUpdateNotice" style="display:none;margin:12px 20px 0;padding:10px 14px;background:var(--primary-light);border:1px solid var(--primary-border);border-radius:8px;font-size:12.5px;color:var(--primary);cursor:pointer;align-items:center;justify-content:space-between;" onclick="openUpdateModal()">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);flex-shrink:0;"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <strong id="homeUpdateNoticeText">发现新版本 v1.4.3，点击一键更新</strong>
+        </span>
+        <span style="font-weight:700;text-decoration:underline;white-space:nowrap;margin-left:8px;">立即更新 ›</span>
+      </div>
 
       <!-- 首页横向搜索实时结果下拉面板 (不弹窗) -->
       <div class="inline-search-results-panel" id="inlineSearchResultsPanel">
@@ -2615,6 +2623,44 @@
           </div>
         </div>
 
+        <!-- 清除数据 (清空答题记录、错题本与模拟考卷) -->
+        <div data-settings-section="reset" style="border:1px solid #ef444444;border-radius:12px;padding:16px;background:var(--card-bg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:15px;font-weight:800;color:#dc2626;display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:#dc2626;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              <span>清除本地做题数据</span>
+            </div>
+            <span style="font-size:11px;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:4px;font-weight:600;">高风险操作</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
+            此操作将清空本地所有已作答的真题记录、错题本、艾宾浩斯复习曲线、题目收藏夹、模拟考试试卷库以及每日打卡热力图，系统将恢复为初始做题状态。<br>
+            <span style="color:var(--text-muted);">注：不会删除内置官方题库及您已保存的 AI 密钥。如需备份现有学习进度，请先在【备份与恢复】中导出备份文件。</span>
+          </div>
+          <button class="modal-submit-btn" style="width:100%;background:#dc2626;border-color:#dc2626;padding:10px;font-size:13px;" onclick="clearAllUserData()">
+            确认清空所有做题记录与错题本
+          </button>
+        </div>
+
+        <!-- 版本更新与 APK 推送 -->
+        <div data-settings-section="update" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
+              <span>版本与在线更新</span>
+            </div>
+            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.3</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;" id="appRuntimeEnvText">
+            当前环境：检测中...
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;" onclick="checkAppUpdate(true)">
+              立即检查最新版本
+            </button>
+            <div id="settingsUpdateResultArea" style="display:none;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:12px;line-height:1.6;"></div>
+          </div>
+        </div>
+
         <!-- 考点精要手册直接下载 (DOCX / Markdown) -->
         <div data-settings-section="handbook" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -2923,15 +2969,24 @@
         <button class="modal-close-icon" onclick="closeNewExamModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
       <div>
-        <label style="font-size:13px;font-weight:700;color:var(--text-sub);">试卷名称</label>
+        <label for="examPaperName" style="font-size:13px;font-weight:700;color:var(--text-sub);">试卷名称</label>
         <input id="examPaperName" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;outline:none;" placeholder="如：教资全真模考卷">
+      </div>
+      <div>
+        <label for="examSubjectSelect" style="font-size:13px;font-weight:700;color:var(--text-sub);">考核范围 (分科目 / 整体组卷)</label>
+        <select id="examSubjectSelect" style="width:100%;padding:10px;margin-top:6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-main);font-size:13.5px;outline:none;" onchange="onExamSubjectSelectChange(this.value)">
+          <option value="all">全部科目 (整体综合卷 · 5大科目合卷)</option>
+        </select>
       </div>
       <div>
         <label style="font-size:13px;font-weight:700;color:var(--text-sub);">题量大小</label>
         <div style="display:flex;gap:10px;margin-top:6px;">
-          <div class="count-pill active" id="examCnt20" onclick="selectExamCount(20, this)">20题</div>
-          <div class="count-pill" onclick="selectExamCount(50, this)">50题</div>
-          <div class="count-pill" onclick="selectExamCount(100, this)">100题</div>
+          <div class="count-pill active" id="examCnt55" onclick="selectExamCount(55, this)">55题 (标准卷)</div>
+          <div class="count-pill" id="examCnt25" onclick="selectExamCount(25, this)">25题 (速测)</div>
+          <div class="count-pill" id="examCnt110" onclick="selectExamCount(110, this)">110题 (强化)</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+          标准55题卷严格依照官方机考结构组卷：单选40题 + 多选5题 + 判断10题。
         </div>
       </div>
       <button class="modal-submit-btn" onclick="createAndSaveExamPaper()">生成并保存至试卷库</button>
@@ -4086,6 +4141,169 @@
 
       // 启动时后台静默同步一次局域网历史记录
       syncWithServer(false);
+
+      // 启动后延迟检测新版本并轻量推送
+      setTimeout(() => {
+        checkAppUpdate(false);
+      }, 2500);
+    }
+
+    // ==========================================
+    // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
+    // ==========================================
+    const CURRENT_APP_VERSION = "1.4.3";
+    let latestReleaseInfo = null;
+
+    function detectRuntimeEnv() {
+      const isAndroidApp = !!window.AndroidApp || window.location.hostname === "appassets.androidcache.net";
+      const envText = document.getElementById("appRuntimeEnvText");
+      if (envText) {
+        envText.innerHTML = isAndroidApp
+          ? `<strong>当前运行环境：Android 原生客户端 (APK)</strong><br>内置原生离线真题引擎与防误触返回。支持直接通过下方一键检查并更新安装包。`
+          : `<strong>当前运行环境：Web / PWA 浏览器环境</strong><br>您可将网页添加到手机桌面，或点击下方【立即下载安卓 APK】安装手机原生独立应用。`;
+      }
+      const badge = document.getElementById("appCurrentVersionBadge");
+      if (badge) {
+        badge.textContent = `v${CURRENT_APP_VERSION}`;
+      }
+    }
+
+    function compareVersions(v1, v2) {
+      const p1 = String(v1).replace(/^v/, "").split('.').map(n => parseInt(n, 10) || 0);
+      const p2 = String(v2).replace(/^v/, "").split('.').map(n => parseInt(n, 10) || 0);
+      for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+        const n1 = p1[i] || 0;
+        const n2 = p2[i] || 0;
+        if (n1 > n2) return 1;
+        if (n1 < n2) return -1;
+      }
+      return 0;
+    }
+
+    async function checkAppUpdate(isManual = false) {
+      const resultArea = document.getElementById("settingsUpdateResultArea");
+      if (isManual && resultArea) {
+        resultArea.style.display = 'block';
+        resultArea.innerHTML = `<span style="color:var(--text-muted);">正在检查最新版本...</span>`;
+      }
+
+      try {
+        let remoteInfo = null;
+        // 1. 优先读取静态版本索引文件 (高可靠、免 API 限额)
+        try {
+          const vResp = await fetch("version.json?_t=" + Date.now(), { cache: "no-store" });
+          if (vResp.ok) {
+            remoteInfo = await vResp.json();
+          }
+        } catch (e) {}
+
+        // 2. 备用方式：读取 GitHub Releases API
+        if (!remoteInfo) {
+          const ghResp = await fetch("https://api.github.com/repos/Simple53/jsgsMock/releases/latest", {
+            headers: { "Accept": "application/vnd.github.v3+json" }
+          });
+          if (ghResp.ok) {
+            const ghData = await ghResp.json();
+            const tag = (ghData.tag_name || "").replace(/^v/, "");
+            const apkAsset = (ghData.assets || []).find(a => a.name.endsWith(".apk"));
+            const dl = apkAsset ? apkAsset.browser_download_url : `https://github.com/Simple53/jsgsMock/releases/download/${ghData.tag_name}/jsgsMock-${ghData.tag_name}.apk`;
+            remoteInfo = {
+              version: tag,
+              title: ghData.name || `jsgsMock v${tag}`,
+              releaseDate: ghData.published_at ? ghData.published_at.slice(0, 10) : "",
+              changelog: (ghData.body || "").split("\n").filter(l => l.trim().length > 0).slice(0, 6),
+              downloadUrl: dl,
+              acceleratedDownloadUrl: `https://mirror.ghproxy.com/${dl}`
+            };
+          }
+        }
+
+        if (!remoteInfo || !remoteInfo.version) {
+          if (isManual && resultArea) {
+            resultArea.innerHTML = `<span style="color:var(--text-sub);">未能检索到远程版本信息，请确认网络连接正常。</span>`;
+          }
+          return;
+        }
+
+        latestReleaseInfo = remoteInfo;
+        const isNewer = compareVersions(remoteInfo.version, CURRENT_APP_VERSION) > 0;
+
+        if (isNewer) {
+          // 在首页显示轻量更新横幅
+          const homeNotice = document.getElementById("homeUpdateNotice");
+          const homeText = document.getElementById("homeUpdateNoticeText");
+          if (homeNotice && homeText) {
+            homeText.textContent = `发现新版本 v${remoteInfo.version}，点击一键更新`;
+            homeNotice.style.display = 'flex';
+          }
+
+          if (isManual && resultArea) {
+            const logHtml = Array.isArray(remoteInfo.changelog) ? remoteInfo.changelog.map(l => `<div>• ${escapeHtml(l)}</div>`).join('') : remoteInfo.changelog;
+            resultArea.innerHTML = `
+              <div style="font-weight:700;color:var(--primary);margin-bottom:6px;">发现最新版本 v${escapeHtml(remoteInfo.version)}！</div>
+              <div style="margin-bottom:10px;color:var(--text-sub);">${logHtml}</div>
+              <button class="modal-submit-btn" style="width:100%;padding:8px;font-size:12px;" onclick="openUpdateModal()">立即查看并一键更新</button>
+            `;
+          }
+          openUpdateModal();
+        } else {
+          if (isManual && resultArea) {
+            resultArea.innerHTML = `<span style="color:var(--correct);font-weight:700;">✓ 当前已是最新版本 (v${CURRENT_APP_VERSION})，无需更新。</span>`;
+          }
+        }
+      } catch (err) {
+        if (isManual && resultArea) {
+          resultArea.innerHTML = `<span style="color:#ef4444;">检查版本失败: ${escapeHtml(err.message || '网络连接超时')}</span>`;
+        }
+      }
+    }
+
+    function openUpdateModal() {
+      if (!latestReleaseInfo) {
+        latestReleaseInfo = {
+          version: CURRENT_APP_VERSION,
+          title: `jsgsMock v${CURRENT_APP_VERSION}`,
+          releaseDate: "2026-10-27",
+          changelog: [
+            "模拟考试支持分科目精准组卷与整体综合组卷，题目量55题",
+            "设置中心二级菜单顶部返回按钮左置对齐",
+            "设置中心恢复并强化清除数据功能",
+            "新增原生 APK 版本检测与推送一键更新功能"
+          ],
+          downloadUrl: `https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`,
+          acceleratedDownloadUrl: `https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`
+        };
+      }
+      const tag = document.getElementById("updateModalNewTag");
+      if (tag) tag.textContent = `v${latestReleaseInfo.version}`;
+      const dateEl = document.getElementById("updateModalReleaseDate");
+      if (dateEl) dateEl.textContent = `发布日期：${latestReleaseInfo.releaseDate || '最新发布'}`;
+      const logBox = document.getElementById("updateModalChangelog");
+      if (logBox) {
+        if (Array.isArray(latestReleaseInfo.changelog)) {
+          logBox.innerHTML = latestReleaseInfo.changelog.map(item => `<div style="margin-bottom:4px;">• ${escapeHtml(item)}</div>`).join('');
+        } else {
+          logBox.textContent = latestReleaseInfo.changelog;
+        }
+      }
+      document.getElementById("appUpdateModal")?.classList.add("open");
+    }
+
+    function closeUpdateModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById("appUpdateModal")?.classList.remove("open");
+    }
+
+    function triggerApkUpdateDownload(mode) {
+      if (!latestReleaseInfo) return;
+      const url = mode === 'mirror' ? (latestReleaseInfo.acceleratedDownloadUrl || latestReleaseInfo.downloadUrl) : latestReleaseInfo.downloadUrl;
+      showToast("正在前往下载最新 APK 安装包...");
+      if (window.AndroidApp && typeof window.AndroidApp.openDownloadUrl === 'function') {
+        window.AndroidApp.openDownloadUrl(url);
+      } else {
+        window.open(url, '_blank');
+      }
+      closeUpdateModal();
     }
 
     // ==========================================
@@ -4482,6 +4700,8 @@
       ['theme','外观','跟随系统主题'],
       ['sync','多端同步','GitHub Gist 与同步配置'],
       ['backup','备份与恢复','迁移学习记录备份文件'],
+      ['reset','清除数据','清空答题记录、错题本与模拟考卷'],
+      ['update','版本更新','检查最新版本及 APK 一键更新'],
       ['handbook','考点精要手册','Word 与 Markdown 讲义下载'],
       ['downloads','官方题库下载','Excel 对照总表与题库下载'],
       ['bank','题库管理','导入与导出 JSON 题库'],
@@ -4500,14 +4720,17 @@
       }
       const heading = pane.querySelector('.home-top-header');
       const currentTitle = SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置';
-      // 需求4: 子菜单的返回不需要文字提示，按返回/首页svg图标即可返回
+      // 设置二级菜单返回按钮放置在文字左侧
       heading.innerHTML = section === 'menu'
         ? '<span style="font-size:18px;font-weight:800">设置</span>'
-        : `<button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin-right:8px;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800">${currentTitle}</span>`;
+        : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>`;
       menu.style.display = section === 'menu' ? 'block' : 'none';
       host.querySelectorAll('[data-settings-section]').forEach(el => {
         el.style.display = el.dataset.settingsSection === section ? '' : 'none';
       });
+      if (section === 'update') {
+        detectRuntimeEnv();
+      }
       if (section === 'sync') {
         const syncCard = host.querySelector('[data-settings-section="sync"]');
         if (syncCard) {
@@ -4516,9 +4739,14 @@
           });
           if (!document.getElementById('syncMoreButton')) {
             const more = document.createElement('button');
-            more.id = 'syncMoreButton'; more.className = 'settings-menu-row';
-            more.innerHTML = '<span><strong>其他同步方式</strong><small>局域网与离线口令</small></span><span aria-hidden="true">›</span>';
-            more.onclick = () => { syncCard.querySelectorAll(':scope > div').forEach((part, i) => { if (i === 4 || i === 5) part.style.display = part.style.display === 'none' ? '' : 'none'; }); };
+            more.id = 'syncMoreButton';
+            more.className = 'bottom-btn';
+            more.style.cssText = 'width:100%;margin-top:10px;font-size:12px;';
+            more.textContent = '显示高级同步方式 (局域网/口令快照) ›';
+            more.onclick = () => {
+              syncCard.querySelectorAll(':scope > div').forEach(part => part.style.display = '');
+              more.remove();
+            };
             syncCard.appendChild(more);
           }
         }
@@ -7324,14 +7552,20 @@
     }
 
     function clearAllUserData() {
-      if (!confirm("确定要重置所有做题记录与错题本吗？")) return;
+      if (!confirm("确定要清空所有答题记录、错题本与模拟考试记录吗？\n\n清空后将重置为全新的初始做题状态，此操作无法撤销！\n（内置题库和您的 AI 助教配置不受影响）")) return;
       userStore.answers = {};
       userStore.ebbinghausWrong = {};
       userStore.favorites = [];
       userStore.progress = {};
+      userStore.savedExams = [];
+      userStore.studyDays = [];
+      userStore.checkinHistory = {};
       saveUserStore();
-      alert("做题记录已重置！");
+      showToast("所有做题数据已清空，系统已恢复为初始状态！");
       renderSubjectList();
+      renderSavedExams();
+      updateCheckinUI();
+      renderCalendarHeatmap();
     }
 
     // 错题本与模拟考试
@@ -7551,8 +7785,166 @@
       openQuizView();
     }
 
-    // 模考
-    let chosenExamCount = 20;
+    // 模考系统：分科目组卷 / 整体组卷，标准 55 题
+    let chosenExamCount = 55;
+    let chosenExamSubject = 'all';
+
+    function onExamSubjectSelectChange(val) {
+      chosenExamSubject = val || 'all';
+      const now = new Date();
+      const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
+      const nameInput = document.getElementById("examPaperName");
+      if (nameInput) {
+        if (chosenExamSubject === 'all') {
+          nameInput.value = `高校教资全真模考卷(综合55题) (${dateStr})`;
+        } else {
+          nameInput.value = `${chosenExamSubject}·全真模拟卷(55题) (${dateStr})`;
+        }
+      }
+    }
+
+    function openNewExamModal() {
+      const select = document.getElementById("examSubjectSelect");
+      if (select) {
+        const subjects = Object.keys(allSubjectsData);
+        let opts = `<option value="all">全部科目 (整体综合卷 · 5大科目合卷)</option>`;
+        subjects.forEach(s => {
+          opts += `<option value="${escapeHtml(s)}">${escapeHtml(s)} (${(allSubjectsData[s]||[]).length}题)</option>`;
+        });
+        select.innerHTML = opts;
+        select.value = 'all';
+      }
+      chosenExamSubject = 'all';
+      chosenExamCount = 55;
+      document.querySelectorAll("#newExamModal .count-pill").forEach(p => p.classList.remove("active"));
+      document.getElementById("examCnt55")?.classList.add("active");
+
+      const now = new Date();
+      document.getElementById("examPaperName").value = `高校教资全真模考卷(综合55题) (${now.getMonth()+1}月${now.getDate()}日)`;
+      document.getElementById("newExamModal").classList.add("open");
+    }
+
+    function closeNewExamModal() {
+      document.getElementById("newExamModal").classList.remove("open");
+    }
+
+    function selectExamCount(cnt, elem) {
+      chosenExamCount = cnt;
+      document.querySelectorAll("#newExamModal .count-pill").forEach(p => p.classList.remove("active"));
+      elem.classList.add("active");
+    }
+
+    function assembleExamQuestions(subject, count) {
+      // 1. 单科组卷
+      if (subject !== 'all' && allSubjectsData[subject]) {
+        const qs = allSubjectsData[subject];
+        const singles = qs.filter(q => q.type === 'single').sort(() => Math.random() - 0.5);
+        const multis = qs.filter(q => q.type === 'multi').sort(() => Math.random() - 0.5);
+        const judges = qs.filter(q => q.type === 'judge').sort(() => Math.random() - 0.5);
+
+        if (count === 55) {
+          // 标准 55 题：40单选 + 5多选 + 10判断
+          const pickedSingles = singles.slice(0, 40);
+          const pickedMultis = multis.slice(0, 5);
+          const pickedJudges = judges.slice(0, 10);
+          let result = [...pickedSingles, ...pickedMultis, ...pickedJudges];
+          if (result.length < 55) {
+            const pickedSet = new Set(result.map(q => getQKey(q)));
+            const rest = qs.filter(q => !pickedSet.has(getQKey(q))).sort(() => Math.random() - 0.5);
+            result.push(...rest.slice(0, 55 - result.length));
+          }
+          return result;
+        } else {
+          return qs.slice().sort(() => Math.random() - 0.5).slice(0, count);
+        }
+      }
+
+      // 2. 整体组卷 (全部科目综合)
+      const subjects = Object.keys(allSubjectsData);
+      if (count === 55 && subjects.length > 0) {
+        let pickedSingles = [];
+        let pickedMultis = [];
+        let pickedJudges = [];
+        const singlesPerSub = Math.floor(40 / subjects.length);
+        const multisPerSub = Math.floor(5 / subjects.length);
+        const judgesPerSub = Math.floor(10 / subjects.length);
+
+        subjects.forEach(s => {
+          const qs = allSubjectsData[s] || [];
+          const sList = qs.filter(q => q.type === 'single').sort(() => Math.random() - 0.5);
+          const mList = qs.filter(q => q.type === 'multi').sort(() => Math.random() - 0.5);
+          const jList = qs.filter(q => q.type === 'judge').sort(() => Math.random() - 0.5);
+          pickedSingles.push(...sList.slice(0, singlesPerSub));
+          pickedMultis.push(...mList.slice(0, multisPerSub));
+          pickedJudges.push(...jList.slice(0, judgesPerSub));
+        });
+
+        const pickedSet = new Set([...pickedSingles, ...pickedMultis, ...pickedJudges].map(q => getQKey(q)));
+        let remSingles = [], remMultis = [], remJudges = [];
+        Object.values(allSubjectsData).forEach(qs => {
+          qs.forEach(q => {
+            if (!pickedSet.has(getQKey(q))) {
+              if (q.type === 'single') remSingles.push(q);
+              else if (q.type === 'multi') remMultis.push(q);
+              else if (q.type === 'judge') remJudges.push(q);
+            }
+          });
+        });
+        remSingles.sort(() => Math.random() - 0.5);
+        remMultis.sort(() => Math.random() - 0.5);
+        remJudges.sort(() => Math.random() - 0.5);
+
+        if (pickedSingles.length < 40) pickedSingles.push(...remSingles.slice(0, 40 - pickedSingles.length));
+        if (pickedMultis.length < 5) pickedMultis.push(...remMultis.slice(0, 5 - pickedMultis.length));
+        if (pickedJudges.length < 10) pickedJudges.push(...remJudges.slice(0, 10 - pickedJudges.length));
+
+        let finalExam = [...pickedSingles, ...pickedMultis, ...pickedJudges];
+        if (finalExam.length < 55) {
+          const curSet = new Set(finalExam.map(q => getQKey(q)));
+          let pool = [];
+          Object.values(allSubjectsData).forEach(qs => qs.forEach(q => { if (!curSet.has(getQKey(q))) pool.push(q); }));
+          pool.sort(() => Math.random() - 0.5);
+          finalExam.push(...pool.slice(0, 55 - finalExam.length));
+        }
+        return finalExam;
+      } else {
+        let all = [];
+        Object.values(allSubjectsData).forEach(qs => all.push(...qs));
+        all.sort(() => Math.random() - 0.5);
+        return all.slice(0, count);
+      }
+    }
+
+    function createAndSaveExamPaper() {
+      const title = document.getElementById("examPaperName").value.trim() || "模拟考卷";
+      const sampled = assembleExamQuestions(chosenExamSubject, chosenExamCount);
+      const examId = "exam_" + Date.now();
+      const subjectName = (chosenExamSubject === 'all') ? '整体综合卷' : chosenExamSubject;
+      const newExam = {
+        id: examId,
+        title,
+        subject: chosenExamSubject,
+        subjectName,
+        questionKeys: sampled.map(q => getQKey(q)),
+        createdAt: Date.now()
+      };
+
+      if (!userStore.savedExams) userStore.savedExams = [];
+      userStore.savedExams.unshift(newExam);
+      saveUserStore();
+      closeNewExamModal();
+      renderSavedExams();
+      startSavedExam(examId);
+    }
+
+    function deleteSavedExam(examId, event) {
+      if (event) event.stopPropagation();
+      if (!confirm("确定要删除此试卷吗？")) return;
+      userStore.savedExams = (userStore.savedExams || []).filter(e => e.id !== examId);
+      saveUserStore();
+      renderSavedExams();
+    }
+
     function renderSavedExams() {
       const container = document.getElementById("savedExamList");
       container.innerHTML = "";
@@ -7563,46 +7955,26 @@
       userStore.savedExams.forEach(exam => {
         const card = document.createElement("div");
         card.className = "exam-paper-card";
+        card.style.cssText = "display:flex;align-items:center;justify-content:space-between;padding:14px;border:1.5px solid var(--border);border-radius:12px;background:var(--card-bg);margin-bottom:10px;";
         const isDone = (exam.score !== undefined);
+        const subTag = exam.subjectName || (exam.subject === 'all' ? '整体综合卷' : exam.subject || '全科模考');
         card.innerHTML = `
-          <div>
-            <div class="exam-paper-title">${exam.title}</div>
-            <div class="exam-paper-desc">共 ${exam.questionKeys.length} 题 | 创建于 ${new Date(exam.createdAt).toLocaleDateString()} ${isDone ? `| 得分: <strong style="color:var(--primary);">${exam.score}分</strong>` : '| 未交卷'}</div>
+          <div style="flex:1;min-width:0;cursor:pointer;" onclick="startSavedExam('${exam.id}')">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+              <span class="exam-paper-title" style="font-weight:700;font-size:14px;color:var(--text-main);">${escapeHtml(exam.title)}</span>
+              <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:var(--primary-light);color:var(--primary);font-weight:600;">${escapeHtml(subTag)}</span>
+            </div>
+            <div class="exam-paper-desc" style="font-size:12px;color:var(--text-muted);">共 ${exam.questionKeys.length} 题 | 创建于 ${new Date(exam.createdAt).toLocaleDateString()} ${isDone ? `| 得分: <strong style="color:var(--primary);">${exam.score}分</strong>` : '| 未交卷'}</div>
           </div>
-          <button class="bottom-btn primary" style="padding:6px 14px;font-size:12px;">${isDone ? '查看答卷' : '进入考试'}</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="bottom-btn primary" style="padding:6px 14px;font-size:12px;" onclick="startSavedExam('${exam.id}')">${isDone ? '查看答卷' : '进入考试'}</button>
+            <button class="bottom-btn" style="padding:6px 8px;color:#ef4444;border-color:transparent;" title="删除试卷" onclick="deleteSavedExam('${exam.id}', event)">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
         `;
-        card.onclick = () => startSavedExam(exam.id);
         container.appendChild(card);
       });
-    }
-
-    function openNewExamModal() {
-      document.getElementById("examPaperName").value = `高校教资全真模考卷 (${new Date().getMonth()+1}月${new Date().getDate()}日)`;
-      document.getElementById("newExamModal").classList.add("open");
-    }
-    function closeNewExamModal() { document.getElementById("newExamModal").classList.remove("open"); }
-    function selectExamCount(cnt, elem) {
-      chosenExamCount = cnt;
-      document.querySelectorAll("#newExamModal .count-pill").forEach(p => p.classList.remove("active"));
-      elem.classList.add("active");
-    }
-
-    function createAndSaveExamPaper() {
-      const title = document.getElementById("examPaperName").value.trim() || "模拟考卷";
-      let all = [];
-      Object.values(allSubjectsData).forEach(qs => all.push(...qs));
-      all.sort(() => Math.random() - 0.5);
-
-      const sampled = all.slice(0, chosenExamCount);
-      const examId = "exam_" + Date.now();
-      const newExam = { id: examId, title, questionKeys: sampled.map(q => getQKey(q)), createdAt: Date.now() };
-
-      if (!userStore.savedExams) userStore.savedExams = [];
-      userStore.savedExams.unshift(newExam);
-      saveUserStore();
-      closeNewExamModal();
-      renderSavedExams();
-      startSavedExam(examId);
     }
 
     function startSavedExam(examId) {
@@ -7684,6 +8056,33 @@
       </div>
 
       <button class="modal-submit-btn" style="margin-top:14px;" onclick="closeNetworkConnectModal()">我知道了</button>
+    </div>
+  </div>
+
+
+  <!-- 版本更新提示与一键更新弹窗 -->
+  <div class="modal-mask" id="appUpdateModal" onclick="closeUpdateModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <div class="modal-top-row">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="modal-main-title">发现新版本</span>
+          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.3</span>
+        </div>
+        <button class="modal-close-icon" onclick="closeUpdateModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+      <div style="margin-top:10px;">
+        <div style="font-size:12px;color:var(--text-muted);" id="updateModalReleaseDate">发布日期：2026-10-27</div>
+        <div style="margin-top:10px;font-size:13px;font-weight:700;color:var(--text-main);">更新内容说明：</div>
+        <div id="updateModalChangelog" style="margin-top:6px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:12px;line-height:1.6;max-height:180px;overflow-y:auto;color:var(--text-sub);"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
+        <button class="modal-submit-btn" id="btnUpdateDirect" style="width:100%;padding:11px;font-size:13px;" onclick="triggerApkUpdateDownload('direct')">
+          立即一键更新安装 (官方下载)
+        </button>
+        <button class="bottom-btn" id="btnUpdateAccelerated" style="width:100%;padding:9px;font-size:12px;" onclick="triggerApkUpdateDownload('mirror')">
+          国内高速加速更新通道
+        </button>
+      </div>
     </div>
   </div>
 

@@ -1,0 +1,14 @@
+{
+  "version": "1.4.3",
+  "versionCode": 19,
+  "title": "jsgsMock v1.4.3 - 全科模考与智能更新",
+  "releaseDate": "2026-10-27",
+  "changelog": [
+    "模拟考试支持分科目组卷与整体全科组卷，官方标准 55 题题量（40单选 + 5多选 + 10判断）",
+    "优化设置中心二级菜单顶部返回按钮位置，置于标题文字左侧",
+    "设置中心恢复并强化【清除数据】功能（答题进度、打卡记录、错题本与模考一键重置）",
+    "新增原生 APK 版本检测与推送一键更新功能，支持国内高速节点加速下载"
+  ],
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.3/jsgsMock-v1.4.3.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.3/jsgsMock-v1.4.3.apk"
+}

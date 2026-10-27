@@ -47,6 +47,24 @@ public class MainActivity extends AppCompatActivity {
         settings.setLoadWithOverviewMode(true);
         settings.setSupportZoom(false);
 
+        // 注入 Android 原生 JS 桥接对象，支持版本获取与一键调用外部浏览器下载安装更新
+        mWebView.addJavascriptInterface(new Object() {
+            @android.webkit.JavascriptInterface
+            public String getAppVersion() {
+                return "1.4.3";
+            }
+            @android.webkit.JavascriptInterface
+            public void openDownloadUrl(String url) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "启动下载失败: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        }, "AndroidApp");
+
         // 使用 AndroidX 官方推荐的 WebViewAssetLoader 将本地 Assets 映射为合法的虚拟安全域
         // 彻底根治本地 file:/// 协议下 Fetch/XHR/CORS 无法读取 JSON 题库的问题
         final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
