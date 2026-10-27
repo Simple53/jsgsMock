@@ -2294,8 +2294,11 @@
       <div style="padding:14px 20px 80px;">
         <section id="tutorialVideosPane">
           <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">课程视频需联网观看</div>
-          <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;background:#111;border-radius:8px;margin-bottom:12px;"></video>
-          <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;margin-bottom:12px;"></div>
+          <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;background:#111;border-radius:8px;margin-bottom:8px;"></video>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px;">
+            <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;"></div>
+            <button id="videoMirrorBtn" class="bottom-btn" style="display:none;padding:3px 8px;font-size:11px;" onclick="toggleVideoCdnMirror()">切换加速线路</button>
+          </div>
           <div id="tutorialVideoCatalog"></div>
         </section>
       </div>
@@ -4873,14 +4876,55 @@
       switchBottomTab('video');
       document.getElementById('tutorialVideosPane')?.scrollIntoView({behavior:'smooth',block:'start'});
     }
+    let isVideoMirrorActive = false;
+    let currentPlayingLessonUrl = '';
+
+    function getEffectiveVideoUrl(url) {
+      if (!url) return '';
+      if (isVideoMirrorActive && url.includes('github.com')) {
+        return `https://mirror.ghproxy.com/${url}`;
+      }
+      return url;
+    }
+
+    function toggleVideoCdnMirror() {
+      isVideoMirrorActive = !isVideoMirrorActive;
+      const btn = document.getElementById('videoMirrorBtn');
+      if (btn) {
+        btn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
+        btn.classList.toggle('primary', isVideoMirrorActive);
+      }
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (player && currentPlayingLessonUrl) {
+        const curTime = player.currentTime;
+        player.src = getEffectiveVideoUrl(currentPlayingLessonUrl);
+        player.currentTime = curTime;
+        player.load();
+        player.play().catch(() => {});
+        showToast(isVideoMirrorActive ? '已切换至国内高速加速线路' : '已切换至 GitHub 官方线路');
+      }
+    }
+
     function renderTutorialVideos() {
       const catalog = document.getElementById('tutorialVideoCatalog');
       if (catalog.dataset.ready) return;
       catalog.dataset.ready = '1';
       const courses = window.COURSE_VIDEOS || [];
       document.getElementById('tutorialVideoNotice').textContent = courses.length
-        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节视频 · ${courses.some(c => c.lessons.some(l => l.url)) ? '播放时需要网络连接' : '压缩与部署完成后可在线播放'}`
-        : '尚未部署课程视频，请先生成并上传压缩视频。';
+        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节名师精讲视频 · 全程支持拖动与断点续播`
+        : '尚未部署课程视频。';
+      
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (player) {
+        player.onerror = () => {
+          if (!isVideoMirrorActive && currentPlayingLessonUrl && currentPlayingLessonUrl.includes('github.com')) {
+            toggleVideoCdnMirror();
+          } else {
+            showToast('若播放遇到网络缓冲，可点击上方“切换加速线路”');
+          }
+        };
+      }
+
       courses.forEach(course => {
         const group = document.createElement('details');
         group.style.cssText = 'border-bottom:1px solid var(--border);padding:12px 0';
@@ -4893,13 +4937,20 @@
           button.className = 'video-lesson-row'; button.textContent = lesson.title;
           button.onclick = () => {
             if (!lesson.url) {
-              showToast('视频尚未部署，请稍后观看');
+              showToast('视频正在同步云端，请稍候观看');
               return;
             }
-            const player = document.getElementById('tutorialVideoPlayer');
-            player.src = lesson.url; player.style.display = 'block';
+            currentPlayingLessonUrl = lesson.url;
+            const mirrorBtn = document.getElementById('videoMirrorBtn');
+            if (mirrorBtn && lesson.url.includes('github.com')) {
+              mirrorBtn.style.display = 'inline-block';
+              mirrorBtn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
+            }
+            player.src = getEffectiveVideoUrl(lesson.url);
+            player.style.display = 'block';
             document.getElementById('tutorialVideoTitle').textContent = `${course.title} · ${lesson.title}`;
-            player.load(); player.play().catch(() => {});
+            player.load();
+            player.play().catch(() => {});
             player.scrollIntoView({behavior:'smooth',block:'start'});
           };
           group.appendChild(button);
