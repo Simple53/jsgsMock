@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jsgsMock-v33';
+const CACHE_NAME = 'jsgsMock-v34';
 const ASSETS = [
   './',
   './index.html',

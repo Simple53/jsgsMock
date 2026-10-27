@@ -1982,7 +1982,37 @@
       color: var(--primary);
       margin-bottom: 4px;
     }
-  </style>
+  
+/* 视频全屏/沉浸放大与选集交互 */
+#videoContainer.enlarged {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 99999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  background: #000 !important;
+}
+#videoContainer.enlarged video {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100vh !important;
+  object-fit: contain !important;
+}
+@keyframes spinDaily {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.daily-refresh-btn.spinning svg {
+  animation: spinDaily 0.5s ease;
+}
+
+</style>
 </head>
 <body>
 
@@ -2294,11 +2324,49 @@
       <div style="padding:14px 20px 80px;">
         <section id="tutorialVideosPane">
           <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">课程视频需联网观看</div>
-          <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;background:#111;border-radius:8px;margin-bottom:8px;"></video>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px;">
-            <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;"></div>
-            <button id="videoMirrorBtn" class="bottom-btn" style="display:none;padding:3px 8px;font-size:11px;" onclick="toggleVideoCdnMirror()">切换加速线路</button>
+          
+          <!-- 视频播放器容器（支持沉浸放大/全屏与选集） -->
+          <div id="videoContainer" class="video-container" style="position:relative;background:#000;border-radius:10px;overflow:hidden;margin-bottom:10px;min-height:180px;display:flex;align-items:center;justify-content:center;">
+            <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;max-height:55vh;background:#000;"></video>
+            
+            <div id="videoEmptyPlaceholder" style="color:#aaa;font-size:13px;padding:30px 16px;text-align:center;">
+              请在下方选择课程开始观看
+            </div>
+
+            <!-- 放大/沉浸模式下的顶部悬浮栏 (选集 + 缩小) -->
+            <div id="videoFullscreenBar" style="display:none;position:absolute;top:12px;right:12px;z-index:90;gap:8px;align-items:center;">
+              <button class="bottom-btn" id="btnFullscreenEpisode" style="padding:5px 12px;font-size:12px;background:rgba(0,0,0,0.65);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(6px);" onclick="openEpisodeDrawer()">选集</button>
+              <button class="bottom-btn" id="btnFullscreenExit" style="padding:5px 12px;font-size:12px;background:rgba(0,0,0,0.65);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(6px);" onclick="toggleVideoEnlarge()">缩小</button>
+            </div>
+
+            <!-- 选集抽屉 (覆在视频容器上方) -->
+            <div id="videoEpisodeDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:80%;max-width:340px;background:rgba(18,18,18,0.95);backdrop-filter:blur(12px);z-index:95;border-left:1px solid rgba(255,255,255,0.15);flex-direction:column;box-sizing:border-box;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.1);color:#fff;">
+                <span style="font-size:14px;font-weight:700;">选集播放</span>
+                <button onclick="closeEpisodeDrawer()" style="border:none;background:transparent;color:#fff;cursor:pointer;padding:4px;font-size:18px;line-height:1;">×</button>
+              </div>
+              <div id="videoEpisodeDrawerList" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
+            </div>
           </div>
+
+          <!-- 播放器控制面板：标题、线路、上下集、选集、放大 -->
+          <div id="videoControlsRow" style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;color:var(--text-main);word-break:break-all;">未开始播放</div>
+              <button id="videoMirrorBtn" class="bottom-btn" style="display:none;padding:3px 8px;font-size:11px;" onclick="toggleVideoCdnMirror()">切换加速线路</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button id="btnPrevLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="playPrevLesson()" disabled>上一集</button>
+                <button id="btnDrawerLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="openEpisodeDrawer()">选集</button>
+                <button id="btnNextLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="playNextLesson()" disabled>下一集</button>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button id="btnEnlargeVideo" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="toggleVideoEnlarge()">窗口放大</button>
+              </div>
+            </div>
+          </div>
+
           <div id="tutorialVideoCatalog"></div>
         </section>
       </div>
@@ -3165,30 +3233,131 @@
 
   <script>
     // ==========================================
-    // 每日从答案解析中选取一个考点
+    // 每日从答案解析中选取一个考点 (支持刷新与点击放大查看)
     // ==========================================
-    function renderDailyPoint() {
-      const points = Object.entries(allSubjectsData).flatMap(([subject, questions]) =>
+    let _cachedDailyPoints = [];
+    let _currentDailyPoint = null;
+
+    function initDailyPoints() {
+      if (_cachedDailyPoints.length) return _cachedDailyPoints;
+      _cachedDailyPoints = Object.entries(allSubjectsData).flatMap(([subject, questions]) =>
         questions.flatMap(q => {
           const analysis = String(q.analysis || '').replace(/\s+/g, ' ').trim();
           const sentence = analysis.match(/[^。！？]{15,90}[。！？]/)?.[0]?.trim();
-          return sentence ? [{subject, sentence}] : [];
+          return sentence ? [{
+            subject,
+            sentence,
+            fullAnalysis: analysis,
+            title: q.title || q.question || ''
+          }] : [];
         })
       );
-      const today = new Date();
-      const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-      let seed = 0;
-      for (const char of dayKey) seed = (seed * 31 + char.charCodeAt(0)) >>> 0;
-      const point = points[seed % points.length];
+      return _cachedDailyPoints;
+    }
+
+    function renderDailyPoint(isRandom = false) {
+      const points = initDailyPoints();
+      if (!points.length) return;
+
+      if (isRandom) {
+        const idx = Math.floor(Math.random() * points.length);
+        _currentDailyPoint = points[idx];
+      } else if (!_currentDailyPoint) {
+        const today = new Date();
+        const dayKey = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        let seed = 0;
+        for (const char of dayKey) seed = (seed * 31 + char.charCodeAt(0)) >>> 0;
+        _currentDailyPoint = points[seed % points.length];
+      }
+
       const track = document.getElementById('bannerTrack');
+      if (!track) return;
       const slide = document.createElement('div');
       slide.className = 'banner-slide';
-      slide.innerHTML = '<div class="banner-badge-row"><span class="banner-tag">每日一句</span><span class="banner-date">来自答案解析</span></div><div class="banner-title">今日考点</div><div class="banner-summary"></div><div class="banner-foot-row"><span></span><span>每天更新</span></div>';
-      slide.querySelector('.banner-summary').textContent = point?.sentence || '题库加载后将在这里展示今日考点。';
-      slide.querySelector('.banner-foot-row span').textContent = point?.subject || '';
+      slide.style.cursor = 'pointer';
+      slide.onclick = () => openDailyPointModal();
+      slide.innerHTML = `
+        <div class="banner-badge-row" style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="banner-tag">每日一句</span>
+            <span class="banner-date">来自真题解析</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button id="btnDailyRefresh" class="daily-refresh-btn" title="换一个考点" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();refreshDailyPointWithAnim();">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            </button>
+            <button title="放大查看" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();openDailyPointModal();">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="banner-title">今日考点</div>
+        <div class="banner-summary" style="line-height:1.5;">${escapeHtml(_currentDailyPoint.sentence)}</div>
+        <div class="banner-foot-row" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>${escapeHtml(_currentDailyPoint.subject || '')}</span>
+          <span style="font-size:11px;color:var(--primary);">点击放大阅读 · 随时刷新</span>
+        </div>
+      `;
       track.replaceChildren(slide);
       track.style.transform = 'none';
-      document.getElementById('bannerDotsRow').replaceChildren();
+      document.getElementById('bannerDotsRow')?.replaceChildren();
+
+      const modal = document.getElementById('dailyPointModal');
+      if (modal && modal.style.display !== 'none') {
+        updateDailyModalContent();
+      }
+    }
+
+    function refreshDailyPointWithAnim() {
+      const btn = document.getElementById('btnDailyRefresh');
+      if (btn) {
+        btn.classList.add('spinning');
+        setTimeout(() => btn.classList.remove('spinning'), 500);
+      }
+      renderDailyPoint(true);
+      showToast('已更换考点');
+    }
+
+    function openDailyPointModal() {
+      if (!_currentDailyPoint) renderDailyPoint(false);
+      updateDailyModalContent();
+      const modal = document.getElementById('dailyPointModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeDailyPointModal() {
+      const modal = document.getElementById('dailyPointModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function updateDailyModalContent() {
+      if (!_currentDailyPoint) return;
+      const tag = document.getElementById('dailyModalSubjectTag');
+      if (tag) tag.textContent = _currentDailyPoint.subject || '考点';
+      const sentence = document.getElementById('dailyModalSentence');
+      if (sentence) sentence.textContent = _currentDailyPoint.sentence;
+      const fullArea = document.getElementById('dailyModalFullAnalysisArea');
+      const fullText = document.getElementById('dailyModalFullAnalysis');
+      if (_currentDailyPoint.fullAnalysis && _currentDailyPoint.fullAnalysis !== _currentDailyPoint.sentence) {
+        if (fullArea) fullArea.style.display = 'block';
+        if (fullText) fullText.textContent = (_currentDailyPoint.title ? _currentDailyPoint.title + '\n\n' : '') + _currentDailyPoint.fullAnalysis;
+      } else {
+        if (fullArea) fullArea.style.display = 'none';
+      }
+    }
+
+    function copyDailyPointText() {
+      if (!_currentDailyPoint) return;
+      const textToCopy = `【${_currentDailyPoint.subject || '高校教资考点'}】\n${_currentDailyPoint.sentence}\n\n${_currentDailyPoint.fullAnalysis || ''}`;
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast('考点内容已复制');
+        }).catch(() => {
+          showToast('复制失败，请手动选择复制');
+        });
+      } else {
+        showToast('浏览器限制，请手动长按复制');
+      }
     }
 
     // ==========================================
@@ -4801,18 +4970,21 @@
     }
 
     const SETTINGS_SECTIONS = [
-      ['mode','做题偏好','默认答题模式'],
-      ['ai','AI 助教','模型、密钥与悬浮助教'],
-      ['theme','外观','跟随系统主题'],
-      ['sync','多端同步','GitHub Gist 与同步配置'],
-      ['backup','备份与恢复','迁移学习记录备份文件'],
-      ['reset','清除数据','清空答题记录、错题本与模拟考卷'],
-      ['update','版本更新','检查最新版本及 APK 一键更新'],
-      ['handbook','考点精要手册','Word 与 Markdown 讲义下载'],
-      ['downloads','官方题库下载','Excel 对照总表与题库下载'],
-      ['bank','题库管理','导入与导出 JSON 题库'],
-      ['export','做题记录导出','下载 CSV 答题记录表格']
+      ['preference', '偏好与外观', '做题模式与界面外观主题'],
+      ['ai', 'AI 助教', '模型服务商、密钥与悬浮助教'],
+      ['data', '数据管理', '云端同步、备份恢复、题库与清空重置'],
+      ['resources', '资料与题库下载', '考点精要手册讲义与 Excel 对照表'],
+      ['update', '版本与更新', '检查最新版本及 APK 一键升级']
     ];
+
+    const SETTINGS_SECTION_MAP = {
+      preference: ['mode', 'theme'],
+      ai: ['ai'],
+      data: ['sync', 'backup', 'bank', 'export', 'reset'],
+      resources: ['handbook', 'downloads'],
+      update: ['update']
+    };
+
     function openSettingsSection(section) {
       const pane = document.getElementById('paneSettings');
       const host = pane.querySelector('.home-top-header + div');
@@ -4831,13 +5003,17 @@
         ? '<span style="font-size:18px;font-weight:800">设置</span>'
         : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>`;
       menu.style.display = section === 'menu' ? 'block' : 'none';
+
+      // 映射到目标卡片子集合
+      const activeTargets = SETTINGS_SECTION_MAP[section] || (section === 'menu' ? [] : [section]);
       host.querySelectorAll('[data-settings-section]').forEach(el => {
-        el.style.display = el.dataset.settingsSection === section ? '' : 'none';
+        el.style.display = activeTargets.includes(el.dataset.settingsSection) ? '' : 'none';
       });
+
       if (section === 'update') {
         detectRuntimeEnv();
       }
-      if (section === 'sync') {
+      if (section === 'data' || section === 'sync') {
         const syncCard = host.querySelector('[data-settings-section="sync"]');
         if (syncCard) {
           syncCard.querySelectorAll(':scope > div').forEach((part, i) => {
@@ -4905,13 +5081,17 @@
       }
     }
 
+    let currentCourseIndex = -1;
+    let currentLessonIndex = -1;
+    let isVideoEnlarged = false;
+
     function renderTutorialVideos() {
       const catalog = document.getElementById('tutorialVideoCatalog');
       if (catalog.dataset.ready) return;
       catalog.dataset.ready = '1';
       const courses = window.COURSE_VIDEOS || [];
       document.getElementById('tutorialVideoNotice').textContent = courses.length
-        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节名师精讲视频 · 全程支持拖动与断点续播`
+        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节名师精讲视频 · 全程支持上下集连播与窗口放大选集`
         : '尚未部署课程视频。';
       
       const player = document.getElementById('tutorialVideoPlayer');
@@ -4923,39 +5103,190 @@
             showToast('若播放遇到网络缓冲，可点击上方“切换加速线路”');
           }
         };
+        // 播放结束自动连播下一集
+        player.onended = () => {
+          playNextLesson(true);
+        };
       }
 
-      courses.forEach(course => {
+      catalog.replaceChildren();
+      courses.forEach((course, cIdx) => {
         const group = document.createElement('details');
         group.style.cssText = 'border-bottom:1px solid var(--border);padding:12px 0';
+        if (cIdx === 0) group.open = true; // 默认展开第一门课
         const summary = document.createElement('summary');
         summary.style.cssText = 'cursor:pointer;font-weight:700;font-size:14px';
         summary.textContent = `${course.title} · ${course.lessons.length} 节`;
         group.appendChild(summary);
-        course.lessons.forEach(lesson => {
+        course.lessons.forEach((lesson, lIdx) => {
           const button = document.createElement('button');
-          button.className = 'video-lesson-row'; button.textContent = lesson.title;
-          button.onclick = () => {
-            if (!lesson.url) {
-              showToast('视频正在同步云端，请稍候观看');
-              return;
-            }
-            currentPlayingLessonUrl = lesson.url;
-            const mirrorBtn = document.getElementById('videoMirrorBtn');
-            if (mirrorBtn && lesson.url.includes('github.com')) {
-              mirrorBtn.style.display = 'inline-block';
-              mirrorBtn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
-            }
-            player.src = getEffectiveVideoUrl(lesson.url);
-            player.style.display = 'block';
-            document.getElementById('tutorialVideoTitle').textContent = `${course.title} · ${lesson.title}`;
-            player.load();
-            player.play().catch(() => {});
-            player.scrollIntoView({behavior:'smooth',block:'start'});
-          };
+          button.className = 'video-lesson-row';
+          button.dataset.courseIdx = cIdx;
+          button.dataset.lessonIdx = lIdx;
+          button.textContent = lesson.title;
+          button.onclick = () => playLesson(cIdx, lIdx);
           group.appendChild(button);
         });
         catalog.appendChild(group);
+      });
+    }
+
+    function playLesson(cIdx, lIdx) {
+      const courses = window.COURSE_VIDEOS || [];
+      if (!courses[cIdx] || !courses[cIdx].lessons[lIdx]) return;
+      const course = courses[cIdx];
+      const lesson = course.lessons[lIdx];
+      if (!lesson.url) {
+        showToast('视频正在同步云端，请稍候观看');
+        return;
+      }
+      currentCourseIndex = cIdx;
+      currentLessonIndex = lIdx;
+      currentPlayingLessonUrl = lesson.url;
+
+      const player = document.getElementById('tutorialVideoPlayer');
+      const placeholder = document.getElementById('videoEmptyPlaceholder');
+      if (placeholder) placeholder.style.display = 'none';
+      if (player) {
+        player.style.display = 'block';
+        player.src = getEffectiveVideoUrl(lesson.url);
+        player.load();
+        player.play().catch(() => {});
+      }
+
+      const mirrorBtn = document.getElementById('videoMirrorBtn');
+      if (mirrorBtn && lesson.url.includes('github.com')) {
+        mirrorBtn.style.display = 'inline-block';
+        mirrorBtn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
+      }
+
+      const titleEl = document.getElementById('tutorialVideoTitle');
+      if (titleEl) {
+        titleEl.textContent = `${course.title} · ${lesson.title}`;
+      }
+
+      updateVideoNavButtons();
+      updateEpisodeDrawerList();
+      highlightActiveLessonRow();
+
+      if (!isVideoEnlarged && player) {
+        player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function updateVideoNavButtons() {
+      const courses = window.COURSE_VIDEOS || [];
+      const btnPrev = document.getElementById('btnPrevLesson');
+      const btnNext = document.getElementById('btnNextLesson');
+      if (!courses.length || currentCourseIndex < 0) {
+        if (btnPrev) btnPrev.disabled = true;
+        if (btnNext) btnNext.disabled = true;
+        return;
+      }
+      const isFirst = (currentCourseIndex === 0 && currentLessonIndex === 0);
+      const isLast = (currentCourseIndex === courses.length - 1 && currentLessonIndex === courses[currentCourseIndex].lessons.length - 1);
+      if (btnPrev) btnPrev.disabled = isFirst;
+      if (btnNext) btnNext.disabled = isLast;
+    }
+
+    function playPrevLesson() {
+      const courses = window.COURSE_VIDEOS || [];
+      if (!courses.length) return;
+      if (currentCourseIndex < 0) {
+        playLesson(0, 0);
+        return;
+      }
+      if (currentLessonIndex > 0) {
+        playLesson(currentCourseIndex, currentLessonIndex - 1);
+      } else if (currentCourseIndex > 0) {
+        const prevC = currentCourseIndex - 1;
+        playLesson(prevC, courses[prevC].lessons.length - 1);
+      } else {
+        showToast('已经是第一集了');
+      }
+    }
+
+    function playNextLesson(isAutoEnded = false) {
+      const courses = window.COURSE_VIDEOS || [];
+      if (!courses.length) return;
+      if (currentCourseIndex < 0) {
+        playLesson(0, 0);
+        return;
+      }
+      const curCourseLessons = courses[currentCourseIndex].lessons;
+      if (currentLessonIndex < curCourseLessons.length - 1) {
+        playLesson(currentCourseIndex, currentLessonIndex + 1);
+      } else if (currentCourseIndex < courses.length - 1) {
+        playLesson(currentCourseIndex + 1, 0);
+      } else {
+        if (!isAutoEnded) showToast('已经是最后一集了');
+      }
+    }
+
+    function toggleVideoEnlarge() {
+      const container = document.getElementById('videoContainer');
+      const bar = document.getElementById('videoFullscreenBar');
+      const btn = document.getElementById('btnEnlargeVideo');
+      if (!container) return;
+      isVideoEnlarged = !isVideoEnlarged;
+      if (isVideoEnlarged) {
+        container.classList.add('enlarged');
+        if (bar) bar.style.display = 'flex';
+        if (btn) btn.textContent = '退出放大';
+      } else {
+        container.classList.remove('enlarged');
+        if (bar) bar.style.display = 'none';
+        if (btn) btn.textContent = '窗口放大';
+        closeEpisodeDrawer();
+      }
+    }
+
+    function openEpisodeDrawer() {
+      const drawer = document.getElementById('videoEpisodeDrawer');
+      if (!drawer) return;
+      updateEpisodeDrawerList();
+      drawer.style.display = 'flex';
+    }
+
+    function closeEpisodeDrawer() {
+      const drawer = document.getElementById('videoEpisodeDrawer');
+      if (drawer) drawer.style.display = 'none';
+    }
+
+    function updateEpisodeDrawerList() {
+      const list = document.getElementById('videoEpisodeDrawerList');
+      if (!list) return;
+      const courses = window.COURSE_VIDEOS || [];
+      list.replaceChildren();
+
+      courses.forEach((course, cIdx) => {
+        const header = document.createElement('div');
+        header.style.cssText = 'font-size:12px;font-weight:700;color:#aaa;margin:8px 0 3px;';
+        header.textContent = course.title;
+        list.appendChild(header);
+
+        course.lessons.forEach((lesson, lIdx) => {
+          const item = document.createElement('button');
+          const isActive = (cIdx === currentCourseIndex && lIdx === currentLessonIndex);
+          item.style.cssText = `width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:space-between;background:${isActive ? 'var(--primary)' : 'rgba(255,255,255,0.08)'};color:${isActive ? '#fff' : '#ddd'};`;
+          item.innerHTML = `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:6px;">${lesson.title}</span>${isActive ? '<span style="font-size:10px;background:rgba(255,255,255,0.25);padding:1px 6px;border-radius:4px;white-space:nowrap;">播放中</span>' : ''}`;
+          item.onclick = () => {
+            playLesson(cIdx, lIdx);
+            if (!isVideoEnlarged) {
+              closeEpisodeDrawer();
+            }
+          };
+          list.appendChild(item);
+        });
+      });
+    }
+
+    function highlightActiveLessonRow() {
+      document.querySelectorAll('.video-lesson-row').forEach(btn => {
+        const isAct = Number(btn.dataset.courseIdx) === currentCourseIndex && Number(btn.dataset.lessonIdx) === currentLessonIndex;
+        btn.style.background = isAct ? 'var(--primary-light)' : '';
+        btn.style.color = isAct ? 'var(--primary)' : '';
+        btn.style.fontWeight = isAct ? '700' : '';
       });
     }
 
@@ -8236,6 +8567,32 @@
         <button class="bottom-btn" id="btnUpdateAccelerated" style="width:100%;padding:9px;font-size:12px;" onclick="triggerApkUpdateDownload('mirror')">
           国内高速加速更新通道
         </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 每日一句核心考点放大查看弹窗 -->
+  <div id="dailyPointModal" class="custom-modal-backdrop" style="display:none;align-items:center;justify-content:center;z-index:9999;" onclick="if(event.target===this)closeDailyPointModal();">
+    <div class="custom-modal-content" style="max-width:540px;width:90%;max-height:85vh;display:flex;flex-direction:column;border-radius:16px;background:var(--card-bg);border:1px solid var(--border);padding:20px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="banner-tag" id="dailyModalSubjectTag">考点</span>
+          <span style="font-size:15px;font-weight:800;color:var(--text-main);">今日核心考点精选</span>
+        </div>
+        <button onclick="closeDailyPointModal()" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      </div>
+      <div style="overflow-y:auto;flex:1;padding-right:4px;">
+        <div id="dailyModalSentence" style="font-size:16px;font-weight:700;line-height:1.6;color:var(--text-main);margin-bottom:16px;padding:12px;background:var(--bg);border-radius:10px;border-left:4px solid var(--primary);"></div>
+        <div id="dailyModalFullAnalysisArea" style="display:none;margin-top:12px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">题库真题及解析全文</div>
+          <div id="dailyModalFullAnalysis" style="font-size:13px;line-height:1.7;color:var(--text-sub);white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px dashed var(--border);"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
+        <button class="bottom-btn" style="flex:1;" onclick="refreshDailyPointWithAnim()">换一个考点</button>
+        <button class="bottom-btn" style="flex:1;" onclick="copyDailyPointText()">复制考点</button>
+        <button class="bottom-btn primary" style="flex:1;" onclick="closeDailyPointModal()">关闭</button>
       </div>
     </div>
   </div>
