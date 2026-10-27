@@ -496,7 +496,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding-bottom: 76px;
+      padding-bottom: 125px;
       user-select: text;
       -webkit-user-select: text;
     }
@@ -1236,10 +1236,10 @@
     /* 底部操作 */
     .quiz-bottom-actions {
       position: fixed;
-      bottom: 0;
+      bottom: 56px;
       width: 100%;
       max-width: 480px;
-      height: 56px;
+      height: 52px;
       background: var(--card-bg);
       border-top: 1px solid var(--border);
       display: flex;
@@ -1564,17 +1564,21 @@
     .calendar-heatmap-card {
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px 12px;
       background: var(--card-bg);
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .calendar-top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .calendar-title-row {
       display: flex;
@@ -1597,6 +1601,8 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 6px 10px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .calendar-nav-btn {
       background: transparent;
@@ -1642,15 +1648,22 @@
       font-weight: 700;
       color: var(--text-muted);
       padding-bottom: 2px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 4px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .calendar-day-cell {
       aspect-ratio: 1 / 1;
-      min-height: 42px;
+      min-height: 0;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--bg);
@@ -1661,7 +1674,23 @@
       cursor: pointer;
       position: relative;
       user-select: none;
+      padding: 2px 0;
+      overflow: hidden;
       transition: border-color 0.15s, background-color 0.15s;
+    }
+    @media (max-width: 480px) {
+      .calendar-heatmap-card {
+        padding: 12px 8px;
+      }
+      .calendar-grid {
+        gap: 2.5px;
+      }
+      .calendar-day-num {
+        font-size: 10.5px;
+      }
+      .calendar-day-count {
+        font-size: 8px;
+      }
     }
     .calendar-day-cell.empty {
       background: transparent;
@@ -2241,44 +2270,22 @@
     </div>
 
     <!-- =======================================
-         TAB 2: 权威教材大纲与考点精解 (EPUB 阅读与全文搜索)
+         TAB 2: 视频课程 (保留视频板块，删除教材板块)
          ======================================= -->
-    <div class="view-content-pane" id="paneTextbook" style="display:none;">
-      <header class="home-top-header" style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
+    <div class="view-content-pane" id="paneVideo" style="display:none;">
+      <header class="home-top-header" style="padding:14px 20px;">
         <div>
-          <span style="font-size:18px;font-weight:800;">教程</span>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">教材阅读与课程视频</div>
+          <span style="font-size:18px;font-weight:800;">视频课程</span>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">按科目观看 123 节官方名师精讲视频</div>
         </div>
-        <label class="custom-fab-btn" style="padding:6px 12px;font-size:12px;cursor:pointer;">
-          <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-upload"/></svg>
-          <span>导入EPUB</span>
-          <input type="file" id="textbookFileInput" accept=".epub" style="display:none;" onchange="handleImportLocalEpub(event)">
-        </label>
       </header>
 
       <div style="padding:14px 20px 80px;">
         <section id="tutorialVideosPane">
-          <h2 style="font-size:16px;margin:0 0 8px;">视频课程</h2>
           <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">课程视频需联网观看</div>
           <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;background:#111;border-radius:8px;margin-bottom:12px;"></video>
           <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;margin-bottom:12px;"></div>
           <div id="tutorialVideoCatalog"></div>
-        </section>
-        <section id="tutorialBooksPane" style="margin-top:24px;">
-        <h2 style="font-size:16px;margin:0 0 10px;">教材与讲义</h2>
-        <!-- 搜索栏 -->
-        <div style="display:flex;gap:8px;margin-bottom:14px;">
-          <div style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--text-muted);"><use href="#icon-search"/></svg>
-            <input id="textbookSearchInput" placeholder="搜索教材名称或考点 (如: 高等教育心理学)..." style="border:none;background:transparent;outline:none;font-size:13px;color:var(--text-main);width:100%;" onkeydown="if(event.key==='Enter') searchOnlineTextbooks()">
-          </div>
-          <button class="bottom-btn primary" style="padding:0 14px;font-size:13px;white-space:nowrap;" onclick="searchOnlineTextbooks()">检索</button>
-        </div>
-
-        <div id="textbookOnlineNotice" style="display:none;margin-bottom:12px;padding:8px 12px;background:var(--primary-light);border-radius:8px;font-size:12px;color:var(--primary);font-weight:600;"></div>
-
-        <!-- 教材卡片列表 -->
-        <div class="textbook-grid" id="textbookCardsContainer"></div>
         </section>
       </div>
     </div>
@@ -2373,19 +2380,7 @@
           </div>
         </div>
 
-        <div style="font-size:14px;font-weight:800;margin-bottom:10px;">各板块掌握度详情</div>
-        <div id="statsSubjectBars" style="display:flex;flex-direction:column;gap:12px;"></div>
-      </div>
-    </div>
-
-    <!-- =======================================
-         TAB 5: 个人设置板块 (需求1: 包含打卡统计数据)
-         ======================================= -->
-    <div class="view-content-pane" id="paneSettings" style="display:none;">
-      <header class="home-top-header" style="padding:14px 20px;">
-        <span style="font-size:18px;font-weight:800;">个人与系统设置</span>
-      </header>
-      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
+        <!-- 学习打卡与做题热力图 (已整合至统计板块) -->
         <!-- 需求：学习打卡与做题热力图月历 -->
         <div class="calendar-heatmap-card">
           <!-- 头部：打卡概览与打卡按钮 -->
@@ -2440,8 +2435,21 @@
           </div>
         </div>
 
+        <div style="font-size:14px;font-weight:800;margin-bottom:10px;">各板块掌握度详情</div>
+        <div id="statsSubjectBars" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+
+    <!-- =======================================
+         TAB 5: 个人设置板块 (需求1: 包含打卡统计数据)
+         ======================================= -->
+    <div class="view-content-pane" id="paneSettings" style="display:none;">
+      <header class="home-top-header" style="padding:14px 20px;">
+        <span style="font-size:18px;font-weight:800;">个人与系统设置</span>
+      </header>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
         <!-- 默认做题模式 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="mode" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">默认做题模式</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">进入新题目时的默认行为</div>
           <div style="display:flex;gap:10px;margin-top:10px;">
@@ -2451,7 +2459,7 @@
         </div>
 
         <!-- 需求4：设置板块内置完整 AI 配置专区 (无 Emoji, 纯扁平) -->
-        <div class="ai-settings-panel" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+        <div class="ai-settings-panel" data-settings-section="ai" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:6px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
@@ -2522,7 +2530,7 @@
         </div>
 
         <!-- 主题是否跟随系统 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+        <div data-settings-section="theme" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <div style="font-size:14px;font-weight:700;">主题外观跟随系统</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">自动跟随手机深色/浅色模式切换</div>
@@ -2531,7 +2539,7 @@
         </div>
 
         <!-- 需求：多端数据同步中心 (支持 Gist 免服云同步、自定义服务与快照口令) -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+        <div data-settings-section="sync" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-cloud-sync"/></svg>
@@ -2596,7 +2604,7 @@
           <div style="font-size:11px;color:var(--text-muted);margin-top:12px;" id="lastSyncTimeText">上次同步：未进行</div>
         </div>
 
-        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="backup" style="border:1px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">学习记录备份与恢复</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">导入旧 file2quiz 的备份文件，合并做题、错题、收藏与打卡记录；不包含 AI 密钥。</div>
           <div style="display:flex;gap:8px;margin-top:10px;">
@@ -2608,7 +2616,7 @@
         </div>
 
         <!-- 考点精要手册直接下载 (DOCX / Markdown) -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
+        <div data-settings-section="handbook" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div style="font-size:14px;font-weight:700;">高校教资核心考点精要手册（按章节排版）</div>
             <span style="font-size:11px;background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">考前背诵必读</span>
@@ -2645,7 +2653,7 @@
         </div>
 
         <!-- 全套题库与答案文件直接下载 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="downloads" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">全套官方题库与答案文件下载</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">本地整理好的完整题库（含 2026 官网标准答案版与历年真题版）</div>
           <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
@@ -2665,7 +2673,7 @@
         </div>
 
         <!-- 题库导入与更新 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="bank" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">题库导入与更新</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">导入 JSON 题库文件扩充题目</div>
           <div style="display:flex;gap:10px;margin-top:10px;">
@@ -2678,19 +2686,13 @@
         </div>
 
         <!-- 历史做题记录深度恢复 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="export" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">导出做题记录</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">下载 CSV，包含题目编号、作答、对错和时间</div>
           <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="exportAnswerRecords()">导出 CSV</button>
         </div>
 
-        <!-- 清空重置数据 -->
-        <div style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
-          <div style="font-size:14px;font-weight:700;color:var(--wrong);">重置数据</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">清空所有已答题目痕迹、错题与做题记录</div>
-          <button class="bottom-btn" style="color:var(--wrong);border-color:var(--wrong);margin-top:10px;width:100%;" onclick="clearAllUserData()">确认重置所有做题进度</button>
         </div>
-      </div>
     </div>
 
     <!-- =======================================
@@ -2796,9 +2798,9 @@
         <svg viewBox="0 0 24 24"><use href="#icon-book"/></svg>
         <span>首页</span>
       </button>
-      <button class="tabbar-item" id="tabBtnTextbook" onclick="switchBottomTab('textbook')">
-        <svg viewBox="0 0 24 24"><use href="#icon-textbook"/></svg>
-        <span>教程</span>
+      <button class="tabbar-item" id="tabBtnVideo" onclick="switchBottomTab('video')">
+        <svg viewBox="0 0 24 24"><use href="#icon-play"/></svg>
+        <span>视频</span>
       </button>
       <button class="tabbar-item" id="tabBtnWrong" onclick="switchBottomTab('wrong')">
         <svg viewBox="0 0 24 24"><use href="#icon-wrong-book"/></svg>
@@ -4409,56 +4411,81 @@
     // 底部 5 栏导航切换
     // ==========================================
     function switchBottomTab(tab) {
-      if (tab !== 'textbook') document.getElementById('tutorialVideoPlayer')?.pause();
-      ['panePractice', 'paneTextbook', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
+      if (tab === 'textbook') tab = 'video';
+      if (tab !== 'video') document.getElementById('tutorialVideoPlayer')?.pause();
+
+      // 需求5: 做题时保留下方菜单，可以一键切换，切出时自动归档当前做题会话
+      const quizViewEl = document.getElementById('quizView');
+      if (quizViewEl && quizViewEl.style.display === 'flex') {
+        stopTimer();
+        if (currentSubject && activeQuestions && activeQuestions.length > 0 && currentSubject !== '我的收藏' && currentSubject !== '错题复习') {
+          if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
+          userStore.unfinishedSessions[currentSubject] = {
+            activeQuestions: activeQuestions,
+            currentQuizIndex: currentQuizIndex,
+            timerSeconds: timerSeconds,
+            mode: appConfig.quizMode || 'study'
+          };
+        }
+        saveUserStore();
+        closeFloatingAiDrawer();
+        const dd = document.getElementById("topAiDropdown");
+        if (dd) dd.classList.remove("open");
+        quizViewEl.style.display = 'none';
+      }
+
+      ['panePractice', 'paneVideo', 'paneTextbook', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
-      ['tabBtnPractice', 'tabBtnWrong', 'tabBtnExam', 'tabBtnStats', 'tabBtnSettings'].forEach(id => {
+      ['tabBtnPractice', 'tabBtnVideo', 'tabBtnTextbook', 'tabBtnWrong', 'tabBtnExam', 'tabBtnStats', 'tabBtnSettings'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('active');
       });
 
+      // 保持底部 TabBar 始终显示
+      const bottomBar = document.getElementById("bottomTabbar");
+      if (bottomBar) bottomBar.style.display = 'flex';
+
       if (tab === 'practice') {
         document.getElementById('panePractice').style.display = 'flex';
-        document.getElementById('tabBtnPractice').classList.add('active');
+        document.getElementById('tabBtnPractice')?.classList.add('active');
         renderSubjectList();
-      } else if (tab === 'textbook') {
-        document.getElementById('paneTextbook').style.display = 'flex';
-        document.getElementById('tabBtnTextbook').classList.add('active');
-        renderTextbookCards();
+      } else if (tab === 'video') {
+        const pVideo = document.getElementById('paneVideo') || document.getElementById('paneTextbook');
+        if (pVideo) pVideo.style.display = 'flex';
+        document.getElementById('tabBtnVideo')?.classList.add('active');
         renderTutorialVideos();
       } else if (tab === 'wrong') {
         document.getElementById('paneWrong').style.display = 'flex';
-        document.getElementById('tabBtnWrong').classList.add('active');
+        document.getElementById('tabBtnWrong')?.classList.add('active');
         renderWrongPane('all');
       } else if (tab === 'exam') {
         document.getElementById('paneExam').style.display = 'flex';
-        document.getElementById('tabBtnExam').classList.add('active');
+        document.getElementById('tabBtnExam')?.classList.add('active');
         renderSavedExams();
       } else if (tab === 'stats') {
         document.getElementById('paneStats').style.display = 'flex';
-        document.getElementById('tabBtnStats').classList.add('active');
+        document.getElementById('tabBtnStats')?.classList.add('active');
         renderStatsPane();
       } else if (tab === 'settings') {
         document.getElementById('paneSettings').style.display = 'flex';
-        document.getElementById('tabBtnSettings').classList.add('active');
+        document.getElementById('tabBtnSettings')?.classList.add('active');
         updateSettingsUI();
         openSettingsSection('menu');
       }
     }
 
     const SETTINGS_SECTIONS = [
-      ['checkin','学习记录','打卡日历与学习热力图'],
       ['mode','做题偏好','默认答题模式'],
       ['ai','AI 助教','模型、密钥与悬浮助教'],
       ['theme','外观','跟随系统主题'],
-      ['sync','同步','跨设备合并学习进度'],
-      ['backup','备份与恢复','迁移旧站学习记录'],
-      ['bank','题库管理','导入与导出题目'],
-      ['export','做题记录导出','下载 CSV 表格'],
-      ['restore','记录恢复','找回本机历史记录'],
-      ['reset','重置数据','清空本机学习进度']
+      ['sync','多端同步','GitHub Gist 与同步配置'],
+      ['backup','备份与恢复','迁移学习记录备份文件'],
+      ['handbook','考点精要手册','Word 与 Markdown 讲义下载'],
+      ['downloads','官方题库下载','Excel 对照总表与题库下载'],
+      ['bank','题库管理','导入与导出 JSON 题库'],
+      ['export','做题记录导出','下载 CSV 答题记录表格']
     ];
     function openSettingsSection(section) {
       const pane = document.getElementById('paneSettings');
@@ -4472,25 +4499,28 @@
         host.prepend(menu);
       }
       const heading = pane.querySelector('.home-top-header');
+      const currentTitle = SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置';
+      // 需求4: 子菜单的返回不需要文字提示，按返回/首页svg图标即可返回
       heading.innerHTML = section === 'menu'
         ? '<span style="font-size:18px;font-weight:800">设置</span>'
-        : `<button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回设置">‹ 返回</button><span style="font-size:18px;font-weight:800">${SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置'}</span>`;
+        : `<button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin-right:8px;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800">${currentTitle}</span>`;
       menu.style.display = section === 'menu' ? 'block' : 'none';
-      SETTINGS_SECTIONS.forEach(([id], index) => {
-        const item = host.children[index + 1];
-        if (item) item.style.display = id === section ? '' : 'none';
+      host.querySelectorAll('[data-settings-section]').forEach(el => {
+        el.style.display = el.dataset.settingsSection === section ? '' : 'none';
       });
       if (section === 'sync') {
-        const syncCard = host.children[5];
-        syncCard.querySelectorAll(':scope > div').forEach((part, i) => {
-          if (i === 4 || i === 5) part.style.display = 'none';
-        });
-        if (!document.getElementById('syncMoreButton')) {
-          const more = document.createElement('button');
-          more.id = 'syncMoreButton'; more.className = 'settings-menu-row';
-          more.innerHTML = '<span><strong>其他同步方式</strong><small>局域网与离线口令</small></span><span aria-hidden="true">›</span>';
-          more.onclick = () => { syncCard.querySelectorAll(':scope > div').forEach((part, i) => { if (i === 4 || i === 5) part.style.display = part.style.display === 'none' ? '' : 'none'; }); };
-          syncCard.appendChild(more);
+        const syncCard = host.querySelector('[data-settings-section="sync"]');
+        if (syncCard) {
+          syncCard.querySelectorAll(':scope > div').forEach((part, i) => {
+            if (i === 4 || i === 5) part.style.display = 'none';
+          });
+          if (!document.getElementById('syncMoreButton')) {
+            const more = document.createElement('button');
+            more.id = 'syncMoreButton'; more.className = 'settings-menu-row';
+            more.innerHTML = '<span><strong>其他同步方式</strong><small>局域网与离线口令</small></span><span aria-hidden="true">›</span>';
+            more.onclick = () => { syncCard.querySelectorAll(':scope > div').forEach((part, i) => { if (i === 4 || i === 5) part.style.display = part.style.display === 'none' ? '' : 'none'; }); };
+            syncCard.appendChild(more);
+          }
         }
       }
       pane.scrollTop = 0;
@@ -4509,8 +4539,8 @@
     }
 
     function openTutorialVideos() {
-      switchBottomTab('textbook');
-      document.getElementById('tutorialVideosPane').scrollIntoView({behavior:'smooth',block:'start'});
+      switchBottomTab('video');
+      document.getElementById('tutorialVideosPane')?.scrollIntoView({behavior:'smooth',block:'start'});
     }
     function renderTutorialVideos() {
       const catalog = document.getElementById('tutorialVideoCatalog');
@@ -5342,11 +5372,12 @@
     }
 
     function openQuizView() {
-      ['panePractice', 'paneTextbook', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
+      ['panePractice', 'paneVideo', 'paneTextbook', 'paneWrong', 'paneExam', 'paneStats', 'paneSettings'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
-      document.getElementById("bottomTabbar").style.display = 'none';
+      // 需求5: 做题时保留下方菜单，可以一键切换
+      document.getElementById("bottomTabbar").style.display = 'flex';
       document.getElementById("quizView").style.display = 'flex';
 
       studySessionAnswered = {};
@@ -7154,6 +7185,10 @@
         tagEl.textContent = "起步阶段 (蓄力)";
         adviseEl.textContent = "完成更多真题练习后，预测分将更加精准！";
       }
+
+      // 刷新已整合进统计板块的打卡与热力图日历
+      updateCheckinUI();
+      renderCalendarHeatmap();
     }
 
     // ==========================================
