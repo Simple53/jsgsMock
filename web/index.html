@@ -925,13 +925,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
+      cursor: grab;
       z-index: 60;
       border: 2px solid #ffffff;
       box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    .floating-ai-bubble:active { transform: scale(0.92); }
+    .floating-ai-bubble:active { cursor: grabbing; transform: scale(0.94); }
     .floating-ai-bubble.hide { display: none !important; }
 
     .floating-ai-drawer {
@@ -2797,7 +2800,7 @@
       <main class="quiz-scroll-body" id="quizScrollBody"></main>
 
       <!-- 需求3：悬浮 AI 助教球 (可开启/关闭) -->
-      <div class="floating-ai-bubble" id="floatingAiBubble" onclick="openFloatingAiDrawer()" title="唤起 AI 名师助教">
+      <div class="floating-ai-bubble" id="floatingAiBubble" title="唤起 AI 名师助教 (可随意拖拽位置)">
         <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:#ffffff;"><use href="#icon-chat"/></svg>
       </div>
 
@@ -4108,6 +4111,105 @@
     // ==========================================
     // 初始化应用
     // ==========================================
+    
+    // ==========================================
+    // 悬浮 AI 助教球拖拽位置交互 (移动端触摸与鼠标通用，自动记忆坐标)
+    // ==========================================
+    function initDraggableAiBubble() {
+      const bubble = document.getElementById("floatingAiBubble");
+      if (!bubble) return;
+
+      try {
+        const saved = localStorage.getItem("jsgsMock_bubble_pos");
+        if (saved) {
+          const pos = JSON.parse(saved);
+          if (typeof pos.x === 'number' && typeof pos.y === 'number') {
+            const maxX = window.innerWidth - 50;
+            const maxY = window.innerHeight - 60;
+            const x = Math.max(8, Math.min(pos.x, maxX));
+            const y = Math.max(10, Math.min(pos.y, maxY));
+            bubble.style.left = x + "px";
+            bubble.style.top = y + "px";
+            bubble.style.right = "auto";
+            bubble.style.bottom = "auto";
+          }
+        }
+      } catch (e) {}
+
+      let isDragging = false;
+      let hasMoved = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+
+      function onStart(e) {
+        if (e.type === 'mousedown' && e.button !== 0) return;
+        const pt = e.touches ? e.touches[0] : e;
+        const rect = bubble.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        startX = pt.clientX;
+        startY = pt.clientY;
+        isDragging = true;
+        hasMoved = false;
+
+        bubble.style.transition = 'none';
+
+        document.addEventListener('mousemove', onMove, { passive: false });
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchcancel', onEnd);
+      }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        const pt = e.touches ? e.touches[0] : e;
+        const dx = pt.clientX - startX;
+        const dy = pt.clientY - startY;
+
+        if (!hasMoved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+          hasMoved = true;
+        }
+
+        if (hasMoved) {
+          if (e.cancelable) e.preventDefault();
+          const maxX = window.innerWidth - bubble.offsetWidth - 8;
+          const maxY = window.innerHeight - bubble.offsetHeight - 58;
+          const newLeft = Math.max(8, Math.min(initialLeft + dx, maxX));
+          const newTop = Math.max(10, Math.min(initialTop + dy, maxY));
+
+          bubble.style.left = newLeft + 'px';
+          bubble.style.top = newTop + 'px';
+          bubble.style.right = 'auto';
+          bubble.style.bottom = 'auto';
+        }
+      }
+
+      function onEnd(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        bubble.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onEnd);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onEnd);
+        document.removeEventListener('touchcancel', onEnd);
+
+        if (hasMoved) {
+          const rect = bubble.getBoundingClientRect();
+          try {
+            localStorage.setItem("jsgsMock_bubble_pos", JSON.stringify({ x: rect.left, y: rect.top }));
+          } catch (e) {}
+        } else {
+          openFloatingAiDrawer();
+        }
+      }
+
+      bubble.addEventListener('mousedown', onStart);
+      bubble.addEventListener('touchstart', onStart, { passive: false });
+    }
+
     async function init() {
       loadUserStore();
 
@@ -4134,6 +4236,7 @@
       initDraftCanvasWithUndo();
       initTouchSwipe();
       initPcNavigation();
+      initDraggableAiBubble();
       renderSavedExams();
       renderTextbookCards();
       renderTutorialVideos();
