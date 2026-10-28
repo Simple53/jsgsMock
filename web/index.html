@@ -2012,6 +2012,220 @@
   animation: spinDaily 0.5s ease;
 }
 
+
+/* ==========================================
+   图1与图2：专业视频播放系统与全屏影院交互
+   ========================================== */
+.video-player-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-player-wrapper video {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: contain;
+}
+.video-corner-back-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 30;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.video-action-grid-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+  padding: 12px 6px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.video-act-item {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--text-main);
+  padding: 4px;
+}
+.video-act-item svg {
+  width: 22px;
+  height: 22px;
+  color: var(--text-main);
+}
+.video-act-item span.title {
+  font-size: 13px;
+  font-weight: 600;
+}
+.video-act-item span.status {
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+/* 选集滑动卡片（图2高质感复刻） */
+.video-ep-scroll-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 6px 2px 12px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.video-ep-card-item {
+  flex: 0 0 auto;
+  min-width: 92px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.video-ep-card-item.active {
+  background: rgba(29, 78, 216, 0.08) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  font-weight: 800 !important;
+}
+
+/* 全屏横屏影院模式（图1高质感复刻） */
+.video-player-wrapper.fullscreen-mode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 999999 !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  background: #000 !important;
+}
+.cinema-overlay-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, transparent 22%, transparent 70%, rgba(0,0,0,0.85) 100%);
+  color: #fff;
+  z-index: 40;
+  pointer-events: none;
+  box-sizing: border-box;
+  transition: opacity 0.3s;
+}
+.cinema-overlay-layer * {
+  pointer-events: auto;
+}
+.cinema-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cinema-bottom-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cinema-progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-family: monospace;
+}
+.cinema-progress-rail {
+  flex: 1;
+  height: 5px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+}
+.cinema-progress-current {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  width: 0%;
+}
+.cinema-progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+}
+.cinema-btns-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cinema-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.cinema-ctrl-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.cinema-ctrl-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+.cinema-text-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 13.5px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.cinema-text-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
 </style>
 </head>
 <body>
@@ -2323,51 +2537,213 @@
 
       <div style="padding:14px 20px 80px;">
         <section id="tutorialVideosPane">
-          <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">课程视频需联网观看</div>
-          
-          <!-- 视频播放器容器（支持沉浸放大/全屏与选集） -->
-          <div id="videoContainer" class="video-container" style="position:relative;background:#000;border-radius:10px;overflow:hidden;margin-bottom:10px;min-height:180px;display:flex;align-items:center;justify-content:center;">
-            <video id="tutorialVideoPlayer" controls playsinline preload="none" style="display:none;width:100%;max-height:55vh;background:#000;"></video>
-            
-            <div id="videoEmptyPlaceholder" style="color:#aaa;font-size:13px;padding:30px 16px;text-align:center;">
-              请在下方选择课程开始观看
+          <!-- 顶部提示 -->
+          <div id="tutorialVideoNotice" style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">课程视频已由官方 CDN 高速同步，全程支持断点续播</div>
+
+          <!-- 播放器核心窗口（支持竖屏常规与全屏横屏影院模式） -->
+          <div id="videoContainer" class="video-player-wrapper">
+            <!-- 播放器左上角返回按钮（图2样式） -->
+            <button class="video-corner-back-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+
+            <!-- 视频标签 -->
+            <video id="tutorialVideoPlayer" playsinline preload="metadata" style="display:none;"></video>
+
+            <!-- 未开始播放时的初始引导画面 -->
+            <div id="videoEmptyPlaceholder" style="color:#aaa;font-size:13px;padding:30px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--primary);"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+              <span>请在下方选集开始观看名师精讲</span>
             </div>
 
-            <!-- 放大/沉浸模式下的顶部悬浮栏 (选集 + 缩小) -->
-            <div id="videoFullscreenBar" style="display:none;position:absolute;top:12px;right:12px;z-index:90;gap:8px;align-items:center;">
-              <button class="bottom-btn" id="btnFullscreenEpisode" style="padding:5px 12px;font-size:12px;background:rgba(0,0,0,0.65);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(6px);" onclick="openEpisodeDrawer()">选集</button>
-              <button class="bottom-btn" id="btnFullscreenExit" style="padding:5px 12px;font-size:12px;background:rgba(0,0,0,0.65);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(6px);" onclick="toggleVideoEnlarge()">缩小</button>
+            <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
+            <div id="cinemaOverlayLayer" class="cinema-overlay-layer" style="display:none;">
+              <!-- 顶部控制栏（左侧返回与标题，右侧状态） -->
+              <div class="cinema-top-bar">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <button class="cinema-ctrl-btn" onclick="toggleCinemaFullscreen()" aria-label="退出全屏" style="padding:4px;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                  </button>
+                  <span id="cinemaVideoTitle" style="font-size:14px;font-weight:700;letter-spacing:0.5px;"></span>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;font-size:12px;">
+                  <span id="cinemaClockDisplay">09:15</span>
+                  <button class="cinema-ctrl-btn" onclick="toggleCinemaFullscreen()" title="切换全屏">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path fill="currentColor" d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 底部控制面板（图1底部结构） -->
+              <div class="cinema-bottom-panel">
+                <!-- 进度条行：00:00:32 / 进度滑块 / 00:47:39 -->
+                <div class="cinema-progress-wrapper">
+                  <span id="cinemaCurTimeText">00:00:00</span>
+                  <div class="cinema-progress-rail" id="cinemaProgressRail" onclick="seekCinemaVideo(event)">
+                    <div class="cinema-progress-current" id="cinemaProgressFill"></div>
+                    <div class="cinema-progress-thumb" id="cinemaProgressThumb"></div>
+                  </div>
+                  <span id="cinemaTotalTimeText">00:00:00</span>
+                </div>
+
+                <!-- 控制按钮行（左侧播放/下一集/音量；右侧片头尾/倍速/播放源/选集） -->
+                <div class="cinema-btns-row">
+                  <div class="cinema-btn-group">
+                    <button class="cinema-ctrl-btn" id="btnCinemaPlayPause" onclick="togglePlayPause()" aria-label="播放/暂停">
+                      <svg class="svg-icon" id="iconCinemaPlayPause" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button class="cinema-ctrl-btn" onclick="playNextLesson()" aria-label="下一集" title="下一集">
+                      <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                    <button class="cinema-ctrl-btn" onclick="toggleMuteVideo()" aria-label="静音" title="音量">
+                      <svg class="svg-icon" id="iconCinemaVolume" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                    </button>
+                  </div>
+                  <div class="cinema-btn-group">
+                    <button class="cinema-text-btn" onclick="skipVideoIntro()" title="跳过片头60秒">片头/尾</button>
+                    <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
+                    <button class="cinema-text-btn" id="btnCinemaSource" onclick="toggleVideoCdnMirror()">播放源</button>
+                    <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- 选集抽屉 (覆在视频容器上方) -->
-            <div id="videoEpisodeDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:80%;max-width:340px;background:rgba(18,18,18,0.95);backdrop-filter:blur(12px);z-index:95;border-left:1px solid rgba(255,255,255,0.15);flex-direction:column;box-sizing:border-box;">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.1);color:#fff;">
+            <!-- 全屏选集侧边滑出抽屉 -->
+            <div id="cinemaEpisodeDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:78%;max-width:320px;background:rgba(18,18,18,0.96);backdrop-filter:blur(14px);z-index:60;border-left:1px solid rgba(255,255,255,0.15);flex-direction:column;box-sizing:border-box;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.1);color:#fff;">
                 <span style="font-size:14px;font-weight:700;">选集播放</span>
-                <button onclick="closeEpisodeDrawer()" style="border:none;background:transparent;color:#fff;cursor:pointer;padding:4px;font-size:18px;line-height:1;">×</button>
+                <button onclick="toggleCinemaEpisodeDrawer(false)" style="border:none;background:transparent;color:#fff;cursor:pointer;padding:4px;font-size:20px;line-height:1;">×</button>
               </div>
-              <div id="videoEpisodeDrawerList" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
+              <div id="cinemaEpisodeDrawerList" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
           </div>
 
-          <!-- 播放器控制面板：标题、线路、上下集、选集、放大 -->
-          <div id="videoControlsRow" style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-              <div id="tutorialVideoTitle" style="font-size:13px;font-weight:700;color:var(--text-main);word-break:break-all;">未开始播放</div>
-              <button id="videoMirrorBtn" class="bottom-btn" style="display:none;padding:3px 8px;font-size:11px;" onclick="toggleVideoCdnMirror()">切换加速线路</button>
+          <!-- 播放器下方 Tab 导航栏（图2） -->
+          <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:12px;padding-bottom:2px;">
+            <div style="display:flex;gap:24px;">
+              <button class="inner-tab-btn active" id="tabBtnVideoPlay" onclick="switchVideoMainTab('play')" style="padding:8px 4px;font-size:15px;font-weight:800;border:none;background:transparent;border-bottom:3px solid var(--primary);border-radius:0;">视频</button>
+              <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">考点大纲</button>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <div style="display:flex;gap:6px;align-items:center;">
-                <button id="btnPrevLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="playPrevLesson()" disabled>上一集</button>
-                <button id="btnDrawerLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="openEpisodeDrawer()">选集</button>
-                <button id="btnNextLesson" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="playNextLesson()" disabled>下一集</button>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span id="badgeCurrentCdn" style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:4px;font-weight:700;">官方 CDN</span>
+              <button onclick="toggleCinemaFullscreen()" title="横屏全屏播放" style="border:none;background:transparent;cursor:pointer;color:var(--text-main);padding:4px;display:flex;align-items:center;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 内容 1：视频播放核心区（图2主体） -->
+          <div id="videoTabPlayContent">
+            <!-- 课程大标题与简介折叠入口（图2） -->
+            <div style="margin-top:14px;padding:2px 4px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div id="videoCourseMainTitle" style="font-size:19px;font-weight:800;color:var(--text-main);letter-spacing:0.3px;">高等教育学</div>
+                <button onclick="toggleCourseIntro()" style="border:none;background:transparent;cursor:pointer;font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:2px;">
+                  <span>简介</span>
+                  <span aria-hidden="true">›</span>
+                </button>
               </div>
-              <div style="display:flex;gap:6px;align-items:center;">
-                <button id="btnEnlargeVideo" class="bottom-btn" style="padding:4px 10px;font-size:12px;" onclick="toggleVideoEnlarge()">窗口放大</button>
+              <div id="videoCourseSubMeta" style="font-size:12px;color:var(--text-muted);margin-top:4px;">2026统编版 / 高校教资官方精讲 / 共 28 节</div>
+              
+              <!-- 展开的简介详情 -->
+              <div id="videoCourseIntroBox" style="display:none;margin-top:10px;padding:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;font-size:12.5px;line-height:1.6;color:var(--text-sub);">
+                全国高校教师资格统编精品视频课程，紧扣《高等教育学》、《高等教育心理学》、《高校教师职业道德》及《高等教育法规概论》考纲，名师全程高清重难点拆解。
+              </div>
+            </div>
+
+            <!-- 4 个核心功能图标按钮行（严格复刻图2的换源、倍速、收藏、分享） -->
+            <div class="video-action-grid-card">
+              <!-- 1. 换源 -->
+              <button class="video-act-item" onclick="toggleVideoCdnMirror()" title="切换播放源">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                <span class="title">换源</span>
+                <span class="status" id="labelActionSource">官方线路</span>
+              </button>
+              <!-- 2. 倍速 -->
+              <button class="video-act-item" onclick="cyclePlaybackRate()" title="切换倍速">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.28-10.43zM10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/></svg>
+                <span class="title">倍速</span>
+                <span class="status" id="labelActionSpeed">1.0x</span>
+              </button>
+              <!-- 3. 收藏 -->
+              <button class="video-act-item" onclick="toggleFavoriteCurrentLesson()" title="收藏本集">
+                <svg class="svg-icon" id="iconActionFav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <span class="title" id="labelActionFav">收藏</span>
+                <span class="status">加入错题本</span>
+              </button>
+              <!-- 4. 分享 -->
+              <button class="video-act-item" onclick="shareCurrentLesson()" title="复制直达链接">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                <span class="title">分享</span>
+                <span class="status">复制集链接</span>
+              </button>
+            </div>
+
+            <!-- 选集区（图2精髓部分） -->
+            <div style="margin-top:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:16px;font-weight:800;color:var(--text-main);">选集</span>
+                  <span id="labelCourseCompletion" style="font-size:12px;color:var(--text-muted);">已完结</span>
+                </div>
+                <select id="selectCourseGroup" onchange="switchCourseBySelect(this.value)" style="border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text-main);padding:4px 8px;font-size:12px;outline:none;">
+                  <option value="0">高等教育学</option>
+                  <option value="1">高等教育心理学</option>
+                  <option value="2">高校教师职业道德</option>
+                  <option value="3">高等教育法规概论</option>
+                  <option value="4">教学实践与试讲精析</option>
+                </select>
+              </div>
+
+              <!-- 集数卡片横向可滑动行（图2样式） -->
+              <div class="video-ep-scroll-row" id="videoEpisodeTrack"></div>
+
+              <!-- 当前播放小节名称提示 -->
+              <div id="videoCurrentPlayingSubTitle" style="font-size:13px;font-weight:700;color:var(--text-main);margin-top:6px;padding:6px 2px;"></div>
+            </div>
+
+            <!-- 详情介绍区（完全还原图2） -->
+            <div style="margin-top:24px;border-top:1px dashed var(--border);padding-top:16px;">
+              <div style="text-align:center;font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:1px;margin-bottom:14px;">
+                ◀◀ 详情介绍 ▶▶
+              </div>
+
+              <!-- 演职人员 / 编著主讲 -->
+              <div style="margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
+                  <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
+                  <span>教研与主讲团队</span>
+                </div>
+                <div style="font-size:13px;line-height:1.6;color:var(--text-sub);">
+                  统编教材：全国高校教师资格认定指导中心 组编<br>
+                  主讲专家：陈何芳、王一军、宋华明、刘小强等高校博导、教授团队全程领衔主讲
+                </div>
+              </div>
+
+              <!-- 课程核心大纲介绍 -->
+              <div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
+                  <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
+                  <span>课程大纲与重点</span>
+                </div>
+                <div style="font-size:13px;line-height:1.7;color:var(--text-sub);" id="videoCourseFullOutline">
+                  涵盖高校教育基本规律、大学三大职能演进、现代高校教学与科研原则、教师专业化发展与考核评价。系统剖析历年教资真题高频命题点。
+                </div>
               </div>
             </div>
           </div>
 
-          <div id="tutorialVideoCatalog"></div>
+          <!-- Tab 内容 2：讲义与大纲 -->
+          <div id="videoTabNotesContent" style="display:none;margin-top:14px;">
+            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px;">
+              <div style="font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:8px;">配套考点精要讲义</div>
+              <div style="font-size:13px;line-height:1.7;color:var(--text-sub);">
+                系统已为您内置完整《2026年高校教资考点精要融合手册》（包含高等教育学、心理学、师德、法规四科）。可在【设置】-【资料与题库下载】中一键下载 Word 与 Markdown 完整讲义进行离线复习。
+              </div>
+              <button class="bottom-btn primary" style="margin-top:12px;padding:6px 14px;font-size:12.5px;" onclick="openSettingsSection('resources')">前往下载完整讲义手册</button>
+            </div>
+          </div>
         </section>
       </div>
     </div>
@@ -3275,36 +3651,31 @@
       const slide = document.createElement('div');
       slide.className = 'banner-slide';
       slide.style.cursor = 'pointer';
-      slide.onclick = () => openDailyPointModal();
+      slide.onclick = () => openDailyPointFullScreen();
       slide.innerHTML = `
         <div class="banner-badge-row" style="display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:6px;">
             <span class="banner-tag">每日一句</span>
             <span class="banner-date">来自真题解析</span>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button id="btnDailyRefresh" class="daily-refresh-btn" title="换一个考点" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();refreshDailyPointWithAnim();">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-            </button>
-            <button title="放大查看" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();openDailyPointModal();">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-            </button>
-          </div>
+          <button id="btnDailyRefresh" class="daily-refresh-btn" title="换一个考点" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();refreshDailyPointWithAnim();">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          </button>
         </div>
         <div class="banner-title">今日考点</div>
         <div class="banner-summary" style="line-height:1.5;">${escapeHtml(_currentDailyPoint.sentence)}</div>
         <div class="banner-foot-row" style="display:flex;align-items:center;justify-content:space-between;">
-          <span>${escapeHtml(_currentDailyPoint.subject || '')}</span>
-          <span style="font-size:11px;color:var(--primary);">点击放大阅读 · 随时刷新</span>
+          <span style="font-size:12px;color:var(--text-sub);">${escapeHtml(_currentDailyPoint.subject || '')}</span>
+          <span style="font-size:12px;color:var(--primary);font-weight:700;">更多 ›</span>
         </div>
       `;
       track.replaceChildren(slide);
       track.style.transform = 'none';
       document.getElementById('bannerDotsRow')?.replaceChildren();
 
-      const modal = document.getElementById('dailyPointModal');
-      if (modal && modal.style.display !== 'none') {
-        updateDailyModalContent();
+      const fs = document.getElementById('dailyPointFullScreen');
+      if (fs && fs.style.display !== 'none') {
+        updateDailyFsContent();
       }
     }
 
@@ -3318,46 +3689,58 @@
       showToast('已更换考点');
     }
 
-    function openDailyPointModal() {
+    function openDailyPointFullScreen() {
       if (!_currentDailyPoint) renderDailyPoint(false);
-      updateDailyModalContent();
-      const modal = document.getElementById('dailyPointModal');
-      if (modal) modal.style.display = 'flex';
-    }
-
-    function closeDailyPointModal() {
-      const modal = document.getElementById('dailyPointModal');
-      if (modal) modal.style.display = 'none';
-    }
-
-    function updateDailyModalContent() {
-      if (!_currentDailyPoint) return;
-      const tag = document.getElementById('dailyModalSubjectTag');
-      if (tag) tag.textContent = _currentDailyPoint.subject || '考点';
-      const sentence = document.getElementById('dailyModalSentence');
-      if (sentence) sentence.textContent = _currentDailyPoint.sentence;
-      const fullArea = document.getElementById('dailyModalFullAnalysisArea');
-      const fullText = document.getElementById('dailyModalFullAnalysis');
-      if (_currentDailyPoint.fullAnalysis && _currentDailyPoint.fullAnalysis !== _currentDailyPoint.sentence) {
-        if (fullArea) fullArea.style.display = 'block';
-        if (fullText) fullText.textContent = (_currentDailyPoint.title ? _currentDailyPoint.title + '\n\n' : '') + _currentDailyPoint.fullAnalysis;
-      } else {
-        if (fullArea) fullArea.style.display = 'none';
+      updateDailyFsContent();
+      const fs = document.getElementById('dailyPointFullScreen');
+      if (fs) {
+        fs.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
       }
+    }
+
+    function closeDailyPointFullScreen() {
+      const fs = document.getElementById('dailyPointFullScreen');
+      if (fs) {
+        fs.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+
+    function updateDailyFsContent() {
+      if (!_currentDailyPoint) return;
+      const tag = document.getElementById('dailyFsSubjectTag');
+      if (tag) tag.textContent = _currentDailyPoint.subject || '考点';
+      const sentence = document.getElementById('dailyFsSentence');
+      if (sentence) sentence.textContent = _currentDailyPoint.sentence;
+      const titleEl = document.getElementById('dailyFsQuestionTitle');
+      if (titleEl) titleEl.textContent = _currentDailyPoint.title ? `原题：${_currentDailyPoint.title}` : '';
+      const fullText = document.getElementById('dailyFsFullAnalysis');
+      if (fullText) fullText.textContent = _currentDailyPoint.fullAnalysis || _currentDailyPoint.sentence;
     }
 
     function copyDailyPointText() {
       if (!_currentDailyPoint) return;
-      const textToCopy = `【${_currentDailyPoint.subject || '高校教资考点'}】\n${_currentDailyPoint.sentence}\n\n${_currentDailyPoint.fullAnalysis || ''}`;
+      const textToCopy = `【${_currentDailyPoint.subject || '高校教资考点'}】\n${_currentDailyPoint.sentence}\n\n原题与解析全文：\n${_currentDailyPoint.fullAnalysis || ''}`;
       if (navigator.clipboard?.writeText) {
         navigator.clipboard.writeText(textToCopy).then(() => {
-          showToast('考点内容已复制');
+          showToast('考点内容已复制到剪贴板');
         }).catch(() => {
           showToast('复制失败，请手动选择复制');
         });
       } else {
         showToast('浏览器限制，请手动长按复制');
       }
+    }
+
+    function jumpToSubjectPractice() {
+      if (!_currentDailyPoint) return;
+      closeDailyPointFullScreen();
+      const sub = _currentDailyPoint.subject;
+      if (sub && currentSubjectList.includes(sub)) {
+        selectedSubject = sub;
+      }
+      switchMainView('practice');
     }
 
     // ==========================================
@@ -5081,67 +5464,121 @@
       }
     }
 
-    let currentCourseIndex = -1;
+    let currentCourseIndex = 0;
     let currentLessonIndex = -1;
-    let isVideoEnlarged = false;
+    let isCinemaFullscreen = false;
+    let playbackRates = [1.0, 1.25, 1.5, 2.0, 0.75];
+    let currentRateIdx = 0;
+    let videoFavoriteIds = JSON.parse(localStorage.getItem('jsgs_video_favs') || '[]');
 
     function renderTutorialVideos() {
-      const catalog = document.getElementById('tutorialVideoCatalog');
-      if (catalog.dataset.ready) return;
-      catalog.dataset.ready = '1';
+      const catalog = document.getElementById('videoEpisodeTrack');
+      if (!catalog) return;
       const courses = window.COURSE_VIDEOS || [];
-      document.getElementById('tutorialVideoNotice').textContent = courses.length
-        ? `共 ${courses.reduce((n, c) => n + c.lessons.length, 0)} 节名师精讲视频 · 全程支持上下集连播与窗口放大选集`
-        : '尚未部署课程视频。';
-      
+      if (!courses.length) return;
+
+      if (currentCourseIndex < 0) currentCourseIndex = 0;
+      updateCourseView(currentCourseIndex);
+
       const player = document.getElementById('tutorialVideoPlayer');
-      if (player) {
+      if (player && !player.dataset.bound) {
+        player.dataset.bound = '1';
         player.onerror = () => {
           if (!isVideoMirrorActive && currentPlayingLessonUrl && currentPlayingLessonUrl.includes('github.com')) {
             toggleVideoCdnMirror();
           } else {
-            showToast('若播放遇到网络缓冲，可点击上方“切换加速线路”');
+            showToast('若播放遇到网络缓冲，可点击“换源”切换加速线路');
           }
         };
-        // 播放结束自动连播下一集
+        // 自动连播下一集
         player.onended = () => {
           playNextLesson(true);
         };
+        // 时间更新
+        player.ontimeupdate = () => {
+          updateCinemaProgress();
+        };
+        player.onplay = () => {
+          updatePlayPauseIcon(true);
+        };
+        player.onpause = () => {
+          updatePlayPauseIcon(false);
+        };
       }
 
-      catalog.replaceChildren();
-      courses.forEach((course, cIdx) => {
-        const group = document.createElement('details');
-        group.style.cssText = 'border-bottom:1px solid var(--border);padding:12px 0';
-        if (cIdx === 0) group.open = true; // 默认展开第一门课
-        const summary = document.createElement('summary');
-        summary.style.cssText = 'cursor:pointer;font-weight:700;font-size:14px';
-        summary.textContent = `${course.title} · ${course.lessons.length} 节`;
-        group.appendChild(summary);
-        course.lessons.forEach((lesson, lIdx) => {
-          const button = document.createElement('button');
-          button.className = 'video-lesson-row';
-          button.dataset.courseIdx = cIdx;
-          button.dataset.lessonIdx = lIdx;
-          button.textContent = lesson.title;
-          button.onclick = () => playLesson(cIdx, lIdx);
-          group.appendChild(button);
-        });
-        catalog.appendChild(group);
+      // 影院模式时间走时
+      setInterval(() => {
+        const d = new Date();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        const clock = document.getElementById('cinemaClockDisplay');
+        if (clock) clock.textContent = `${hh}:${mm}`;
+      }, 1000);
+    }
+
+    function updateCourseView(cIdx) {
+      const courses = window.COURSE_VIDEOS || [];
+      if (!courses[cIdx]) return;
+      currentCourseIndex = cIdx;
+      const course = courses[cIdx];
+
+      // 更新主标题与元信息
+      const titleEl = document.getElementById('videoCourseMainTitle');
+      if (titleEl) titleEl.textContent = course.title;
+      const metaEl = document.getElementById('videoCourseSubMeta');
+      if (metaEl) metaEl.textContent = `2026统编版 / 高校教资系统精讲 / 共 ${course.lessons.length} 节`;
+      const compEl = document.getElementById('labelCourseCompletion');
+      if (compEl) compEl.textContent = `共 ${course.lessons.length} 节 · 已完结`;
+
+      // 同步下拉框
+      const sel = document.getElementById('selectCourseGroup');
+      if (sel) sel.value = String(cIdx);
+
+      // 渲染选集横向滑动轨道（图2风格）
+      renderEpisodeCards(cIdx);
+    }
+
+    function switchCourseBySelect(val) {
+      const idx = Number(val);
+      updateCourseView(idx);
+    }
+
+    function renderEpisodeCards(cIdx) {
+      const track = document.getElementById('videoEpisodeTrack');
+      if (!track) return;
+      const courses = window.COURSE_VIDEOS || [];
+      const course = courses[cIdx];
+      if (!course) return;
+
+      track.replaceChildren();
+      course.lessons.forEach((lesson, lIdx) => {
+        const card = document.createElement('div');
+        const isAct = (cIdx === currentCourseIndex && lIdx === currentLessonIndex);
+        card.className = `video-ep-card-item ${isAct ? 'active' : ''}`;
+        const epNum = String(lIdx + 1).padStart(2, '0');
+        card.innerHTML = `<div>第${epNum}集</div>`;
+        card.onclick = () => {
+          playLesson(cIdx, lIdx);
+        };
+        track.appendChild(card);
       });
+
+      // 同步更新全屏抽屉列表
+      updateCinemaEpisodeDrawerList();
     }
 
     function playLesson(cIdx, lIdx) {
       const courses = window.COURSE_VIDEOS || [];
       if (!courses[cIdx] || !courses[cIdx].lessons[lIdx]) return;
+      currentCourseIndex = cIdx;
+      currentLessonIndex = lIdx;
       const course = courses[cIdx];
       const lesson = course.lessons[lIdx];
+
       if (!lesson.url) {
         showToast('视频正在同步云端，请稍候观看');
         return;
       }
-      currentCourseIndex = cIdx;
-      currentLessonIndex = lIdx;
       currentPlayingLessonUrl = lesson.url;
 
       const player = document.getElementById('tutorialVideoPlayer');
@@ -5150,360 +5587,316 @@
       if (player) {
         player.style.display = 'block';
         player.src = getEffectiveVideoUrl(lesson.url);
+        player.playbackRate = playbackRates[currentRateIdx];
         player.load();
         player.play().catch(() => {});
       }
 
-      const mirrorBtn = document.getElementById('videoMirrorBtn');
-      if (mirrorBtn && lesson.url.includes('github.com')) {
-        mirrorBtn.style.display = 'inline-block';
-        mirrorBtn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
+      // 更新界面标题
+      const subTitleEl = document.getElementById('videoCurrentPlayingSubTitle');
+      if (subTitleEl) {
+        subTitleEl.textContent = `正在播放：${lesson.title}`;
+      }
+      const cinemaTitle = document.getElementById('cinemaVideoTitle');
+      if (cinemaTitle) {
+        cinemaTitle.textContent = `${course.title} 第${String(lIdx + 1).padStart(2, '0')}集 · ${lesson.title}`;
       }
 
-      const titleEl = document.getElementById('tutorialVideoTitle');
-      if (titleEl) {
-        titleEl.textContent = `${course.title} · ${lesson.title}`;
-      }
+      // 刷新选集激活状态
+      renderEpisodeCards(cIdx);
+      updateFavoriteButtonState();
 
-      updateVideoNavButtons();
-      updateEpisodeDrawerList();
-      highlightActiveLessonRow();
-
-      if (!isVideoEnlarged && player) {
-        player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // 滚动居中选中的卡片
+      const track = document.getElementById('videoEpisodeTrack');
+      const activeCard = track?.children[lIdx];
+      if (activeCard) {
+        activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       }
     }
 
-    function updateVideoNavButtons() {
-      const courses = window.COURSE_VIDEOS || [];
-      const btnPrev = document.getElementById('btnPrevLesson');
-      const btnNext = document.getElementById('btnNextLesson');
-      if (!courses.length || currentCourseIndex < 0) {
-        if (btnPrev) btnPrev.disabled = true;
-        if (btnNext) btnNext.disabled = true;
+    function returnFromVideoPlayer() {
+      // 如果处于全屏影院模式，先退出全屏
+      if (isCinemaFullscreen) {
+        toggleCinemaFullscreen();
         return;
       }
-      const isFirst = (currentCourseIndex === 0 && currentLessonIndex === 0);
-      const isLast = (currentCourseIndex === courses.length - 1 && currentLessonIndex === courses[currentCourseIndex].lessons.length - 1);
-      if (btnPrev) btnPrev.disabled = isFirst;
-      if (btnNext) btnNext.disabled = isLast;
+      // 否则返回首页
+      switchMainView('practice');
+    }
+
+    function switchVideoMainTab(tab) {
+      const btnPlay = document.getElementById('tabBtnVideoPlay');
+      const btnNotes = document.getElementById('tabBtnVideoNotes');
+      const contentPlay = document.getElementById('videoTabPlayContent');
+      const contentNotes = document.getElementById('videoTabNotesContent');
+      if (tab === 'play') {
+        btnPlay.classList.add('active');
+        btnPlay.style.color = 'var(--text-main)';
+        btnPlay.style.borderBottom = '3px solid var(--primary)';
+        btnNotes.classList.remove('active');
+        btnNotes.style.color = 'var(--text-muted)';
+        btnNotes.style.borderBottom = 'none';
+        contentPlay.style.display = 'block';
+        contentNotes.style.display = 'none';
+      } else {
+        btnNotes.classList.add('active');
+        btnNotes.style.color = 'var(--text-main)';
+        btnNotes.style.borderBottom = '3px solid var(--primary)';
+        btnPlay.classList.remove('active');
+        btnPlay.style.color = 'var(--text-muted)';
+        btnPlay.style.borderBottom = 'none';
+        contentPlay.style.display = 'none';
+        contentNotes.style.display = 'block';
+      }
+    }
+
+    function toggleCourseIntro() {
+      const box = document.getElementById('videoCourseIntroBox');
+      if (!box) return;
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // 核心功能 1：换源
+    function toggleVideoCdnMirror() {
+      isVideoMirrorActive = !isVideoMirrorActive;
+      const labelSource = document.getElementById('labelActionSource');
+      if (labelSource) {
+        labelSource.textContent = isVideoMirrorActive ? '国内加速' : '官方线路';
+      }
+      const badge = document.getElementById('badgeCurrentCdn');
+      if (badge) {
+        badge.textContent = isVideoMirrorActive ? '国内加速线路' : '官方 CDN';
+      }
+      const cinemaSource = document.getElementById('btnCinemaSource');
+      if (cinemaSource) {
+        cinemaSource.textContent = isVideoMirrorActive ? '源：加速' : '源：官方';
+      }
+
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (player && currentPlayingLessonUrl) {
+        const curTime = player.currentTime;
+        player.src = getEffectiveVideoUrl(currentPlayingLessonUrl);
+        player.currentTime = curTime;
+        player.load();
+        player.play().catch(() => {});
+        showToast(isVideoMirrorActive ? '已切换至国内高速加速线路' : '已切换至 GitHub 官方线路');
+      }
+    }
+
+    // 核心功能 2：倍速循环切换
+    function cyclePlaybackRate() {
+      currentRateIdx = (currentRateIdx + 1) % playbackRates.length;
+      const rate = playbackRates[currentRateIdx];
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (player) {
+        player.playbackRate = rate;
+      }
+      const speedLabel = document.getElementById('labelActionSpeed');
+      if (speedLabel) speedLabel.textContent = `${rate}x`;
+      const cinemaSpeed = document.getElementById('btnCinemaSpeed');
+      if (cinemaSpeed) cinemaSpeed.textContent = `${rate}x`;
+      showToast(`播放倍速：${rate}x`);
+    }
+
+    // 核心功能 3：收藏
+    function toggleFavoriteCurrentLesson() {
+      const key = `${currentCourseIndex}_${currentLessonIndex}`;
+      const idx = videoFavoriteIds.indexOf(key);
+      if (idx >= 0) {
+        videoFavoriteIds.splice(idx, 1);
+        showToast('已取消收藏该节');
+      } else {
+        videoFavoriteIds.push(key);
+        showToast('已收藏该节视频');
+      }
+      localStorage.setItem('jsgs_video_favs', JSON.stringify(videoFavoriteIds));
+      updateFavoriteButtonState();
+    }
+
+    function updateFavoriteButtonState() {
+      const key = `${currentCourseIndex}_${currentLessonIndex}`;
+      const isFav = videoFavoriteIds.includes(key);
+      const icon = document.getElementById('iconActionFav');
+      const label = document.getElementById('labelActionFav');
+      if (icon) {
+        icon.style.color = isFav ? '#eab308' : 'var(--text-main)';
+      }
+      if (label) {
+        label.textContent = isFav ? '已收藏' : '收藏';
+        label.style.color = isFav ? '#eab308' : 'var(--text-main)';
+      }
+    }
+
+    // 核心功能 4：分享
+    function shareCurrentLesson() {
+      const courses = window.COURSE_VIDEOS || [];
+      const curCourse = courses[currentCourseIndex];
+      const curLesson = curCourse?.lessons[currentLessonIndex];
+      const text = `我在研读高校教师资格证课程：【${curCourse?.title || ''}】${curLesson?.title || ''}，推荐一起学习！`;
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('已复制课程与视频信息');
+        }).catch(() => {
+          showToast('复制失败');
+        });
+      } else {
+        showToast('已复制课程信息');
+      }
+    }
+
+    // 核心功能 5：上下集切换
+    function playNextLesson(isAuto = false) {
+      const courses = window.COURSE_VIDEOS || [];
+      if (!courses.length) return;
+      const curLessons = courses[currentCourseIndex].lessons;
+      if (currentLessonIndex < curLessons.length - 1) {
+        playLesson(currentCourseIndex, currentLessonIndex + 1);
+      } else if (currentCourseIndex < courses.length - 1) {
+        updateCourseView(currentCourseIndex + 1);
+        playLesson(currentCourseIndex, 0);
+      } else {
+        if (!isAuto) showToast('已经是全课程最后一集了');
+      }
     }
 
     function playPrevLesson() {
       const courses = window.COURSE_VIDEOS || [];
       if (!courses.length) return;
-      if (currentCourseIndex < 0) {
-        playLesson(0, 0);
-        return;
-      }
       if (currentLessonIndex > 0) {
         playLesson(currentCourseIndex, currentLessonIndex - 1);
       } else if (currentCourseIndex > 0) {
         const prevC = currentCourseIndex - 1;
+        updateCourseView(prevC);
         playLesson(prevC, courses[prevC].lessons.length - 1);
       } else {
         showToast('已经是第一集了');
       }
     }
 
-    function playNextLesson(isAutoEnded = false) {
-      const courses = window.COURSE_VIDEOS || [];
-      if (!courses.length) return;
-      if (currentCourseIndex < 0) {
-        playLesson(0, 0);
-        return;
-      }
-      const curCourseLessons = courses[currentCourseIndex].lessons;
-      if (currentLessonIndex < curCourseLessons.length - 1) {
-        playLesson(currentCourseIndex, currentLessonIndex + 1);
-      } else if (currentCourseIndex < courses.length - 1) {
-        playLesson(currentCourseIndex + 1, 0);
-      } else {
-        if (!isAutoEnded) showToast('已经是最后一集了');
-      }
-    }
-
-    function toggleVideoEnlarge() {
+    // 全屏影院模式控制（图1）
+    function toggleCinemaFullscreen() {
       const container = document.getElementById('videoContainer');
-      const bar = document.getElementById('videoFullscreenBar');
-      const btn = document.getElementById('btnEnlargeVideo');
+      const overlay = document.getElementById('cinemaOverlayLayer');
       if (!container) return;
-      isVideoEnlarged = !isVideoEnlarged;
-      if (isVideoEnlarged) {
-        container.classList.add('enlarged');
-        if (bar) bar.style.display = 'flex';
-        if (btn) btn.textContent = '退出放大';
+      isCinemaFullscreen = !isCinemaFullscreen;
+      if (isCinemaFullscreen) {
+        container.classList.add('fullscreen-mode');
+        if (overlay) overlay.style.display = 'flex';
+        // 尝试锁定横屏模式 (移动端支持)
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
       } else {
-        container.classList.remove('enlarged');
-        if (bar) bar.style.display = 'none';
-        if (btn) btn.textContent = '窗口放大';
-        closeEpisodeDrawer();
+        container.classList.remove('fullscreen-mode');
+        if (overlay) overlay.style.display = 'none';
+        toggleCinemaEpisodeDrawer(false);
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock().catch(() => {});
+        }
       }
     }
 
-    function openEpisodeDrawer() {
-      const drawer = document.getElementById('videoEpisodeDrawer');
+    function togglePlayPause() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      if (player.paused) {
+        player.play().catch(() => {});
+      } else {
+        player.pause();
+      }
+    }
+
+    function updatePlayPauseIcon(isPlaying) {
+      const icon = document.getElementById('iconCinemaPlayPause');
+      if (icon) {
+        icon.innerHTML = isPlaying
+          ? '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+          : '<path fill="currentColor" d="M8 5v14l11-7z"/>';
+      }
+    }
+
+    function toggleMuteVideo() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      player.muted = !player.muted;
+      const icon = document.getElementById('iconCinemaVolume');
+      if (icon) {
+        icon.innerHTML = player.muted
+          ? '<path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+          : '<path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+      }
+    }
+
+    function skipVideoIntro() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      player.currentTime = Math.min(player.duration || 9999, player.currentTime + 60);
+      showToast('已快进 60 秒跳过片头');
+    }
+
+    function formatTimeStr(sec) {
+      if (isNaN(sec) || sec < 0) return '00:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateCinemaProgress() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      const cur = player.currentTime || 0;
+      const total = player.duration || 0;
+      const curEl = document.getElementById('cinemaCurTimeText');
+      if (curEl) curEl.textContent = formatTimeStr(cur);
+      const totEl = document.getElementById('cinemaTotalTimeText');
+      if (totEl) totEl.textContent = formatTimeStr(total);
+
+      const percent = total > 0 ? (cur / total) * 100 : 0;
+      const fill = document.getElementById('cinemaProgressFill');
+      if (fill) fill.style.width = `${percent}%`;
+      const thumb = document.getElementById('cinemaProgressThumb');
+      if (thumb) thumb.style.left = `${percent}%`;
+    }
+
+    function seekCinemaVideo(e) {
+      const rail = document.getElementById('cinemaProgressRail');
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!rail || !player || !player.duration) return;
+      const rect = rail.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      const targetTime = Math.max(0, Math.min(player.duration, pos * player.duration));
+      player.currentTime = targetTime;
+    }
+
+    function toggleCinemaEpisodeDrawer(show) {
+      const drawer = document.getElementById('cinemaEpisodeDrawer');
       if (!drawer) return;
-      updateEpisodeDrawerList();
-      drawer.style.display = 'flex';
+      const willShow = (typeof show === 'boolean') ? show : (drawer.style.display === 'none');
+      drawer.style.display = willShow ? 'flex' : 'none';
+      if (willShow) {
+        updateCinemaEpisodeDrawerList();
+      }
     }
 
-    function closeEpisodeDrawer() {
-      const drawer = document.getElementById('videoEpisodeDrawer');
-      if (drawer) drawer.style.display = 'none';
-    }
-
-    function updateEpisodeDrawerList() {
-      const list = document.getElementById('videoEpisodeDrawerList');
+    function updateCinemaEpisodeDrawerList() {
+      const list = document.getElementById('cinemaEpisodeDrawerList');
       if (!list) return;
       const courses = window.COURSE_VIDEOS || [];
+      const course = courses[currentCourseIndex];
+      if (!course) return;
+
       list.replaceChildren();
-
-      courses.forEach((course, cIdx) => {
-        const header = document.createElement('div');
-        header.style.cssText = 'font-size:12px;font-weight:700;color:#aaa;margin:8px 0 3px;';
-        header.textContent = course.title;
-        list.appendChild(header);
-
-        course.lessons.forEach((lesson, lIdx) => {
-          const item = document.createElement('button');
-          const isActive = (cIdx === currentCourseIndex && lIdx === currentLessonIndex);
-          item.style.cssText = `width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:space-between;background:${isActive ? 'var(--primary)' : 'rgba(255,255,255,0.08)'};color:${isActive ? '#fff' : '#ddd'};`;
-          item.innerHTML = `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:6px;">${lesson.title}</span>${isActive ? '<span style="font-size:10px;background:rgba(255,255,255,0.25);padding:1px 6px;border-radius:4px;white-space:nowrap;">播放中</span>' : ''}`;
-          item.onclick = () => {
-            playLesson(cIdx, lIdx);
-            if (!isVideoEnlarged) {
-              closeEpisodeDrawer();
-            }
-          };
-          list.appendChild(item);
-        });
+      course.lessons.forEach((lesson, lIdx) => {
+        const item = document.createElement('button');
+        const isActive = (lIdx === currentLessonIndex);
+        item.style.cssText = `width:100%;text-align:left;padding:10px 12px;border-radius:6px;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:space-between;background:${isActive ? 'var(--primary)' : 'rgba(255,255,255,0.08)'};color:${isActive ? '#fff' : '#ddd'};`;
+        item.innerHTML = `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px;">第${String(lIdx + 1).padStart(2, '0')}集 ${lesson.title}</span>${isActive ? '<span style="font-size:10px;background:rgba(255,255,255,0.3);padding:1px 6px;border-radius:4px;white-space:nowrap;">播放中</span>' : ''}`;
+        item.onclick = () => {
+          playLesson(currentCourseIndex, lIdx);
+          toggleCinemaEpisodeDrawer(false);
+        };
+        list.appendChild(item);
       });
-    }
-
-    function highlightActiveLessonRow() {
-      document.querySelectorAll('.video-lesson-row').forEach(btn => {
-        const isAct = Number(btn.dataset.courseIdx) === currentCourseIndex && Number(btn.dataset.lessonIdx) === currentLessonIndex;
-        btn.style.background = isAct ? 'var(--primary-light)' : '';
-        btn.style.color = isAct ? 'var(--primary)' : '';
-        btn.style.fontWeight = isAct ? '700' : '';
-      });
-    }
-
-
-    // ==========================================
-    // 需求3: 权威教材板块与 EPUB 阅读/全文检索系统
-    // ==========================================
-    const DEFAULT_TEXTBOOKS = [
-      {
-        id: "tb_he_pedagogy",
-        title: "高等教育学（高校教资统编教材）",
-        tag: "教育部统编用书",
-        author: "全国高校教师资格认定指导中心 编著",
-        desc: "系统阐述现代高等教育职能、培养目标体系、高校教学过程原则、科研与学科建设，全书覆盖教资高频核心考点。",
-        chapters: [
-          {
-            title: "第一章 高等教育的本质与大学现代职能",
-            content: `<h3>第一节 高等教育的历史演变与现代大学制度</h3>
-<p>高等教育是建立在中等教育基础之上的高层次专业性教育，是培养高层次专门人才的主要阵地。从欧洲中世纪大学（如萨莱诺大学、博洛尼亚大学、巴黎大学）的萌芽，到现代大学制度的定型，高等教育始终与人类知识探索和社会发展紧密相连。</p>
-<p>在大学职能演进历程中，最具里程碑意义的包括：1810年德国洪堡创立柏林大学，确立了<strong>“教学与科研相统一”</strong>（科研职能）；19世纪后半叶美国《莫里尔法案》促进赠地大学兴起，确立了大学直接<strong>“服务社会职能”</strong>（威斯康星思想）。进入21世纪，大学进一步确立了<strong>文化传承创新</strong>和<strong>国际交流合作</strong>职能。</p>
-<h3>第二节 教育强国视域下的高校核心使命</h3>
-<p>在新时代高等教育强国战略部署中，坚持把<strong>立德树人</strong>作为检验高校一切工作的根本标准。高等教育处于国民教育体系的龙头地位，是统筹科教兴国、人才强国与创新驱动发展战略的最佳结合点。</p>`
-          },
-          {
-            title: "第二章 高等学校教学原则与启发式教学法",
-            content: `<h3>第一节 高校教学过程特点与启发式教学法</h3>
-<p>高等学校教学活动区别于基础教育的显著特征在于：专业性与专门性结合、教学与科学研究深度融合、学生独立自主性增强、前沿知识探索渗透。高校教师绝不仅是灌输知识的教书匠，而是引导学生独立探究的引路人。</p>
-<p><strong>核心教学原则：</strong>科学性与思想性统一原则、理论联系实际原则、启发性教学原则、循序渐进原则、因材施教原则。在启发式教学法中，通过创设问题情境、引导反思辨析，激发大学生的内部求知动机与认知冲突。</p>`
-          },
-          {
-            title: "第三章 高等学校课程体系与教育质量评价",
-            content: `<h3>第一节 现代大学课程结构与教材建设</h3>
-<p>高校课程体系由公共基础课程、专业核心课程、跨学科通识课程以及创新实践课程构成。课程建设是立德树人的主渠道，各类专业课程均须深挖思政元素，落实“课程思政”协同育人格局。</p>
-<p><strong>教育教学评价机制：</strong>坚持形成性评价与终结性评价相结合，强化对学生批判性思维、复杂问题解决能力与工程实践能力的综合考察。</p>`
-          }
-        ]
-      },
-      {
-        id: "tb_he_psychology",
-        title: "高等教育心理学（考点精析与重点讲义）",
-        tag: "必考核心理论",
-        author: "高校教师资格考试研究专家组 编写",
-        desc: "全面剖析大学生认知发展、四大心理学习流派、成就归因理论、学习动机激发与高校教师心理健康调适。",
-        chapters: [
-          {
-            title: "第一章 大学生心理发展特征与自我意识",
-            content: `<h3>第一节 大学生认知与自我意识的飞跃发展</h3>
-<p>青年初期至成年早期是大学生自我意识走向成熟的关键期。大学生思维具有高度的理论性与辩证批判性，但情感世界往往伴随着理想自我与现实自我的矛盾冲突。</p>
-<p>埃里克森人生发展阶段理论指出，青年阶段的核心发展危机是<strong>“同一性确立对角色混乱”</strong>。高校教师应积极引导学生确立稳定的专业认同与职业发展方向。</p>`
-          },
-          {
-            title: "第二章 高校学习理论与知识建构机制",
-            content: `<h3>第一节 四大学习心理流派与课堂教学应用</h3>
-<p>1. <strong>行为主义学习观</strong>（斯金纳操作性条件反射）：强调刺激-反应-强化，及时反馈有助于建立稳定的解题习惯。</p>
-<p>2. <strong>认知主义学习观</strong>（布鲁纳发现学习、奥苏伯尔有意义接受学习）：强调通过先行组织者同化新旧认知结构。</p>
-<p>3. <strong>建构主义学习观</strong>：强调学习的主动建构性、社会互动性与情境性，学生是知识意义的主动建构者。</p>`
-          },
-          {
-            title: "第三章 学习动机激发与归因指导",
-            content: `<h3>第一节 学习动机模型与自我效能感</h3>
-<p>班杜拉（Bandura）提出<strong>自我效能感理论</strong>，直接决定了个体在面对学业挑战时的坚持度与努力程度。维纳（Weiner）的<strong>成败归因理论</strong>指出，引导学生将成功或失败归因于“内部、不稳定、可控制”的<strong>努力因素</strong>，能够最大程度保护学习自信心。</p>
-<p><strong>耶克斯-多德森定律（Yerkes-Dodson Law）：</strong>学习效率与动机激发水平呈倒U形曲线关系。面对复杂高难度任务时，中等偏低动机水平最利于任务达成。</p>`
-          }
-        ]
-      },
-      {
-        id: "tb_teacher_ethics",
-        title: "新时代高校教师职业道德修养规范手册",
-        tag: "师德第一标准",
-        author: "教育部师德师风建设专家委员会 编",
-        desc: "逐条深解《新时代高校教师职业行为十项准则》，涵盖为人师表、学术诚信、立德树人与师德失范一票否决制。",
-        chapters: [
-          {
-            title: "第一章 新时代高校教师职业道德的核心准则",
-            content: `<h3>第一节 师德师风是评价教师的第一标准</h3>
-<p>高校教师是人类灵魂的工程师，肩负着传播知识、传播思想、传播真理，塑造灵魂、塑造生命、塑造新人的时代重任。老师应该有言为士则、行为世范的自觉，做学生为学、为事、为人的<strong>“大先生”</strong>，成为<strong>“经师”</strong>与<strong>“人师”</strong>相统一的典范。</p>
-<p><strong>高校教师十项准则要旨：</strong>坚定政治方向、自觉爱国守法、传播优秀文化、潜心教书育人、关心爱护学生、坚持言行雅正、遵守学术规范、秉持公平诚信、坚守廉洁自律、积极奉献社会。</p>`
-          },
-          {
-            title: "第二章 学术规范与师德失范一票否决机制",
-            content: `<h3>第一节 坚守学术规范与学术诚信</h3>
-<p>高校教师应大力弘扬求真务实、敢为人先的科学精神。严禁抄袭剽窃、伪造篡改实验数据、买卖代写论文或虚假署名。实行<strong>师德失范一票否决制</strong>，对师德违规行为零容忍，终身追责。</p>`
-          }
-        ]
-      },
-      {
-        id: "tb_he_law",
-        title: "高等教育法规与政策概论教程",
-        tag: "政策法理大纲",
-        author: "全国教育法制研究会 审定",
-        desc: "收录中华人民共和国教育法、高等教育法、教师法精讲与高校依法治校、教师申诉、学生权益保障机制。",
-        chapters: [
-          {
-            title: "第一章 教育法与高等教育法基本法律制度",
-            content: `<h3>第一节 我国高等教育立法体系与办学自主权</h3>
-<p>我国教育法律法规体系以《宪法》为统领，以《中华人民共和国教育法》为基本法，以《高等教育法》、《教师法》、《学位条例》为专门骨干法律。</p>
-<p>高等学校具有独立法人资格。高校依据法律法规自主开展教学活动、科学研究、行政管理、人事聘任与资产管理，推进依法治校与现代大学章程治理。</p>`
-          },
-          {
-            title: "第二章 高校教师的法定权利与法定义务",
-            content: `<h3>第一节 教师法赋予的六大权利与六项义务</h3>
-<p><strong>高校教师法定权利：</strong>教育教学权、科学研究与学术交流权、指导评价学生权、按时获取报酬待遇权、参与民主管理权、进修培训权。</p>
-<p><strong>法定义务：</strong>遵守宪法法律和职业道德、贯彻国家教育方针落实教学计划、开展思想品德教育、关心爱护尊重学生、制止侵害学生合法权益的行为、不断提高思想水平和业务素质。</p>`
-          }
-        ]
-      },
-      {
-        id: "tb_teaching_skills",
-        title: "高校教学技能实务与教案设计指南",
-        tag: "教学实践技能",
-        author: "高校卓越教师培养工程联盟",
-        desc: "三维教学目标设计、板书与多媒体融合、启发提问艺术、形成性学情反馈与模拟试讲金牌教案。",
-        chapters: [
-          {
-            title: "第一章 高校备课与教学方案设计精要",
-            content: `<h3>第一节 三维教学目标与重难点突破</h3>
-<p>优质高校课堂始于严密的教学设计。明确<strong>知识与技能目标</strong>、<strong>过程与方法目标</strong>、<strong>情感态度与价值观目标</strong>，结合学科前沿与行业发展重构知识模块。</p>
-<p>精心设计新课导入、概念引入、重难点剖析、课中探究与课后延伸思考，达成教学闭环。</p>`
-          }
-        ]
-      }
-    ];
-
-    let currentReadingBook = null;
-    let currentChapterIndex = 0;
-    let readerFontSize = 16;
-
-    function renderTextbookCards(filterKw = "") {
-      const container = document.getElementById("textbookCardsContainer");
-      if (!container) return;
-      container.innerHTML = "";
-
-      let allBooks = [...DEFAULT_TEXTBOOKS];
-      if (userStore.customTextbooks && Array.isArray(userStore.customTextbooks)) {
-        allBooks.push(...userStore.customTextbooks);
-      }
-
-      if (filterKw) {
-        const kw = filterKw.toLowerCase().trim();
-        allBooks = allBooks.filter(b => 
-          b.title.toLowerCase().includes(kw) || 
-          b.desc.toLowerCase().includes(kw) ||
-          (b.author && b.author.toLowerCase().includes(kw))
-        );
-      }
-
-      if (allBooks.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">未找到匹配教材，点击上方【检索】可联网搜索新教材</div>`;
-        return;
-      }
-
-      allBooks.forEach(b => {
-        const card = document.createElement("div");
-        card.className = "textbook-card";
-        card.innerHTML = `
-          <div style="flex:1;">
-            <span class="textbook-badge">${b.tag || '权威教材'}</span>
-            <div class="textbook-title">${b.title}</div>
-            <div class="textbook-desc">${b.desc}</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">共 ${b.chapters?.length || 1} 章节 · ${b.author || '官方教材'}</div>
-          </div>
-          <button class="textbook-open-btn" onclick="openTextbookReader('${b.id}')">开始阅读</button>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // 打开教材阅读器
-    function openTextbookReader(bookId) {
-      let allBooks = [...DEFAULT_TEXTBOOKS];
-      if (userStore.customTextbooks) allBooks.push(...userStore.customTextbooks);
-
-      const target = allBooks.find(b => b.id === bookId);
-      if (!target) return;
-
-      currentReadingBook = target;
-      currentChapterIndex = 0;
-
-      document.getElementById("readerBookTitle").textContent = target.title;
-      renderCurrentChapter();
-      document.getElementById("textbookReaderModal").classList.add("open");
-    }
-
-    function closeTextbookReader() {
-      document.getElementById("textbookReaderModal").classList.remove("open");
-      const searchDrawer = document.getElementById("readerSearchDrawer");
-      if (searchDrawer) searchDrawer.classList.remove("open");
-    }
-
-    function renderCurrentChapter() {
-      if (!currentReadingBook) return;
-      const body = document.getElementById("readerContentBody");
-      const ch = currentReadingBook.chapters[currentChapterIndex] || { title: "正文", content: "<p>暂无内容</p>" };
-
-      body.style.fontSize = `${readerFontSize}px`;
-      body.innerHTML = `
-        <h2 style="font-size:19px;font-weight:900;border-bottom:1.5px solid var(--border);padding-bottom:8px;margin-bottom:16px;">${ch.title}</h2>
-        ${ch.content}
-      `;
-      body.scrollTop = 0;
-
-      const total = currentReadingBook.chapters.length;
-      const pct = Math.round(((currentChapterIndex + 1) / total) * 100);
-      document.getElementById("readerProgressText").textContent = `第 ${currentChapterIndex + 1}/${total} 章 · ${pct}%`;
-    }
-
-    function navReaderChapter(step) {
-      if (!currentReadingBook) return;
-      const target = currentChapterIndex + step;
-      if (target >= 0 && target < currentReadingBook.chapters.length) {
-        currentChapterIndex = target;
-        renderCurrentChapter();
-      } else if (target < 0) {
-        showToast("已是第一章");
-      } else {
-        showToast("已读完全书所有章节");
-      }
     }
 
     function adjustReaderFontSize(delta) {
@@ -8572,27 +8965,52 @@
   </div>
 
 
-  <!-- 每日一句核心考点放大查看弹窗 -->
-  <div id="dailyPointModal" class="custom-modal-backdrop" style="display:none;align-items:center;justify-content:center;z-index:9999;" onclick="if(event.target===this)closeDailyPointModal();">
-    <div class="custom-modal-content" style="max-width:540px;width:90%;max-height:85vh;display:flex;flex-direction:column;border-radius:16px;background:var(--card-bg);border:1px solid var(--border);padding:20px;box-sizing:border-box;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="banner-tag" id="dailyModalSubjectTag">考点</span>
-          <span style="font-size:15px;font-weight:800;color:var(--text-main);">今日核心考点精选</span>
-        </div>
-        <button onclick="closeDailyPointModal()" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+  
+  <!-- 每日一句全屏沉浸阅读页面 (严格执行用户要求: 直接全屏显示, 删掉小弹窗) -->
+  <div id="dailyPointFullScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--bg);z-index:99999;flex-direction:column;box-sizing:border-box;">
+    <!-- 顶部导航栏 -->
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card-bg);border-bottom:1px solid var(--border);height:52px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button onclick="closeDailyPointFullScreen()" aria-label="返回" style="border:none;background:transparent;cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--text-main);">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <span style="font-size:17px;font-weight:800;color:var(--text-main);">每日考点精读</span>
       </div>
-      <div style="overflow-y:auto;flex:1;padding-right:4px;">
-        <div id="dailyModalSentence" style="font-size:16px;font-weight:700;line-height:1.6;color:var(--text-main);margin-bottom:16px;padding:12px;background:var(--bg);border-radius:10px;border-left:4px solid var(--primary);"></div>
-        <div id="dailyModalFullAnalysisArea" style="display:none;margin-top:12px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">题库真题及解析全文</div>
-          <div id="dailyModalFullAnalysis" style="font-size:13px;line-height:1.7;color:var(--text-sub);white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px dashed var(--border);"></div>
-        </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button id="btnDailyFsRefresh" title="换一个考点" onclick="refreshDailyPointWithAnim()" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-main);display:flex;align-items:center;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </button>
+        <button title="复制全文" onclick="copyDailyPointText()" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-main);display:flex;align-items:center;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </button>
       </div>
-      <div style="display:flex;gap:10px;margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
-        <button class="bottom-btn" style="flex:1;" onclick="refreshDailyPointWithAnim()">换一个考点</button>
-        <button class="bottom-btn" style="flex:1;" onclick="copyDailyPointText()">复制考点</button>
-        <button class="bottom-btn primary" style="flex:1;" onclick="closeDailyPointModal()">关闭</button>
+    </header>
+
+    <!-- 全屏可滚动主体 -->
+    <div style="flex:1;overflow-y:auto;padding:20px 18px 40px;max-width:760px;width:100%;margin:0 auto;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <span class="banner-tag" id="dailyFsSubjectTag" style="font-size:12px;padding:4px 10px;">科目</span>
+        <span style="font-size:12px;color:var(--text-muted);">全国高校教资统编核心考点</span>
+      </div>
+
+      <div style="background:var(--card-bg);border:1.5px solid var(--border);border-left:5px solid var(--primary);border-radius:12px;padding:18px 20px;margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px;letter-spacing:0.5px;">核心考点金句</div>
+        <div id="dailyFsSentence" style="font-size:18px;font-weight:800;line-height:1.7;color:var(--text-main);letter-spacing:0.3px;"></div>
+      </div>
+
+      <div id="dailyFsAnalysisCard" style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:var(--text-main);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><path fill="currentColor" d="M19 2H5c-1.11 0-2 .9-2 2v16c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 16H6v-2h6v2zm4-4H6v-2h10v2zm0-4H6V8h10v2z"/></svg>
+          <span>考点溯源与解析全文</span>
+        </div>
+        <div id="dailyFsQuestionTitle" style="font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.6;"></div>
+        <div id="dailyFsFullAnalysis" style="font-size:14px;line-height:1.8;color:var(--text-sub);white-space:pre-wrap;"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="bottom-btn" style="flex:1;min-width:120px;padding:10px 14px;font-size:14px;" onclick="refreshDailyPointWithAnim()">换一个考点</button>
+        <button class="bottom-btn" style="flex:1;min-width:120px;padding:10px 14px;font-size:14px;" onclick="copyDailyPointText()">复制考点内容</button>
+        <button class="bottom-btn primary" style="flex:1;min-width:120px;padding:10px 14px;font-size:14px;" onclick="jumpToSubjectPractice()">进入本科目练习</button>
       </div>
     </div>
   </div>
