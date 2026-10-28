@@ -749,7 +749,7 @@
       border-color: #cbd5e1;
     }
     .bank-switch-wrap {
-      margin: 10px 0 12px;
+      margin: 0 20px 12px;
     }
     .bank-switch-segmented {
       display: flex;
@@ -1813,12 +1813,21 @@
     .wrong-compact-row .row-meta{display:block;font-size:11px;color:var(--text-muted);margin-top:2px}
     .video-lesson-row{padding:11px 2px;font-size:13px}
     .video-lesson-row:hover,.wrong-compact-row:hover,.settings-menu-row:hover{background:var(--primary-light)}
-    .home-video-entry{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 16px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--card-bg);color:var(--text-main);text-align:left;cursor:pointer}
+    .home-video-entry{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 16px;padding:14px;border:1.5px solid var(--border);border-radius:12px;background:var(--card-bg);color:var(--text-main);text-align:left;cursor:pointer;box-sizing:border-box;min-width:0}
     .home-video-entry .svg-icon{width:22px;height:22px;color:var(--primary);flex-shrink:0}
     .home-video-entry span:nth-child(2){flex:1;min-width:0}.home-video-entry strong,.home-video-entry small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-video-entry small{color:var(--text-muted);font-size:11.5px;margin-top:2px}
     .home-video-entry:hover{background:var(--primary-light)}
-    .home-dual-entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 20px 16px}
-    .home-dual-entry-grid .home-video-entry{width:100%;margin:0;padding:12px 12px;gap:10px}
+    .home-dual-entry-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:6px 20px 12px;box-sizing:border-box}
+    .home-dual-entry-grid .home-video-entry{width:100%;margin:0;padding:12px 14px;gap:10px}
+    .video-ep-expanded-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;max-height:340px;overflow-y:auto;padding-right:2px}
+    .video-ep-row-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text-main);font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;box-sizing:border-box;transition:border-color 0.15s,background 0.15s}
+    .video-ep-row-btn:hover{background:var(--primary-light);border-color:var(--primary-border)}
+    .video-ep-row-btn.active{background:rgba(29,78,216,0.08);border-color:var(--primary);color:var(--primary);font-weight:800}
+    .video-ep-row-btn .ep-row-num{flex-shrink:0;font-size:12px;padding:2px 7px;border-radius:5px;background:var(--card-bg);border:1px solid var(--border);color:var(--text-sub);font-weight:700}
+    .video-ep-row-btn.active .ep-row-num{background:var(--primary);border-color:var(--primary);color:#fff}
+    .video-ep-row-btn .ep-row-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .video-ep-row-btn .ep-row-tag{flex-shrink:0;font-size:11px;color:var(--text-muted);font-weight:600}
+    .video-ep-row-btn.active .ep-row-tag{color:var(--primary);font-weight:700}
     .sub-actions-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
     .sub-kp-btn{padding:6px 10px;border-radius:8px;border:1.5px solid var(--primary-border);background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
     .sub-kp-btn:active{opacity:0.8}
@@ -2277,7 +2286,7 @@
 .video-player-wrapper { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .rotate-btn { position:relative; z-index:55; width:38px; height:38px; border-radius:50%; border:none; padding:0; cursor:pointer; background:rgba(255,255,255,0.18); color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .rotate-btn::after { content:""; position:absolute; inset:-8px; border-radius:50%; }
-.rotate-btn:active, .rotate-btn.active { background:var(--primary); color:#fff; }
+.rotate-btn:active { background:rgba(255,255,255,0.28); color:#fff; }
 .rotate-btn-light { width:32px; height:32px; background:var(--bg); border:1.5px solid var(--border); color:var(--text-main); }
 .rotate-btn-light:active { background:var(--border); }
 .cinema-overlay-layer.hide-controls { opacity:0; }
@@ -2569,7 +2578,7 @@
         </button>
         <button class="home-video-entry" type="button" id="homeKnowledgeEntryBtn" onclick="openKnowledgeReaderModal()">
           <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-textbook"/></svg>
-          <span><strong>考点精要</strong><small>EPUB 预览 · 讲义融合</small></span>
+          <span><strong>考点精要</strong><small>EPUB 预览</small></span>
           <span aria-hidden="true">›</span>
         </button>
       </div>
@@ -2630,18 +2639,18 @@
 
           <!-- 播放器核心窗口（支持竖屏常规与全屏横屏影院模式） -->
           <div id="videoContainer" class="video-player-wrapper">
-            <!-- 视频标签 -->
-            <video id="tutorialVideoPlayer" playsinline preload="metadata" style="display:none;"></video>
+            <!-- 视频标签（启用 AirPlay 与 RemotePlayback 无线投屏支持） -->
+            <video id="tutorialVideoPlayer" playsinline x-webkit-airplay="allow" airplay="allow" preload="metadata" style="display:none;"></video>
 
             <!-- 未开始播放时的初始引导画面 -->
             <div id="videoEmptyPlaceholder" style="color:#aaa;font-size:13px;padding:30px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:40px;height:40px;color:var(--primary);"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-              <span>请在下方选集开始观看名师精讲</span>
+              <span>正在载入上次播放进度...</span>
             </div>
 
             <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
             <div id="cinemaOverlayLayer" class="cinema-overlay-layer">
-              <!-- 顶部控制栏（左侧返回与标题，右上角全屏切换按钮） -->
+              <!-- 顶部控制栏（左侧返回与标题，右上角投屏与全屏切换按钮） -->
               <div class="cinema-top-bar">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
                   <button class="cinema-ctrl-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回" style="padding:4px;">
@@ -2649,9 +2658,15 @@
                   </button>
                   <span id="cinemaVideoTitle" style="font-size:14px;font-weight:700;letter-spacing:0.5px;">请选择课程</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:12px;font-size:12px;flex-shrink:0;">
+                <div style="display:flex;align-items:center;gap:10px;font-size:12px;flex-shrink:0;">
                   <span id="cinemaClockDisplay">09:15</span>
-                  <button class="rotate-btn" id="btnCinemaFullscreen" onclick="toggleVideoFullscreen()" aria-label="全屏切换" title="全屏切换">
+                  <button class="rotate-btn" id="btnCinemaCast" onclick="triggerVideoCast(event)" aria-label="投屏播放" title="无线投屏 / AirPlay">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                      <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
+                      <line x1="2" y1="20" x2="2.01" y2="20"/>
+                    </svg>
+                  </button>
+                  <button class="rotate-btn" id="btnCinemaFullscreen" onclick="toggleVideoFullscreen(event)" aria-label="全屏切换" title="全屏切换">
                     <svg class="svg-icon" id="iconCinemaFullscreen" viewBox="0 0 24 24" style="width:19px;height:19px;"><use href="#icon-fullscreen"/></svg>
                   </button>
                 </div>
@@ -2722,17 +2737,36 @@
               </div>
               <div id="cinemaEpisodeDrawerList" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;"></div>
             </div>
-          </div>
 
-          <!-- 播放器下方 Tab 导航栏（已取消右侧视频源和倍速按钮） -->
-          <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:12px;padding-bottom:2px;">
-            <div style="display:flex;gap:24px;">
-              <button class="inner-tab-btn active" id="tabBtnVideoPlay" onclick="switchVideoMainTab('play')" style="padding:8px 4px;font-size:15px;font-weight:800;border:none;background:transparent;border-bottom:3px solid var(--primary);border-radius:0;">视频</button>
-              <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">考点大纲</button>
+            <!-- 无线投屏与多屏协同面板 -->
+            <div id="cinemaCastDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:82%;max-width:320px;background:rgba(18,18,18,0.96);backdrop-filter:blur(14px);z-index:65;border-left:1px solid rgba(255,255,255,0.15);flex-direction:column;box-sizing:border-box;color:#fff;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                <span style="font-size:14px;font-weight:700;">无线投屏 / 多屏播放</span>
+                <button onclick="toggleCinemaCastDrawer(false)" style="border:none;background:transparent;color:#fff;cursor:pointer;padding:4px;font-size:20px;line-height:1;">×</button>
+              </div>
+              <div style="flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:12px;line-height:1.55;color:#d1d5db;">
+                <div id="castStatusNotice" style="padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.08);color:#fff;font-weight:600;">正在检索当前局域网可用的电视 / 盒子投屏设备...</div>
+                <button type="button" class="video-source-item" style="background:rgba(37,99,235,0.28);border:1px solid rgba(59,130,246,0.5);justify-content:center;font-weight:700;" onclick="invokeNativeCastPicker()">唤醒系统原生投屏 / AirPlay</button>
+                <button type="button" class="video-source-item" style="background:rgba(255,255,255,0.08);justify-content:center;" onclick="toggleVideoPiP()">开启画中画小窗悬浮播放</button>
+                <button type="button" class="video-source-item" style="background:rgba(255,255,255,0.08);justify-content:center;" onclick="copyCurrentVideoStreamUrl()">复制视频流直链 (电视/VLC投屏)</button>
+                <div style="font-size:11px;color:#9ca3af;border-top:1px solid rgba(255,255,255,0.1);padding-top:8px;">
+                  <div>• iPhone / iPad：点击上方唤醒 AirPlay，或从右上角下拉控制中心点「屏幕镜像」</div>
+                  <div>• 安卓手机：确保与电视同 WiFi，点击唤醒投屏或下拉快捷栏开启「无线投屏」</div>
+                  <div>• 电脑浏览器：点击右上角菜单选择「投射(Cast)」即可投屏至电视</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- 课程切换栏：放在视频/考点大纲下方，占满整排！ -->
+          <!-- 播放器下方 Tab 导航栏（视频 / 简介） -->
+          <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:12px;padding-bottom:2px;">
+            <div style="display:flex;gap:24px;">
+              <button class="inner-tab-btn active" id="tabBtnVideoPlay" onclick="switchVideoMainTab('play')" style="padding:8px 4px;font-size:15px;font-weight:800;border:none;background:transparent;border-bottom:3px solid var(--primary);border-radius:0;">视频</button>
+              <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">简介</button>
+            </div>
+          </div>
+
+          <!-- 课程切换栏：放在视频/简介下方，占满整排！ -->
           <div class="video-course-nav-full" id="videoCourseNavFull">
             <button class="video-course-tab-item active" onclick="switchCourseGroup(0)">高等教育学</button>
             <button class="video-course-tab-item" onclick="switchCourseGroup(1)">心理学</button>
@@ -2741,57 +2775,67 @@
             <button class="video-course-tab-item" onclick="switchCourseGroup(4)">教学实践</button>
           </div>
 
-          <!-- Tab 内容 1：视频播放核心区 -->
+          <!-- Tab 内容 1：视频播放与选集核心区 -->
           <div id="videoTabPlayContent">
-            <!-- 课程大标题与简介折叠入口 -->
+            <!-- 课程大标题与元信息 -->
             <div style="margin-top:4px;padding:2px 4px;">
               <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div id="videoCourseMainTitle" style="font-size:18px;font-weight:800;color:var(--text-main);letter-spacing:0.3px;">高等教育学</div>
-                <button onclick="toggleCourseIntro()" style="border:none;background:transparent;cursor:pointer;font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:2px;">
-                  <span>简介</span>
-                  <span aria-hidden="true">›</span>
-                </button>
               </div>
               <div id="videoCourseSubMeta" style="font-size:12px;color:var(--text-muted);margin-top:3px;">2026统编版 / 高校教资官方精讲 / 共 28 节</div>
-              
-              <!-- 展开的简介详情 -->
-              <div id="videoCourseIntroBox" style="display:none;margin-top:10px;padding:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;font-size:12.5px;line-height:1.6;color:var(--text-sub);">
-                全国高校教师资格统编精品视频课程，紧扣《高等教育学》、《高等教育心理学》、《高校教师职业道德》及《高等教育法规概论》考纲，名师全程高清重难点拆解。
-              </div>
             </div>
 
-            <!-- 选集区 -->
+            <!-- 选集区（支持展开菜单预览完整标题，一行一集按钮） -->
             <div style="margin-top:14px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                 <div style="display:flex;align-items:center;gap:8px;">
                   <span style="font-size:15px;font-weight:800;color:var(--text-main);">选集</span>
                   <span id="labelCourseCompletion" style="font-size:12px;color:var(--text-muted);">已完结</span>
                 </div>
+                <button type="button" id="btnToggleEpisodeExpand" onclick="toggleEpisodeExpandMenu()" style="border:none;background:transparent;color:var(--primary);font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 2px;">
+                  <span id="labelToggleEpisodeExpand">展开菜单</span>
+                  <svg id="iconToggleEpisodeExpand" class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
               </div>
 
               <!-- 集数卡片横向可滑动行 -->
               <div class="video-ep-scroll-row" id="videoEpisodeTrack"></div>
 
+              <!-- 展开的选集列表：一行一集按钮，完整预览标题 -->
+              <div class="video-ep-expanded-list" id="videoEpisodeExpandedList" style="display:none;"></div>
+
               <!-- 当前播放小节名称提示 -->
               <div id="videoCurrentPlayingSubTitle" style="font-size:13px;font-weight:700;color:var(--text-main);margin-top:6px;padding:4px 2px;"></div>
             </div>
+          </div>
 
-            <!-- 详情卡片（已去除“详情介绍”文字和箭头） -->
-            <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:14px;">
-              <!-- 演职人员 / 编著主讲 -->
+          <!-- Tab 内容 2：课程简介（原考点大纲改为简介） -->
+          <div id="videoTabNotesContent" style="display:none;margin-top:12px;">
+            <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;">
               <div style="margin-bottom:14px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
+                  <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
+                  <span id="videoIntroCourseTitle">高等教育学 · 课程简介</span>
+                </div>
+                <div id="videoCourseIntroBox" style="font-size:13px;line-height:1.7;color:var(--text-sub);">
+                  全国高校教师资格统编精品视频课程，紧扣《高等教育学》、《高等教育心理学》、《高校教师职业道德》及《高等教育法规概论》考纲，名师全程高清重难点拆解。
+                </div>
+              </div>
+
+              <!-- 演职人员 / 编著主讲 -->
+              <div style="margin-bottom:14px;border-top:1px dashed var(--border);padding-top:12px;">
                 <div style="display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
                   <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
                   <span>教研与主讲团队</span>
                 </div>
-                <div style="font-size:12.5px;line-height:1.6;color:var(--text-sub);">
+                <div style="font-size:12.5px;line-height:1.65;color:var(--text-sub);">
                   统编教材：全国高校教师资格认定指导中心 组编<br>
                   主讲专家：陈何芳、王一军、宋华明、刘小强等高校博导、教授团队全程领衔主讲
                 </div>
               </div>
 
               <!-- 课程核心大纲介绍 -->
-              <div>
+              <div style="border-top:1px dashed var(--border);padding-top:12px;">
                 <div style="display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
                   <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
                   <span>课程大纲与重点</span>
@@ -2799,28 +2843,6 @@
                 <div style="font-size:12.5px;line-height:1.7;color:var(--text-sub);" id="videoCourseFullOutline">
                   涵盖高校教育基本规律、大学三大职能演进、现代高校教学与科研原则、教师专业化发展与考核评价。系统剖析历年教资真题高频命题点。
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tab 内容 2：讲义与大纲（支持直接在线 EPUB 预览与做题联动） -->
-          <div id="videoTabNotesContent" style="display:none;margin-top:14px;">
-            <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                <div style="font-size:14.5px;font-weight:800;color:var(--text-main);">配套考点精要讲义 (EPUB 在线预览)</div>
-                <span style="font-size:11px;background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:4px;font-weight:700;">Markdown 实时解析</span>
-              </div>
-              <div style="font-size:12.5px;line-height:1.65;color:var(--text-sub);margin-bottom:12px;">
-                直接以 EPUB 沉浸式电子书格式在线阅读 5 大科目核心考点、采分要点与命题陷阱，并支持在阅读中一键跳转对应真题实战练习：
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-                <button class="bottom-btn primary" style="padding:8px 10px;font-size:12.5px;height:auto;" onclick="openVideoCourseSubjectEpub()">预览当前课程科目考点</button>
-                <button class="bottom-btn" style="padding:8px 10px;font-size:12.5px;height:auto;" onclick="openKnowledgeReaderModal('merged')">预览新旧全量融合全书</button>
-              </div>
-              <div style="display:flex;gap:8px;">
-                <button class="bottom-btn" style="flex:1;padding:6px 10px;font-size:12px;height:auto;" onclick="openKnowledgeReaderModal('official_2026')">2026官网新版考点</button>
-                <button class="bottom-btn" style="flex:1;padding:6px 10px;font-size:12px;height:auto;" onclick="openKnowledgeReaderModal('word_legacy')">历年真题版考点</button>
-                <button class="bottom-btn" style="padding:6px 10px;font-size:12px;height:auto;" onclick="switchBottomTab('settings');openSettingsSection('resources')">下载讲义</button>
               </div>
             </div>
           </div>
@@ -3065,7 +3087,7 @@
           <button type="button" class="text-name-btn" style="width:100%;padding:8px;font-size:12px;margin-top:8px;" onclick="toggleAiAdvancedOptions(this)" aria-expanded="false">高级设置：端点与模型管理 ›</button>
 
           <!-- 保存按钮 -->
-          <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
+          <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
         </div>
 
         <!-- 主题是否跟随系统 -->
@@ -3109,7 +3131,7 @@
             </div>
             <div style="display:flex;gap:6px;margin-bottom:8px;">
               <input id="githubTokenInput" type="password" style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 GitHub Token (ghp_xxxx)" onchange="saveSyncSettings()">
-              <button class="modal-submit-btn" style="padding:7px 14px;font-size:12px;white-space:nowrap;" onclick="syncWithGitHubGist(true)">
+              <button class="bottom-btn" style="padding:7px 14px;font-size:12px;white-space:nowrap;" onclick="syncWithGitHubGist(true)">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-cloud-sync"/></svg> 立即 Gist 同步
               </button>
             </div>
@@ -3123,7 +3145,7 @@
               <button class="bottom-btn" style="padding:7px 10px;font-size:12px;white-space:nowrap;" onclick="testServerConnection()">测试</button>
             </div>
             <div style="display:flex;gap:8px;">
-              <button class="modal-submit-btn" id="manualSyncBtn" style="flex:1.2;padding:8px 12px;font-size:12px;" onclick="syncWithServer(true)">
+              <button class="bottom-btn" id="manualSyncBtn" style="flex:1.2;padding:8px 12px;font-size:12px;" onclick="syncWithServer(true)">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 局域网立即合并
               </button>
               <button class="bottom-btn" style="flex:1;padding:8px 10px;font-size:12px;" onclick="openNetworkConnectModal()">网络排查指引</button>
@@ -3143,37 +3165,24 @@
           <div style="font-size:11px;color:var(--text-muted);margin-top:12px;" id="lastSyncTimeText">上次同步：未进行</div>
         </div>
 
-        <div data-settings-section="backup" style="border:1px solid var(--border);border-radius:12px;padding:14px;">
-          <div style="font-size:14px;font-weight:700;">学习记录备份与恢复</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">导入备份文件，合并做题、错题、收藏与打卡记录；不包含 AI 密钥。</div>
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button class="bottom-btn" style="flex:1;padding:9px;font-size:13px;" onclick="exportLearningBackup()">下载备份</button>
-            <label class="bottom-btn primary" style="flex:1;padding:9px;font-size:13px;text-align:center;cursor:pointer;">导入备份
+        <div data-settings-section="backup" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
+          <div style="font-size:14px;font-weight:700;">学习记录备份与恢复（多格式导出）</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">支持导出 JSON 完整备份、CSV 表格、Markdown 研学报告与 TXT 文本记录；支持从备份文件恢复做题、错题、收藏与打卡进度（不含 AI 密钥）。</div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;">
+            <button class="bottom-btn" style="padding:9px;font-size:12.5px;" onclick="exportLearningBackup('json')">导出 JSON 备份</button>
+            <button class="bottom-btn" style="padding:9px;font-size:12.5px;" onclick="exportLearningBackup('csv')">导出 CSV 表格</button>
+            <button class="bottom-btn" style="padding:9px;font-size:12.5px;" onclick="exportLearningBackup('md')">导出 Markdown 报告</button>
+            <button class="bottom-btn" style="padding:9px;font-size:12.5px;" onclick="exportLearningBackup('txt')">导出 TXT 文本</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <label class="bottom-btn" style="flex:1;padding:9px;font-size:13px;text-align:center;cursor:pointer;">导入备份文件恢复进度 (.json)
               <input type="file" accept=".json,application/json" style="display:none;" onchange="importLearningBackup(event)">
             </label>
           </div>
         </div>
 
-        <!-- 清除数据 (清空答题记录、错题本与模拟考卷) -->
-        <div data-settings-section="reset" style="border:1px solid #ef444444;border-radius:12px;padding:16px;background:var(--card-bg);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:15px;font-weight:800;color:#dc2626;display:flex;align-items:center;gap:6px;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:#dc2626;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-              <span>清除本地做题数据</span>
-            </div>
-            <span style="font-size:11px;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:4px;font-weight:600;">高风险操作</span>
-          </div>
-          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
-            此操作将清空本地所有已作答的真题记录、错题本、艾宾浩斯复习曲线、题目收藏夹、模拟考试试卷库以及每日打卡热力图，系统将恢复为初始做题状态。<br>
-            <span style="color:var(--text-muted);">注：不会删除内置官方题库及您已保存的 AI 密钥。如需备份现有学习进度，请先在【备份与恢复】中导出备份文件。</span>
-          </div>
-          <button class="modal-submit-btn" style="width:100%;background:#dc2626;border-color:#dc2626;padding:10px;font-size:13px;" onclick="clearAllUserData()">
-            确认清空所有做题记录与错题本
-          </button>
-        </div>
-
         <!-- 版本更新与 APK 推送 -->
-        <div data-settings-section="update" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+        <div data-settings-section="update" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
@@ -3185,7 +3194,7 @@
             当前环境：检测中...
           </div>
           <div style="display:flex;flex-direction:column;gap:10px;">
-            <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;" onclick="checkAppUpdate(true)">
+            <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;" onclick="checkAppUpdate(true)">
               立即检查最新版本
             </button>
             <a href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:13px;text-decoration:none;color:var(--text-main);">
@@ -3200,13 +3209,13 @@
         <div data-settings-section="handbook" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div style="font-size:14px;font-weight:700;">高校教资核心考点精要手册（按章节排版）</div>
-            <span style="font-size:11px;background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">考前背诵必读</span>
+            <span style="font-size:11px;background:var(--bg);color:var(--text-muted);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-weight:600;">考前背诵必读</span>
           </div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">系统归纳 5 大科目考点、核心内涵、采分结论与命题陷阱，提供标准 Word (.docx) 与 Markdown (.md) 格式：</div>
           
           <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
             <div style="display:flex;gap:8px;">
-              <a href="./高校教资考点精要_新旧全量融合版.docx" download="高校教资考点精要_新旧全量融合版.docx" class="bottom-btn primary" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;font-size:12px;padding:8px;">
+              <a href="./高校教资考点精要_新旧全量融合版.docx" download="高校教资考点精要_新旧全量融合版.docx" class="bottom-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;font-size:12px;padding:8px;">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><use href="#icon-book"/></svg>
                 <span>全量融合考点精要.docx</span>
               </a>
@@ -3238,7 +3247,7 @@
           <div style="font-size:14px;font-weight:700;">全套官方题库与答案文件下载</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">本地整理好的完整题库（含 2026 官网标准答案版与历年真题版）</div>
           <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
-            <a href="./高校教资题库全套_新旧两版对照带答案.xlsx" download="高校教资题库全套_新旧两版对照带答案.xlsx" class="bottom-btn primary" style="display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:13px;height:38px;">
+            <a href="./高校教资题库全套_新旧两版对照带答案.xlsx" download="高校教资题库全套_新旧两版对照带答案.xlsx" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:13px;height:38px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-share"/></svg>
               <span>下载 Excel 题库总表（四表合一·新旧对照+统计）</span>
             </a>
@@ -3254,23 +3263,34 @@
         </div>
 
         <!-- 题库导入与更新 -->
-        <div data-settings-section="bank" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+        <div data-settings-section="bank" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;background:var(--card-bg);">
           <div style="font-size:14px;font-weight:700;">题库导入与更新</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">导入 JSON 题库文件扩充题目</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">导入 JSON 题库文件扩充题目或导出当前题库</div>
           <div style="display:flex;gap:10px;margin-top:10px;">
-            <label class="modal-submit-btn" style="flex:1;padding:10px;font-size:13px;cursor:pointer;display:inline-block;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;vertical-align:-2px;"><use href="#icon-upload"/></svg> 导入题库文件
+            <label class="bottom-btn" style="flex:1;padding:10px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-upload"/></svg>
+              <span>导入题库文件</span>
               <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="handleImportQuizFile(event)">
             </label>
             <button class="bottom-btn" style="flex:1;padding:10px;font-size:13px;" onclick="exportCurrentQuizData()">导出当前题库</button>
           </div>
         </div>
 
-        <!-- 历史做题记录深度恢复 -->
-        <div data-settings-section="export" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;">
-          <div style="font-size:14px;font-weight:700;">导出做题记录</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">下载 CSV，包含题目编号、作答、对错和时间</div>
-          <button class="bottom-btn primary" style="margin-top:10px;width:100%;height:38px;font-size:13px;" onclick="exportAnswerRecords()">导出 CSV</button>
+        <!-- 清除数据放在最后，按钮与卡片不设高亮颜色 -->
+        <div data-settings-section="reset" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:14px;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--text-sub);"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              <span>清除本地做题数据</span>
+            </div>
+            <span style="font-size:11px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">重置选项</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
+            清空本地所有已作答的真题记录、错题本、艾宾浩斯复习曲线、题目收藏夹、模拟考试试卷库以及每日打卡热力图，恢复初始做题状态（保留内置题库及 AI 密钥）。
+          </div>
+          <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;" onclick="clearAllUserData()">
+            清除本地所有做题记录与错题本
+          </button>
         </div>
 
         </div>
@@ -4595,17 +4615,88 @@
       }
     }
 
-    // 跨站点备份仅包含学习进度，不导出同步令牌或 AI 密钥。
-    function exportLearningBackup() {
+    // 跨站点备份仅包含学习进度，不导出同步令牌或 AI 密钥；支持 json / csv / md / txt 多种格式导出。
+    function exportLearningBackup(format = 'json') {
       const fields = ['answers', 'favorites', 'wrongBook', 'ebbinghausWrong', 'checkin', 'dailyActivity', 'unfinishedSessions'];
       const store = Object.fromEntries(fields.map(key => [key, userStore[key] ?? (key === 'favorites' ? [] : {})]));
-      const payload = { format: 'jsgsMock-learning-backup', version: 1, exportedAt: new Date().toISOString(), store };
-      const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const answersEntries = Object.entries(store.answers || {});
+      const totalAnswered = answersEntries.length;
+      const correctCount = answersEntries.filter(([, r]) => r && r.isCorrect).length;
+      const accuracy = totalAnswered > 0 ? ((correctCount / totalAnswered) * 100).toFixed(1) : '0.0';
+      const wrongCount = Object.keys(store.wrongBook || {}).length;
+      const favCount = Array.isArray(store.favorites) ? store.favorites.length : 0;
+      const checkinDays = store.checkin?.days || 0;
+
+      let blob = null;
+      let filename = `jsgsMock-learning-backup-${dateStr}`;
+
+      if (format === 'csv') {
+        const rows = [['题目ID', '作答选项', '是否正确', '错题本标记', '作答时间']];
+        answersEntries.forEach(([key, record]) => {
+          const chosenStr = Array.isArray(record?.chosen) ? record.chosen.join('|') : (record?.chosen ?? '');
+          const isWrong = store.wrongBook && store.wrongBook[key] ? '是' : '否';
+          const timeStr = record?.time ? new Date(record.time).toLocaleString('zh-CN') : '';
+          rows.push([key, chosenStr, record?.isCorrect ? '正确' : '错误', isWrong, timeStr]);
+        });
+        const csv = '\uFEFF' + rows.map(row => row.map(v => `"${String(v).replaceAll('"', '""')}"`).join(',')).join('\r\n');
+        blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        filename += '.csv';
+      } else if (format === 'md') {
+        const lines = [
+          `# 高校教师资格证研学备份报告 (${dateStr})`,
+          ``,
+          `## 一、核心学习统计`,
+          `- **累计作答题目**：${totalAnswered} 题`,
+          `- **累计答对题目**：${correctCount} 题（正确率 ${accuracy}%）`,
+          `- **当前错题本数**：${wrongCount} 题`,
+          `- **收藏夹题目数**：${favCount} 题`,
+          `- **连续打卡天数**：${checkinDays} 天`,
+          ``,
+          `## 二、作答明细记录`,
+          `| 序号 | 题目ID | 作答 | 结果 | 作答时间 |`,
+          `| :--- | :--- | :--- | :--- | :--- |`
+        ];
+        answersEntries.forEach(([key, record], idx) => {
+          const chosenStr = Array.isArray(record?.chosen) ? record.chosen.join(',') : (record?.chosen ?? '-');
+          const resStr = record?.isCorrect ? '正确' : '错误';
+          const timeStr = record?.time ? new Date(record.time).toLocaleString('zh-CN') : '-';
+          lines.push(`| ${idx + 1} | ${key} | ${chosenStr} | ${resStr} | ${timeStr} |`);
+        });
+        blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+        filename += '.md';
+      } else if (format === 'txt') {
+        const lines = [
+          `========================================`,
+          `  高校教资题库与模考系统 · 学习记录备份`,
+          `  导出日期：${new Date().toLocaleString('zh-CN')}`,
+          `========================================`,
+          `累计作答：${totalAnswered} 题 | 答对：${correctCount} 题 | 正确率：${accuracy}%`,
+          `错题数量：${wrongCount} 题 | 收藏数量：${favCount} 题 | 连续打卡：${checkinDays} 天`,
+          `----------------------------------------`,
+          `[作答记录明细]`
+        ];
+        answersEntries.forEach(([key, record], idx) => {
+          const chosenStr = Array.isArray(record?.chosen) ? record.chosen.join(',') : (record?.chosen ?? '-');
+          const resStr = record?.isCorrect ? '正确' : '错误';
+          const timeStr = record?.time ? new Date(record.time).toLocaleString('zh-CN') : '-';
+          lines.push(`${idx + 1}. [${key}] 作答:${chosenStr} | 结果:${resStr} | 时间:${timeStr}`);
+        });
+        blob = new Blob([lines.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+        filename += '.txt';
+      } else {
+        const payload = { format: 'jsgsMock-learning-backup', version: 1, exportedAt: new Date().toISOString(), store };
+        blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        filename += '.json';
+      }
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `jsgsMock-learning-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download = filename;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`已导出 ${format.toUpperCase()} 格式学习记录`);
     }
 
     async function importLearningBackup(event) {
@@ -5581,8 +5672,9 @@
     let playbackRates = [1.0, 1.25, 1.5, 2.0, 0.75];
     let currentRateIdx = 0;
     let isDraggingCinemaProgress = false;
+    let isEpisodeMenuExpanded = false;
 
-    // 断点记忆恢复本地存储管理
+    // 断点记忆恢复与上次观看会话本地存储管理
     function getVideoSavedProgress(url) {
       if (!url) return 0;
       try {
@@ -5611,14 +5703,48 @@
       } catch (e) {}
     }
 
+    function saveLastVideoSession(cIdx, lIdx, url) {
+      try {
+        localStorage.setItem('jsgs_last_video_session', JSON.stringify({
+          cIdx: Number(cIdx) || 0,
+          lIdx: Number(lIdx) || 0,
+          url: url || '',
+          updatedAt: Date.now()
+        }));
+      } catch (e) {}
+    }
+
+    function getLastVideoSession() {
+      const courses = window.COURSE_VIDEOS || [];
+      try {
+        const raw = localStorage.getItem('jsgs_last_video_session');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const cIdx = Number(parsed.cIdx);
+          const lIdx = Number(parsed.lIdx);
+          if (courses[cIdx] && courses[cIdx].lessons && courses[cIdx].lessons[lIdx]) {
+            return { cIdx, lIdx };
+          }
+        }
+        // 若未显式记录会话，扫描历史进度表匹配最近有进度的剧集
+        const map = JSON.parse(localStorage.getItem('jsgs_video_progress') || '{}');
+        for (let ci = 0; ci < courses.length; ci++) {
+          const lessons = courses[ci].lessons || [];
+          for (let li = 0; li < lessons.length; li++) {
+            if (lessons[li].url && Number(map[lessons[li].url]) > 0) {
+              return { cIdx: ci, lIdx: li };
+            }
+          }
+        }
+      } catch (e) {}
+      return { cIdx: 0, lIdx: 0 };
+    }
+
     function renderTutorialVideos() {
       const catalog = document.getElementById('videoEpisodeTrack');
       if (!catalog) return;
       const courses = window.COURSE_VIDEOS || [];
       if (!courses.length) return;
-
-      if (currentCourseIndex < 0) currentCourseIndex = 0;
-      updateCourseView(currentCourseIndex);
 
       const player = document.getElementById('tutorialVideoPlayer');
       if (player && !player.dataset.bound) {
@@ -5627,7 +5753,7 @@
           if (!isVideoMirrorActive && currentPlayingLessonUrl && currentPlayingLessonUrl.includes('github.com')) {
             toggleVideoCdnMirror();
           } else {
-            showToast('若播放遇到网络缓冲，可点击“官方CDN”按钮切换线路');
+            showToast('若播放遇到网络缓冲，可点击“源”按钮切换线路');
           }
         };
 
@@ -5666,21 +5792,40 @@
         // 绑定拖拽进度条交互 (触摸与鼠标)
         bindProgressBarDrag();
         bindVideoGestures();
+
+        // 影院模式时间走时
+        setInterval(() => {
+          const d = new Date();
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          const clock = document.getElementById('cinemaClockDisplay');
+          if (clock) clock.textContent = `${hh}:${mm}`;
+        }, 1000);
       }
 
-      // 影院模式时间走时
-      setInterval(() => {
-        const d = new Date();
-        const hh = String(d.getHours()).padStart(2, '0');
-        const mm = String(d.getMinutes()).padStart(2, '0');
-        const clock = document.getElementById('cinemaClockDisplay');
-        if (clock) clock.textContent = `${hh}:${mm}`;
-      }, 1000);
+      // 自动恢复并开始播放原来播放进度的视频
+      if (currentLessonIndex < 0 || !currentPlayingLessonUrl) {
+        const last = getLastVideoSession();
+        updateCourseView(last.cIdx);
+        playLesson(last.cIdx, last.lIdx);
+      } else {
+        updateCourseView(currentCourseIndex);
+        if (player && player.paused) {
+          player.play().catch(() => {});
+        }
+      }
     }
 
     function switchCourseGroup(cIdx) {
       updateCourseView(cIdx);
     }
+
+    const COURSE_INTRO_DESCRIPTIONS = [
+      '《高等教育学》系统梳理高等教育本质、发展历史、高校教育制度、教师与学生发展、高校课程体系与教学活动规律，紧扣统考选择题、简答题、辨析题与论述题高频命题点。',
+      '《高等教育心理学》深入剖析大学生心理发展与自我意识、高校学习心理理论、学习动机激发、知识技能习得迁移及心理健康教育，结合高校教学真实情境强化解题迁移能力。',
+      '《高校教师职业道德修养》围绕新时代高校教师职业道德规范、师德理想、学术诚信、育人礼仪及师德修养途径展开精讲，直击材料分析题与案例辨析采分点。',
+      '《高等教育法规概论》全面解读《教育法》《高等教育法》《教师法》等核心法条、法律责任与教师权利义务救济机制，帮助考生精准攻克法条应用与案例分析题。'
+    ];
 
     function updateCourseView(cIdx) {
       const courses = window.COURSE_VIDEOS || [];
@@ -5696,6 +5841,21 @@
       const compEl = document.getElementById('labelCourseCompletion');
       if (compEl) compEl.textContent = `共 ${course.lessons.length} 节 · 已完结`;
 
+      // 同步更新“简介”Tab 内容
+      const introTitleEl = document.getElementById('videoIntroCourseTitle');
+      if (introTitleEl) introTitleEl.textContent = `${course.title} · 课程简介`;
+      const introBoxEl = document.getElementById('videoCourseIntroBox');
+      if (introBoxEl) {
+        introBoxEl.textContent = COURSE_INTRO_DESCRIPTIONS[cIdx] || COURSE_INTRO_DESCRIPTIONS[0];
+      }
+      const outlineEl = document.getElementById('videoCourseFullOutline');
+      if (outlineEl) {
+        outlineEl.innerHTML = course.lessons.map((les, idx) => {
+          const num = String(idx + 1).padStart(2, '0');
+          return `<div style="padding:4px 0;border-bottom:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="switchVideoMainTab('play');playLesson(${cIdx},${idx});"><span><strong>第${num}集</strong> · ${escapeHtml(les.title)}</span><span style="font-size:11px;color:var(--primary);white-space:nowrap;margin-left:8px;">播放 ›</span></div>`;
+        }).join('');
+      }
+
       // 联动整排课程切换按钮高亮
       const navFull = document.getElementById('videoCourseNavFull');
       if (navFull) {
@@ -5704,8 +5864,24 @@
         });
       }
 
-      // 渲染选集横向滑动轨道
+      // 渲染选集横向滑动轨道及展开菜单列表
       renderEpisodeCards(cIdx);
+    }
+
+    function toggleEpisodeExpandMenu() {
+      isEpisodeMenuExpanded = !isEpisodeMenuExpanded;
+      const listEl = document.getElementById('videoEpisodeExpandedList');
+      const labelEl = document.getElementById('labelToggleEpisodeExpand');
+      const iconEl = document.getElementById('iconToggleEpisodeExpand');
+      if (listEl) {
+        listEl.style.display = isEpisodeMenuExpanded ? 'flex' : 'none';
+      }
+      if (labelEl) {
+        labelEl.textContent = isEpisodeMenuExpanded ? '收起菜单' : '展开菜单';
+      }
+      if (iconEl) {
+        iconEl.style.transform = isEpisodeMenuExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
     }
 
     function renderEpisodeCards(cIdx) {
@@ -5716,16 +5892,41 @@
       if (!course) return;
 
       track.replaceChildren();
+      const expandedList = document.getElementById('videoEpisodeExpandedList');
+      if (expandedList) expandedList.replaceChildren();
+
       course.lessons.forEach((lesson, lIdx) => {
-        const card = document.createElement('div');
         const isAct = (cIdx === currentCourseIndex && lIdx === currentLessonIndex);
-        card.className = `video-ep-card-item ${isAct ? 'active' : ''}`;
         const epNum = String(lIdx + 1).padStart(2, '0');
+
+        // 1. 横向紧凑选集卡片
+        const card = document.createElement('div');
+        card.className = `video-ep-card-item ${isAct ? 'active' : ''}`;
         card.innerHTML = `<div>第${epNum}集</div>`;
         card.onclick = () => {
           playLesson(cIdx, lIdx);
         };
         track.appendChild(card);
+
+        // 2. 展开菜单：一行一集按钮，完整预览标题与播放进度
+        if (expandedList) {
+          const rowBtn = document.createElement('button');
+          rowBtn.type = 'button';
+          rowBtn.className = `video-ep-row-btn ${isAct ? 'active' : ''}`;
+          const savedSec = getVideoSavedProgress(lesson.url);
+          const statusText = isAct
+            ? '正在播放'
+            : (savedSec > 0 ? `已看至 ${formatTimeStr(savedSec)}` : '播放');
+          rowBtn.innerHTML = `
+            <span class="ep-row-badge">第${epNum}集</span>
+            <span class="ep-row-title">${escapeHtml(lesson.title)}</span>
+            <span class="ep-row-status">${statusText}</span>
+          `;
+          rowBtn.onclick = () => {
+            playLesson(cIdx, lIdx);
+          };
+          expandedList.appendChild(rowBtn);
+        }
       });
 
       // 同步更新全屏抽屉列表
@@ -5745,6 +5946,7 @@
         return;
       }
       currentPlayingLessonUrl = lesson.url;
+      saveLastVideoSession(cIdx, lIdx, lesson.url);
 
       const player = document.getElementById('tutorialVideoPlayer');
       const placeholder = document.getElementById('videoEmptyPlaceholder');
@@ -5985,9 +6187,96 @@
       if (useEl) {
         useEl.setAttribute('href', isCinemaFullscreen ? '#icon-fullscreen-exit' : '#icon-fullscreen');
       }
+      // 横竖切换按钮保持无高亮颜色
       const rotBtn = document.getElementById('btnCinemaRotate');
       if (rotBtn) {
-        rotBtn.classList.toggle('active', isCinemaFullscreen && isVideoLandscape);
+        rotBtn.classList.remove('active');
+      }
+    }
+
+    // 播放器投屏与画中画功能恢复
+    function triggerVideoCast(ev) {
+      if (ev) ev.stopPropagation();
+      closeSourceMenu();
+      closeSpeedMenu();
+      toggleCinemaEpisodeDrawer(false);
+      toggleCinemaCastDrawer();
+      showVideoControls(true);
+    }
+
+    function toggleCinemaCastDrawer(show) {
+      const drawer = document.getElementById('cinemaCastDrawer');
+      if (!drawer) return;
+      const willShow = (typeof show === 'boolean') ? show : (drawer.style.display === 'none');
+      drawer.style.display = willShow ? 'flex' : 'none';
+    }
+
+    function invokeNativeCastPicker() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      if (typeof player.webkitShowPlaybackTargetPicker === 'function') {
+        try {
+          player.webkitShowPlaybackTargetPicker();
+          toggleCinemaCastDrawer(false);
+          return;
+        } catch (e) {}
+      }
+      if (player.remote && typeof player.remote.prompt === 'function') {
+        player.remote.prompt()
+          .then(() => {
+            showToast('已连接投屏设备');
+            toggleCinemaCastDrawer(false);
+          })
+          .catch(() => {
+            showToast('未检测到可用的原生投屏设备，可使用系统控制中心无线投屏或复制流地址');
+          });
+        return;
+      }
+      showToast('请开启手机/电脑控制中心的“无线投屏 / 屏幕镜像”，或复制视频流地址至电视投屏软件');
+    }
+
+    function toggleVideoPiP() {
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!player) return;
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture().catch(() => {});
+        toggleCinemaCastDrawer(false);
+      } else if (typeof player.requestPictureInPicture === 'function') {
+        player.requestPictureInPicture()
+          .then(() => {
+            showToast('已开启画中画悬浮播放');
+            toggleCinemaCastDrawer(false);
+          })
+          .catch(() => {
+            showToast('当前开始播放视频后即可开启画中画');
+          });
+      } else if (typeof player.webkitSetPresentationMode === 'function') {
+        try {
+          player.webkitSetPresentationMode(player.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture');
+          toggleCinemaCastDrawer(false);
+        } catch (e) {
+          showToast('当前环境暂不支持画中画');
+        }
+      } else {
+        showToast('当前浏览器环境暂不支持画中画模式');
+      }
+    }
+
+    function copyCurrentVideoStreamUrl() {
+      const url = getEffectiveVideoUrl(currentPlayingLessonUrl);
+      if (!url) {
+        showToast('当前暂无正在播放的视频流');
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('已复制视频投屏直链地址');
+          toggleCinemaCastDrawer(false);
+        }).catch(() => {
+          prompt('请复制以下视频流直链地址用于投屏软件：', url);
+        });
+      } else {
+        prompt('请复制以下视频流直链地址用于投屏软件：', url);
       }
     }
 
@@ -6143,9 +6432,11 @@
     function hideVideoControls() {
       const overlay = document.getElementById('cinemaOverlayLayer');
       const drawer = document.getElementById('cinemaEpisodeDrawer');
+      const castDrawer = document.getElementById('cinemaCastDrawer');
       const player = document.getElementById('tutorialVideoPlayer');
       if (!overlay || isDraggingCinemaProgress) return;
       if (drawer && drawer.style.display !== 'none') return;
+      if (castDrawer && castDrawer.style.display !== 'none') return;
       if (!player || player.paused) return;
       closeSourceMenu();
       closeSpeedMenu();
@@ -6160,12 +6451,12 @@
       const hud = document.getElementById('videoGestureHud');
       if (!box || !player || box.dataset.gesture) return;
       box.dataset.gesture = '1';
-      const IGNORE = 'button, .rotate-btn, .cinema-ctrl-btn, .cinema-text-btn, #cinemaProgressRail, #cinemaEpisodeDrawer, #videoSourceMenu, #videoSpeedMenu';
+      const IGNORE = 'button, .rotate-btn, .cinema-ctrl-btn, .cinema-text-btn, #cinemaProgressRail, #cinemaEpisodeDrawer, #cinemaCastDrawer, #videoSourceMenu, #videoSpeedMenu';
       const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
       let g = null;
       let hudTimer = null;
 
-      // 为横竖切换按钮与全屏按钮绑定直通快速触控（防止移动端 touch-action:none 吞掉轻点）
+      // 为横竖切换按钮、全屏按钮与投屏按钮绑定直通快速触控（防止移动端 touch-action:none 吞掉轻点）
       const rotBtn = document.getElementById('btnCinemaRotate');
       if (rotBtn && !rotBtn.dataset.fastTap) {
         rotBtn.dataset.fastTap = '1';
@@ -6182,6 +6473,15 @@
           ev.stopPropagation();
           if (ev.cancelable) ev.preventDefault();
           toggleVideoFullscreen(ev);
+        }, { passive: false });
+      }
+      const castBtn = document.getElementById('btnCinemaCast');
+      if (castBtn && !castBtn.dataset.fastTap) {
+        castBtn.dataset.fastTap = '1';
+        castBtn.addEventListener('touchend', (ev) => {
+          ev.stopPropagation();
+          if (ev.cancelable) ev.preventDefault();
+          triggerVideoCast(ev);
         }, { passive: false });
       }
 
