@@ -1,0 +1,51 @@
+name: JsgsMock
+options:
+  bundleIdPrefix: com.jsgsmock
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.jsgsmock.app
+    MARKETING_VERSION: 1.4.3
+    CURRENT_PROJECT_VERSION: 143
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    CODE_SIGNING_ALLOWED: "NO"
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGN_IDENTITY: ""
+    AD_HOC_CODE_SIGNING_ALLOWED: "YES"
+targets:
+  JsgsMock:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: JsgsMock
+        excludes:
+          - "web/**"
+      - path: JsgsMock/web
+        type: folder
+        buildPhase: resources
+    info:
+      path: JsgsMock/Info.plist
+      properties:
+        CFBundleDisplayName: jsgsMock
+        CFBundleName: jsgsMock
+        CFBundleShortVersionString: "1.4.3"
+        CFBundleVersion: "143"
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIViewControllerBasedStatusBarAppearance: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIBackgroundModes:
+          - audio
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true

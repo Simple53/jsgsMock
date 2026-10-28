@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowContentAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setUseWideViewPort(true);
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.addJavascriptInterface(new Object() {
             @android.webkit.JavascriptInterface
             public String getAppVersion() {
-                return "1.4.3";
+                return "1.4.4";
             }
             @android.webkit.JavascriptInterface
             public void openDownloadUrl(String url) {

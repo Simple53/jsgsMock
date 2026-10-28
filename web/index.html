@@ -2225,31 +2225,114 @@
   gap: 18px;
 }
 .cinema-ctrl-btn {
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
   color: #fff;
   font-size: 13.5px;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 6px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.cinema-ctrl-btn:hover {
-  background: rgba(255,255,255,0.15);
+.cinema-ctrl-btn:hover,
+.cinema-ctrl-btn:active {
+  background: transparent !important;
+  opacity: 0.82;
 }
 .cinema-text-btn {
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
   color: #fff;
   font-size: 13.5px;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 6px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.cinema-text-btn:hover {
-  background: rgba(255,255,255,0.15);
+.cinema-text-btn:hover,
+.cinema-text-btn:active {
+  background: transparent !important;
+  opacity: 0.82;
+}
+.video-vol-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.video-volume-popup {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  padding: 10px 6px 8px;
+  background: rgba(18, 18, 18, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 75;
+  user-select: none;
+  touch-action: none;
+}
+.video-volume-popup.open {
+  display: flex;
+}
+.video-volume-val {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  font-family: monospace;
+  line-height: 1;
+}
+.video-volume-rail {
+  width: 6px;
+  height: 88px;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  touch-action: none;
+}
+.video-volume-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+}
+.video-volume-thumb {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  pointer-events: none;
+}
+.video-volume-mute-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #d1d5db;
+  font-size: 10px;
+  padding: 2px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 
@@ -2282,11 +2365,11 @@
 }
 
 
-/* 播放器：圆润横竖切换按钮、手势提示、播放源与倍速菜单、强制横竖屏回退 */
+/* 播放器：无背景圆环纯图标按钮、手势提示、播放源与倍速菜单、强制横竖屏回退 */
 .video-player-wrapper { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-.rotate-btn { position:relative; z-index:55; width:38px; height:38px; border-radius:50%; border:none; padding:0; cursor:pointer; background:rgba(255,255,255,0.18); color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
-.rotate-btn::after { content:""; position:absolute; inset:-8px; border-radius:50%; }
-.rotate-btn:active { background:rgba(255,255,255,0.28); color:#fff; }
+.rotate-btn { position:relative; z-index:55; width:34px; height:34px; border-radius:0 !important; border:none !important; box-shadow:none !important; padding:0; cursor:pointer; background:transparent !important; color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:opacity 0.15s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.rotate-btn::after { content:""; position:absolute; inset:-6px; }
+.rotate-btn:hover, .rotate-btn:active { background:transparent !important; color:#fff; opacity:0.8; }
 .rotate-btn-light { width:32px; height:32px; background:var(--bg); border:1.5px solid var(--border); color:var(--text-main); }
 .rotate-btn-light:active { background:var(--border); }
 .cinema-overlay-layer.hide-controls { opacity:0; }
@@ -2648,7 +2731,7 @@
               <span>正在载入上次播放进度...</span>
             </div>
 
-            <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
+            <!-- 全屏影院模式内部控制覆盖层（无背景圆环纯图标，移除横竖切换按钮，新增画中画与垂直音量控制） -->
             <div id="cinemaOverlayLayer" class="cinema-overlay-layer">
               <!-- 顶部控制栏（左侧返回与标题，右上角投屏与全屏切换按钮） -->
               <div class="cinema-top-bar">
@@ -2672,7 +2755,7 @@
                 </div>
               </div>
 
-              <!-- 底部控制面板（支持拖动进度条，右下角横竖屏切换） -->
+              <!-- 底部控制面板（支持拖动进度条、上下拖动调节音量、右下角画中画切换） -->
               <div class="cinema-bottom-panel">
                 <!-- 进度条行：支持点击与顺滑触摸/拖拽 -->
                 <div class="cinema-progress-wrapper">
@@ -2684,7 +2767,7 @@
                   <span id="cinemaTotalTimeText">00:00:00</span>
                 </div>
 
-                <!-- 控制按钮行（保留播放、下一集、音量、倍速、播放源、选集、右下角横竖切换） -->
+                <!-- 控制按钮行（保留播放、下一集、音量与垂直滑块、倍速、播放源、选集、画中画按钮） -->
                 <div class="cinema-btns-row">
                   <div class="cinema-btn-group">
                     <button class="cinema-ctrl-btn" id="btnCinemaPlayPause" onclick="togglePlayPause()" aria-label="播放/暂停">
@@ -2693,16 +2776,29 @@
                     <button class="cinema-ctrl-btn" onclick="playNextLesson()" aria-label="下一集" title="下一集">
                       <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
-                    <button class="cinema-ctrl-btn" onclick="toggleMuteVideo()" aria-label="静音" title="音量">
-                      <svg class="svg-icon" id="iconCinemaVolume" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-                    </button>
+                    <div class="video-vol-wrap" id="videoVolumeWrap">
+                      <button class="cinema-ctrl-btn" id="btnCinemaVolume" onclick="toggleVolumePopup(event)" aria-label="音量控制" title="点击或上下拖动调节音量">
+                        <svg class="svg-icon" id="iconCinemaVolume" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                      </button>
+                      <div class="video-volume-popup" id="videoVolumePopup">
+                        <span class="video-volume-val" id="videoVolumeValText">100%</span>
+                        <div class="video-volume-rail" id="videoVolumeRail" title="上下拖动调节音量">
+                          <div class="video-volume-fill" id="videoVolumeFill"></div>
+                          <div class="video-volume-thumb" id="videoVolumeThumb"></div>
+                        </div>
+                        <button type="button" class="video-volume-mute-btn" id="btnVideoMuteQuick" onclick="toggleMuteVideo(event)">静音</button>
+                      </div>
+                    </div>
                   </div>
                   <div class="cinema-btn-group">
                     <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="openSpeedMenu()">倍速</button>
                     <button class="cinema-text-btn" id="btnCinemaSource" onclick="openSourceMenu()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
-                    <button class="rotate-btn" id="btnCinemaRotate" onclick="toggleVideoOrientation(event)" aria-label="横竖屏切换" title="横竖屏切换">
-                      <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg>
+                    <button class="rotate-btn" id="btnCinemaPiP" onclick="toggleVideoPiP(event)" aria-label="画中画" title="画中画播放">
+                      <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <rect x="12" y="11" width="7" height="6" rx="1" fill="currentColor"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -2719,11 +2815,12 @@
               <button class="video-source-item" data-rate="2" onclick="setPlaybackRate(2.0)"><span>2.0x</span><span class="src-tag"></span></button>
             </div>
 
-            <!-- 播放源菜单（点击打开，再次点击选项才会切换） -->
-            <div id="videoSourceMenu" style="display:none;position:absolute;right:12px;bottom:56px;z-index:70;min-width:160px;background:rgba(18,18,18,0.96);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:6px;">
-              <div style="font-size:11px;color:#9ca3af;padding:6px 12px 4px;">选择播放源</div>
-              <button class="video-source-item" id="srcItemOfficial" onclick="setVideoSource(false)"><span>官方 CDN</span><span class="src-tag"></span></button>
-              <button class="video-source-item" id="srcItemMirror" onclick="setVideoSource(true)"><span>国内加速</span><span class="src-tag"></span></button>
+            <!-- 播放源菜单（支持离线软件联网自动多线路切换） -->
+            <div id="videoSourceMenu" style="display:none;position:absolute;right:12px;bottom:56px;z-index:70;min-width:176px;background:rgba(18,18,18,0.96);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:6px;">
+              <div style="font-size:11px;color:#9ca3af;padding:6px 12px 4px;">选择联网播放线路</div>
+              <button class="video-source-item" id="srcItemMirror1" onclick="setVideoSource('ghproxy_fast')"><span>国内加速一 (推荐)</span><span class="src-tag"></span></button>
+              <button class="video-source-item" id="srcItemMirror2" onclick="setVideoSource('ghproxy_mirror')"><span>国内加速二</span><span class="src-tag"></span></button>
+              <button class="video-source-item" id="srcItemOfficial" onclick="setVideoSource('official')"><span>官方 CDN</span><span class="src-tag"></span></button>
             </div>
 
             <!-- 手势提示（亮度 / 音量 / 进度） -->
@@ -3181,12 +3278,12 @@
           </div>
         </div>
 
-        <!-- 版本更新与 APK 推送 -->
+        <!-- 版本更新与 APK / iOS IPA 推送 -->
         <div data-settings-section="update" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
-              <span>版本与在线更新</span>
+              <span>版本与客户端下载（Android / iOS）</span>
             </div>
             <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.3</span>
           </div>
@@ -3197,6 +3294,14 @@
             <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;" onclick="checkAppUpdate(true)">
               立即检查最新版本
             </button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <a href="https://github.com/Simple53/jsgsMock/releases/latest" target="_blank" rel="noopener noreferrer" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:9px;font-size:12.5px;text-decoration:none;color:var(--text-main);">
+                <span>下载安卓 APK</span>
+              </a>
+              <a href="https://github.com/Simple53/jsgsMock/releases/latest" target="_blank" rel="noopener noreferrer" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:9px;font-size:12.5px;text-decoration:none;color:var(--text-main);">
+                <span>下载苹果 iOS (.ipa)</span>
+              </a>
+            </div>
             <a href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:13px;text-decoration:none;color:var(--text-main);">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-github"/></svg>
               <span>访问 GitHub 仓库并点亮 Star</span>
@@ -3276,21 +3381,43 @@
           </div>
         </div>
 
-        <!-- 清除数据放在最后，按钮与卡片不设高亮颜色 -->
-        <div data-settings-section="reset" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);">
+        <!-- 清除数据放在最后，保留红色警示样式并点击触发弹窗二次确认 -->
+        <div data-settings-section="reset" style="border:1.5px solid #ef444466;border-radius:12px;padding:16px;background:var(--card-bg);">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:14px;font-weight:700;color:var(--text-main);display:flex;align-items:center;gap:6px;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--text-sub);"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            <div style="font-size:15px;font-weight:800;color:#dc2626;display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:#dc2626;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
               <span>清除本地做题数据</span>
             </div>
-            <span style="font-size:11px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">重置选项</span>
+            <span style="font-size:11px;color:#dc2626;background:#fee2e2;padding:2px 8px;border-radius:4px;font-weight:700;">高风险操作</span>
           </div>
           <div style="font-size:12px;color:var(--text-sub);line-height:1.6;margin-bottom:12px;">
             清空本地所有已作答的真题记录、错题本、艾宾浩斯复习曲线、题目收藏夹、模拟考试试卷库以及每日打卡热力图，恢复初始做题状态（保留内置题库及 AI 密钥）。
           </div>
-          <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;" onclick="clearAllUserData()">
+          <button class="modal-submit-btn" style="width:100%;background:#dc2626;border-color:#dc2626;color:#ffffff;padding:10px;font-size:13px;" onclick="clearAllUserData()">
             清除本地所有做题记录与错题本
           </button>
+        </div>
+
+        <!-- 清除本地数据弹窗二次确认 -->
+        <div class="modal-mask" id="clearDataConfirmModal" onclick="if(event.target===this)closeClearDataModal()">
+          <div class="modal-card" style="max-width:380px;">
+            <div class="modal-header-row">
+              <div class="modal-title" id="clearDataModalTitle" style="color:#dc2626;display:flex;align-items:center;gap:6px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;color:#dc2626;"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                <span>清除本地数据确认（1/2）</span>
+              </div>
+              <button class="tool-icon-btn" onclick="closeClearDataModal()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg>
+              </button>
+            </div>
+            <div id="clearDataModalBody" style="font-size:13px;color:var(--text-sub);line-height:1.65;margin:10px 0 16px;">
+              即将清除本地所有答题记录、错题本、收藏夹、模拟考卷与打卡热力图。建议在清除前先通过【学习记录备份与恢复】导出备份文件。是否继续？
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button type="button" class="bottom-btn" style="flex:1;padding:10px;font-size:13px;" onclick="closeClearDataModal()">取消</button>
+              <button type="button" id="btnClearDataConfirmStep" class="modal-submit-btn" style="flex:1.2;background:#dc2626;border-color:#dc2626;color:#ffffff;padding:10px;font-size:13px;" onclick="advanceClearDataConfirm()">下一步：继续确认</button>
+            </div>
+          </div>
         </div>
 
         </div>
@@ -5637,33 +5764,46 @@
       switchBottomTab('video');
       document.getElementById('tutorialVideosPane')?.scrollIntoView({behavior:'smooth',block:'start'});
     }
-    let isVideoMirrorActive = false;
+    // 支持离线安装包（Android APK / iOS IPA / 本地离线包）在联网时多线路流畅播放云端视频
+    const VIDEO_CDN_LINE_ORDER = ['ghproxy_fast', 'ghproxy_mirror', 'official'];
+    const VIDEO_CDN_LABELS = {
+      ghproxy_fast: '国内加速一',
+      ghproxy_mirror: '国内加速二',
+      official: '官方 CDN'
+    };
+    let currentVideoSourceKey = localStorage.getItem('jsgs_video_source_key') || 'ghproxy_fast';
+    if (!VIDEO_CDN_LABELS[currentVideoSourceKey]) currentVideoSourceKey = 'ghproxy_fast';
+    let isVideoMirrorActive = currentVideoSourceKey !== 'official';
     let currentPlayingLessonUrl = '';
+    let _videoAutoRetryCount = 0;
 
-    function getEffectiveVideoUrl(url) {
+    function normalizeRawVideoUrl(url) {
       if (!url) return '';
-      if (isVideoMirrorActive && url.includes('github.com')) {
-        return `https://mirror.ghproxy.com/${url}`;
+      if (/^(?:\.\/|\/)?videos\/([^/?#]+\.mp4)$/i.test(url)) {
+        const fileName = url.replace(/^(?:\.\/|\/)?videos\//i, '');
+        return `https://github.com/Simple53/jsgsMock/releases/download/course-videos/${fileName}`;
       }
       return url;
     }
 
+    function getEffectiveVideoUrl(url) {
+      const rawUrl = normalizeRawVideoUrl(url);
+      if (!rawUrl) return '';
+      if (rawUrl.includes('github.com')) {
+        if (currentVideoSourceKey === 'ghproxy_fast') {
+          return `https://gh-proxy.com/${rawUrl}`;
+        }
+        if (currentVideoSourceKey === 'ghproxy_mirror') {
+          return `https://mirror.ghproxy.com/${rawUrl}`;
+        }
+      }
+      return rawUrl;
+    }
+
     function toggleVideoCdnMirror() {
-      isVideoMirrorActive = !isVideoMirrorActive;
-      const btn = document.getElementById('videoMirrorBtn');
-      if (btn) {
-        btn.textContent = isVideoMirrorActive ? '当前：国内加速 (点此切官方)' : '当前：官方线路 (点此切加速)';
-        btn.classList.toggle('primary', isVideoMirrorActive);
-      }
-      const player = document.getElementById('tutorialVideoPlayer');
-      if (player && currentPlayingLessonUrl) {
-        const curTime = player.currentTime;
-        player.src = getEffectiveVideoUrl(currentPlayingLessonUrl);
-        player.currentTime = curTime;
-        player.load();
-        player.play().catch(() => {});
-        showToast(isVideoMirrorActive ? '已切换至国内高速加速线路' : '已切换至 GitHub 官方线路');
-      }
+      const idx = VIDEO_CDN_LINE_ORDER.indexOf(currentVideoSourceKey);
+      const nextKey = VIDEO_CDN_LINE_ORDER[(idx + 1) % VIDEO_CDN_LINE_ORDER.length];
+      setVideoSource(nextKey, true);
     }
 
     let currentCourseIndex = 0;
@@ -5673,6 +5813,11 @@
     let currentRateIdx = 0;
     let isDraggingCinemaProgress = false;
     let isEpisodeMenuExpanded = false;
+    let videoVolume = (() => {
+      const saved = parseFloat(localStorage.getItem('jsgs_video_volume'));
+      return (!isNaN(saved) && saved >= 0 && saved <= 1) ? saved : 1.0;
+    })();
+    let videoLastNonZeroVolume = videoVolume > 0 ? videoVolume : 1.0;
 
     // 断点记忆恢复与上次观看会话本地存储管理
     function getVideoSavedProgress(url) {
@@ -5749,12 +5894,23 @@
       const player = document.getElementById('tutorialVideoPlayer');
       if (player && !player.dataset.bound) {
         player.dataset.bound = '1';
+        setVideoVolume(videoVolume, false);
+
         player.onerror = () => {
-          if (!isVideoMirrorActive && currentPlayingLessonUrl && currentPlayingLessonUrl.includes('github.com')) {
+          if (!navigator.onLine) {
+            showToast('当前处于离线环境，请连接网络以在线观看视频课程');
+            return;
+          }
+          if (currentPlayingLessonUrl && _videoAutoRetryCount < VIDEO_CDN_LINE_ORDER.length - 1) {
+            _videoAutoRetryCount++;
             toggleVideoCdnMirror();
           } else {
-            showToast('若播放遇到网络缓冲，可点击“源”按钮切换线路');
+            showToast('视频加载超时，请点击右下角“播放源”切换其他线路');
           }
+        };
+
+        player.onloadeddata = () => {
+          _videoAutoRetryCount = 0;
         };
 
         // 播放结束自动连播下一集并清除进度
@@ -5789,8 +5945,9 @@
           showVideoControls();
         };
 
-        // 绑定拖拽进度条交互 (触摸与鼠标)
+        // 绑定拖拽进度条、音量条与全屏手势交互 (触摸与鼠标通用)
         bindProgressBarDrag();
+        bindVolumeSliderDrag();
         bindVideoGestures();
 
         // 影院模式时间走时
@@ -6030,11 +6187,12 @@
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    // 播放源：点击按钮只打开菜单，选择另一条线路才会切换
+    // 播放源：点击按钮只打开菜单，选择另一条线路才会切换（支持离线 App 联网多线路流式播放）
     function openSourceMenu() {
       const menu = document.getElementById('videoSourceMenu');
       if (!menu) return;
       closeSpeedMenu();
+      closeVolumePopup();
       const willShow = menu.style.display === 'none';
       menu.style.display = willShow ? 'block' : 'none';
       if (willShow) {
@@ -6049,25 +6207,42 @@
     }
 
     function refreshSourceMenu() {
-      const items = [['srcItemOfficial', false], ['srcItemMirror', true]];
-      items.forEach(([id, mirror]) => {
+      const items = [
+        ['srcItemMirror1', 'ghproxy_fast'],
+        ['srcItemMirror2', 'ghproxy_mirror'],
+        ['srcItemOfficial', 'official']
+      ];
+      items.forEach(([id, key]) => {
         const el = document.getElementById(id);
         if (!el) return;
-        const active = isVideoMirrorActive === mirror;
+        const active = currentVideoSourceKey === key;
         el.classList.toggle('active', active);
-        el.querySelector('.src-tag').textContent = active ? '当前' : '';
+        const tag = el.querySelector('.src-tag');
+        if (tag) tag.textContent = active ? '当前' : '';
       });
     }
 
-    function setVideoSource(useMirror) {
+    function setVideoSource(sourceKey, isAutoFallback = false) {
       closeSourceMenu();
-      if (useMirror === isVideoMirrorActive) {
+      let targetKey = sourceKey;
+      if (typeof sourceKey === 'boolean') {
+        targetKey = sourceKey ? 'ghproxy_fast' : 'official';
+      }
+      if (!VIDEO_CDN_LABELS[targetKey]) targetKey = 'ghproxy_fast';
+      if (!isAutoFallback && targetKey === currentVideoSourceKey) {
         showToast('已是当前播放源');
         return;
       }
-      isVideoMirrorActive = useMirror;
+      currentVideoSourceKey = targetKey;
+      isVideoMirrorActive = targetKey !== 'official';
+      try {
+        localStorage.setItem('jsgs_video_source_key', targetKey);
+      } catch (e) {}
+
       const cinemaSource = document.getElementById('btnCinemaSource');
-      if (cinemaSource) cinemaSource.textContent = useMirror ? '源：加速' : '源：官方';
+      if (cinemaSource) {
+        cinemaSource.textContent = targetKey === 'official' ? '源：官方' : '源：加速';
+      }
 
       const player = document.getElementById('tutorialVideoPlayer');
       if (player && currentPlayingLessonUrl) {
@@ -6077,12 +6252,7 @@
         player.load();
         player.play().catch(() => {});
       }
-      showToast(useMirror ? '已切换至国内加速线路' : '已切换至官方 CDN 线路');
-    }
-
-    // 播放出错时的自动回退（保留旧入口名）
-    function toggleVideoCdnMirror() {
-      setVideoSource(!isVideoMirrorActive);
+      showToast(isAutoFallback ? `已自动切换至${VIDEO_CDN_LABELS[targetKey]}` : `已切换至${VIDEO_CDN_LABELS[targetKey]}`);
     }
 
     // 倍速菜单：点击按钮弹出菜单，再次点击菜单项才切换倍速
@@ -6090,6 +6260,7 @@
       const menu = document.getElementById('videoSpeedMenu');
       if (!menu) return;
       closeSourceMenu();
+      closeVolumePopup();
       const willShow = menu.style.display === 'none';
       menu.style.display = willShow ? 'block' : 'none';
       if (willShow) {
@@ -6187,18 +6358,14 @@
       if (useEl) {
         useEl.setAttribute('href', isCinemaFullscreen ? '#icon-fullscreen-exit' : '#icon-fullscreen');
       }
-      // 横竖切换按钮保持无高亮颜色
-      const rotBtn = document.getElementById('btnCinemaRotate');
-      if (rotBtn) {
-        rotBtn.classList.remove('active');
-      }
     }
 
-    // 播放器投屏与画中画功能恢复
+    // 播放器投屏与画中画功能
     function triggerVideoCast(ev) {
       if (ev) ev.stopPropagation();
       closeSourceMenu();
       closeSpeedMenu();
+      closeVolumePopup();
       toggleCinemaEpisodeDrawer(false);
       toggleCinemaCastDrawer();
       showVideoControls(true);
@@ -6235,7 +6402,8 @@
       showToast('请开启手机/电脑控制中心的“无线投屏 / 屏幕镜像”，或复制视频流地址至电视投屏软件');
     }
 
-    function toggleVideoPiP() {
+    function toggleVideoPiP(ev) {
+      if (ev) ev.stopPropagation();
       const player = document.getElementById('tutorialVideoPlayer');
       if (!player) return;
       if (document.pictureInPictureElement) {
@@ -6258,7 +6426,7 @@
           showToast('当前环境暂不支持画中画');
         }
       } else {
-        showToast('当前浏览器环境暂不支持画中画模式');
+        showToast('当前环境暂不支持画中画模式');
       }
     }
 
@@ -6283,7 +6451,6 @@
     function syncForcedLandscape() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
-      // 当用户未手动锁死方向时，实时自动跟随设备方向
       if (!isManualOrientationOverride) {
         isVideoLandscape = getDeviceIsLandscape();
       }
@@ -6295,7 +6462,6 @@
       updateFullscreenBtnUI();
     }
 
-    let _lastOrientationTapAt = 0;
     let _lastFullscreenTapAt = 0;
 
     // 右上角全屏按钮：进入或退出全屏播放，并自动获取当前设备方向
@@ -6326,6 +6492,7 @@
         toggleCinemaEpisodeDrawer(false);
         closeSourceMenu();
         closeSpeedMenu();
+        closeVolumePopup();
         if (screen.orientation && screen.orientation.unlock) {
           try { screen.orientation.unlock(); } catch (e) {}
         }
@@ -6339,56 +6506,7 @@
       showVideoControls();
     }
 
-    // 右下角横竖切换按钮：零延迟立即响应，手动切换横屏与竖屏
-    function toggleVideoOrientation(ev) {
-      if (ev) {
-        ev.stopPropagation();
-      }
-      const now = Date.now();
-      if (now - _lastOrientationTapAt < 220) return;
-      _lastOrientationTapAt = now;
-
-      const container = document.getElementById('videoContainer');
-      if (!container) return;
-      isManualOrientationOverride = true;
-
-      if (!isCinemaFullscreen) {
-        isCinemaFullscreen = true;
-        isVideoLandscape = true;
-        container.classList.add('fullscreen-mode');
-        document.body.style.overflow = 'hidden';
-        // 零延迟立即同步旋转样式，无需等待异步全屏 Promise
-        syncForcedLandscape();
-        const req = container.requestFullscreen ? container.requestFullscreen()
-          : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
-        Promise.resolve(req)
-          .catch(() => {})
-          .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
-          .catch(() => {})
-          .then(() => syncForcedLandscape());
-        showToast('已切换至横屏模式');
-      } else {
-        isVideoLandscape = !isVideoLandscape;
-        // 零延迟立即同步横竖样式
-        syncForcedLandscape();
-        if (isVideoLandscape) {
-          Promise.resolve(screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
-            .catch(() => {})
-            .then(() => syncForcedLandscape());
-          showToast('已切换至横屏模式');
-        } else {
-          if (screen.orientation && screen.orientation.unlock) {
-            try { screen.orientation.unlock(); } catch (e) {}
-          }
-          showToast('已切换至竖屏模式');
-        }
-      }
-      updateFullscreenBtnUI();
-      showVideoControls();
-    }
-
     function handleAutoDeviceOrientationChange() {
-      // 当设备发生旋转且正在播放视频（或已在全屏中）时，自动获取设备方向并同步横竖状态
       const videoPane = document.getElementById('paneVideo');
       const player = document.getElementById('tutorialVideoPlayer');
       if (!videoPane || videoPane.style.display === 'none') return;
@@ -6440,10 +6558,168 @@
       if (!player || player.paused) return;
       closeSourceMenu();
       closeSpeedMenu();
+      closeVolumePopup();
       overlay.classList.add('hide-controls');
     }
 
-    // 手势：左侧上下滑动调亮度，右侧上下滑动调音量，左右滑动调进度，单击显示/隐藏控制栏
+    // 音量控制与垂直滑动条
+    let videoHudTimer = null;
+    function showVideoHudMsg(text) {
+      const hud = document.getElementById('videoGestureHud');
+      if (!hud) return;
+      hud.textContent = text;
+      hud.style.display = 'block';
+      clearTimeout(videoHudTimer);
+      videoHudTimer = setTimeout(() => {
+        hud.style.display = 'none';
+      }, 650);
+    }
+
+    function updateVolumeUI(vol, isMuted) {
+      const effectiveVol = isMuted ? 0 : Math.max(0, Math.min(1, vol));
+      const pct = Math.round(effectiveVol * 100);
+      const fill = document.getElementById('videoVolumeFill');
+      if (fill) fill.style.height = `${pct}%`;
+      const thumb = document.getElementById('videoVolumeThumb');
+      if (thumb) thumb.style.bottom = `${pct}%`;
+      const valText = document.getElementById('videoVolumeValText');
+      if (valText) valText.textContent = `${pct}%`;
+      const muteBtn = document.getElementById('btnVideoMuteQuick');
+      if (muteBtn) muteBtn.textContent = pct === 0 ? '恢复' : '静音';
+      const icon = document.getElementById('iconCinemaVolume');
+      if (icon) {
+        icon.innerHTML = pct === 0
+          ? '<path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
+          : (pct < 50
+            ? '<path fill="currentColor" d="M7 9v6h4l5 5V4l-5 5H7z"/>'
+            : '<path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>');
+      }
+    }
+
+    function setVideoVolume(val, showHudFlag = false) {
+      const v = Math.max(0, Math.min(1, Number(val) || 0));
+      videoVolume = v;
+      if (v > 0.02) videoLastNonZeroVolume = v;
+      try {
+        localStorage.setItem('jsgs_video_volume', String(v));
+      } catch (e) {}
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (player) {
+        try { player.volume = v; } catch (e) {}
+        player.muted = (v === 0);
+      }
+      updateVolumeUI(v, v === 0);
+      if (showHudFlag) {
+        showVideoHudMsg(`音量  ${Math.round(v * 100)}%`);
+      }
+    }
+
+    function toggleVolumePopup(ev) {
+      if (ev) ev.stopPropagation();
+      const popup = document.getElementById('videoVolumePopup');
+      if (!popup) return;
+      closeSourceMenu();
+      closeSpeedMenu();
+      const willOpen = !popup.classList.contains('open');
+      popup.classList.toggle('open', willOpen);
+      if (willOpen) {
+        updateVolumeUI(videoVolume, videoVolume === 0);
+        showVideoControls(true);
+      }
+    }
+
+    function closeVolumePopup() {
+      const popup = document.getElementById('videoVolumePopup');
+      if (popup) popup.classList.remove('open');
+    }
+
+    function toggleMuteVideo(ev) {
+      if (ev) ev.stopPropagation();
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (videoVolume > 0 && (!player || !player.muted)) {
+        videoLastNonZeroVolume = videoVolume;
+        setVideoVolume(0, true);
+      } else {
+        setVideoVolume(videoLastNonZeroVolume > 0.05 ? videoLastNonZeroVolume : 0.8, true);
+      }
+    }
+
+    function bindVolumeSliderDrag() {
+      const rail = document.getElementById('videoVolumeRail');
+      const volBtn = document.getElementById('btnCinemaVolume');
+      if (rail && !rail.dataset.bound) {
+        rail.dataset.bound = '1';
+        let draggingVol = false;
+        function calcVolFromEvent(ev) {
+          const rect = rail.getBoundingClientRect();
+          const forced = document.getElementById('videoContainer')?.classList.contains('force-landscape');
+          const clientPos = ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+          let ratio;
+          if (forced) {
+            ratio = (clientPos.clientX - rect.left) / Math.max(1, rect.width);
+          } else {
+            ratio = 1 - (clientPos.clientY - rect.top) / Math.max(1, rect.height);
+          }
+          return Math.max(0, Math.min(1, ratio));
+        }
+        rail.addEventListener('pointerdown', (ev) => {
+          ev.stopPropagation();
+          draggingVol = true;
+          try { rail.setPointerCapture(ev.pointerId); } catch (e) {}
+          setVideoVolume(calcVolFromEvent(ev), true);
+          showVideoControls(true);
+        });
+        rail.addEventListener('pointermove', (ev) => {
+          if (!draggingVol) return;
+          ev.stopPropagation();
+          setVideoVolume(calcVolFromEvent(ev), true);
+        });
+        const stopDrag = (ev) => {
+          if (!draggingVol) return;
+          if (ev) ev.stopPropagation();
+          draggingVol = false;
+          showVideoControls();
+        };
+        rail.addEventListener('pointerup', stopDrag);
+        rail.addEventListener('pointercancel', stopDrag);
+      }
+
+      // 支持直接在音量图标按钮上上下拖动调节音量
+      if (volBtn && !volBtn.dataset.dragBound) {
+        volBtn.dataset.dragBound = '1';
+        let startY = null;
+        let startVol = videoVolume;
+        let moved = false;
+        volBtn.addEventListener('pointerdown', (ev) => {
+          startY = ev.clientY;
+          startVol = videoVolume;
+          moved = false;
+          try { volBtn.setPointerCapture(ev.pointerId); } catch (e) {}
+        });
+        volBtn.addEventListener('pointermove', (ev) => {
+          if (startY === null) return;
+          const dy = ev.clientY - startY;
+          if (Math.abs(dy) > 6) {
+            moved = true;
+            const popup = document.getElementById('videoVolumePopup');
+            if (popup) popup.classList.add('open');
+            setVideoVolume(startVol - dy / 110, true);
+            showVideoControls(true);
+          }
+        });
+        volBtn.addEventListener('pointerup', (ev) => {
+          if (moved) {
+            ev.preventDefault();
+            ev.stopPropagation();
+          }
+          startY = null;
+          moved = false;
+        });
+      }
+    }
+
+    // 手势（同时支持触摸屏 Touch 与电脑鼠标拖动 Mouse）：
+    // 左侧上下拖动调亮度，右侧上下拖动调音量，水平左右拖动调进度，单击显示/隐藏控制栏
     let videoBrightness = 1;
     function bindVideoGestures() {
       const box = document.getElementById('videoContainer');
@@ -6451,19 +6727,19 @@
       const hud = document.getElementById('videoGestureHud');
       if (!box || !player || box.dataset.gesture) return;
       box.dataset.gesture = '1';
-      const IGNORE = 'button, .rotate-btn, .cinema-ctrl-btn, .cinema-text-btn, #cinemaProgressRail, #cinemaEpisodeDrawer, #cinemaCastDrawer, #videoSourceMenu, #videoSpeedMenu';
+      const IGNORE = 'button, .rotate-btn, .cinema-ctrl-btn, .cinema-text-btn, #cinemaProgressRail, #videoVolumePopup, #cinemaEpisodeDrawer, #cinemaCastDrawer, #videoSourceMenu, #videoSpeedMenu';
       const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
       let g = null;
       let hudTimer = null;
 
-      // 为横竖切换按钮、全屏按钮与投屏按钮绑定直通快速触控（防止移动端 touch-action:none 吞掉轻点）
-      const rotBtn = document.getElementById('btnCinemaRotate');
-      if (rotBtn && !rotBtn.dataset.fastTap) {
-        rotBtn.dataset.fastTap = '1';
-        rotBtn.addEventListener('touchend', (ev) => {
+      // 为画中画按钮、全屏按钮与投屏按钮绑定直通快速触控
+      const pipBtn = document.getElementById('btnCinemaPiP');
+      if (pipBtn && !pipBtn.dataset.fastTap) {
+        pipBtn.dataset.fastTap = '1';
+        pipBtn.addEventListener('touchend', (ev) => {
           ev.stopPropagation();
           if (ev.cancelable) ev.preventDefault();
-          toggleVideoOrientation(ev);
+          toggleVideoPiP(ev);
         }, { passive: false });
       }
       const fsBtn = document.getElementById('btnCinemaFullscreen');
@@ -6498,55 +6774,69 @@
         const forced = box.classList.contains('force-landscape');
         const r = box.getBoundingClientRect();
         return forced
-          ? { x: t.clientY - r.top, y: -(t.clientX - r.left), w: r.height, h: r.width }
-          : { x: t.clientX - r.left, y: t.clientY - r.top, w: r.width, h: r.height };
+          ? { x: t.clientY - r.top, y: -(t.clientX - r.left), w: Math.max(1, r.height), h: Math.max(1, r.width) }
+          : { x: t.clientX - r.left, y: t.clientY - r.top, w: Math.max(1, r.width), h: Math.max(1, r.height) };
       }
       function toggleControlsByTap() {
         const srcMenu = document.getElementById('videoSourceMenu');
         if (srcMenu && srcMenu.style.display !== 'none') { closeSourceMenu(); return; }
         const spdMenu = document.getElementById('videoSpeedMenu');
         if (spdMenu && spdMenu.style.display !== 'none') { closeSpeedMenu(); return; }
+        const volPop = document.getElementById('videoVolumePopup');
+        if (volPop && volPop.classList.contains('open')) { closeVolumePopup(); return; }
         const overlay = document.getElementById('cinemaOverlayLayer');
         if (overlay.classList.contains('hide-controls')) showVideoControls();
         else if (player.paused) showVideoControls(true);
         else hideVideoControls();
       }
 
-      box.addEventListener('touchstart', (e) => {
-        if (e.touches.length !== 1 || e.target.closest(IGNORE)) { g = null; return; }
-        const p = point(e.touches[0]);
-        g = { x0: p.x, y0: p.y, w: p.w, h: p.h, side: p.x < p.w / 2 ? 'left' : 'right',
-              mode: null, moved: false, t0: player.currentTime || 0, br: videoBrightness, vol: player.volume };
-      }, { passive: true });
+      function startGesture(ptClient, targetEl) {
+        if (targetEl && targetEl.closest(IGNORE)) { g = null; return false; }
+        const p = point(ptClient);
+        g = {
+          x0: p.x,
+          y0: p.y,
+          w: p.w,
+          h: p.h,
+          side: p.x < p.w / 2 ? 'left' : 'right',
+          mode: null,
+          moved: false,
+          t0: player.currentTime || 0,
+          br: videoBrightness,
+          vol: videoVolume
+        };
+        return true;
+      }
 
-      box.addEventListener('touchmove', (e) => {
-        if (!g || e.touches.length !== 1) return;
-        const p = point(e.touches[0]);
-        const dx = p.x - g.x0, dy = p.y - g.y0;
+      function moveGesture(ptClient, ev) {
+        if (!g) return;
+        const p = point(ptClient);
+        const dx = p.x - g.x0;
+        const dy = p.y - g.y0;
         if (!g.mode) {
-          if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+          if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
           g.mode = Math.abs(dx) > Math.abs(dy) ? 'seek' : (g.side === 'left' ? 'brightness' : 'volume');
         }
         g.moved = true;
-        e.preventDefault();
+        if (ev && ev.cancelable) ev.preventDefault();
         showVideoControls(true);
         if (g.mode === 'seek') {
-          if (!player.duration) return;
-          g.target = clamp(g.t0 + dx / g.w * 120, 0, player.duration);
-          showHud(`${dx >= 0 ? '快进' : '快退'}  ${formatTimeStr(g.target)} / ${formatTimeStr(player.duration)}`);
+          const dur = player.duration || 0;
+          if (!dur) return;
+          g.target = clamp(g.t0 + dx / g.w * 120, 0, dur);
+          showHud(`${dx >= 0 ? '快进' : '快退'}  ${formatTimeStr(g.target)} / ${formatTimeStr(dur)}`);
         } else if (g.mode === 'brightness') {
           videoBrightness = clamp(g.br - dy / g.h * 1.4, 0.2, 1.6);
           player.style.filter = `brightness(${videoBrightness})`;
           showHud(`亮度  ${Math.round(videoBrightness * 100)}%`);
         } else {
           const v = clamp(g.vol - dy / g.h * 1.4, 0, 1);
-          player.volume = v;
-          player.muted = v === 0;
+          setVideoVolume(v, false);
           showHud(`音量  ${Math.round(v * 100)}%`);
         }
-      }, { passive: false });
+      }
 
-      box.addEventListener('touchend', (e) => {
+      function endGesture(ev, isTouch) {
         if (!g) return;
         const cur = g;
         g = null;
@@ -6554,14 +6844,49 @@
           if (cur.mode === 'seek' && cur.target != null) player.currentTime = cur.target;
           hideHudSoon();
           showVideoControls();
-        } else {
+        } else if (isTouch) {
           toggleControlsByTap();
         }
-        if (e.cancelable) e.preventDefault();
+        if (isTouch && ev && ev.cancelable) ev.preventDefault();
+      }
+
+      box.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) { g = null; return; }
+        startGesture(e.touches[0], e.target);
+      }, { passive: true });
+
+      box.addEventListener('touchmove', (e) => {
+        if (!g || e.touches.length !== 1) return;
+        moveGesture(e.touches[0], e);
       }, { passive: false });
 
-      // 桌面鼠标：单击切换控制栏（触屏已在 touchend 处理并阻止了合成 click）
+      box.addEventListener('touchend', (e) => {
+        endGesture(e, true);
+      }, { passive: false });
+
+      // 鼠标上下拖动调节亮度/音量、左右拖动调节进度
+      let mouseMoved = false;
+      box.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        mouseMoved = false;
+        startGesture(e, e.target);
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!g) return;
+        moveGesture(e, e);
+        if (g && g.moved) mouseMoved = true;
+      });
+      window.addEventListener('mouseup', (e) => {
+        if (!g) return;
+        endGesture(e, false);
+      });
+
+      // 桌面鼠标：单击切换控制栏（若刚才发生了拖拽则忽略 click）
       box.addEventListener('click', (e) => {
+        if (mouseMoved) {
+          mouseMoved = false;
+          return;
+        }
         if (e.target.closest(IGNORE)) return;
         toggleControlsByTap();
       });
@@ -6583,18 +6908,6 @@
         icon.innerHTML = isPlaying
           ? '<path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
           : '<path fill="currentColor" d="M8 5v14l11-7z"/>';
-      }
-    }
-
-    function toggleMuteVideo() {
-      const player = document.getElementById('tutorialVideoPlayer');
-      if (!player) return;
-      player.muted = !player.muted;
-      const icon = document.getElementById('iconCinemaVolume');
-      if (icon) {
-        icon.innerHTML = player.muted
-          ? '<path fill="currentColor" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>'
-          : '<path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
       }
     }
 
@@ -7413,15 +7726,9 @@
               </div>
             </div>
           </div>
-          <div class="sub-actions-group">
-            <button type="button" class="sub-kp-btn" onclick="openSubjectKnowledgeEpub('${sub}', event)" title="以 EPUB 模式预览本科目核心考点讲义">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><use href="#icon-textbook"/></svg>
-              <span>考点</span>
-            </button>
-            <div class="sub-right-btn" onclick="handleSubjectCardClick('${sub}', event)">
-              <span>${actionText}</span>
-              <span>›</span>
-            </div>
+          <div class="sub-right-btn" onclick="handleSubjectCardClick('${sub}', event)">
+            <span>${actionText}</span>
+            <span>›</span>
           </div>
         `;
         card.onclick = (e) => handleSubjectCardClick(sub, e);
@@ -9734,16 +10041,66 @@
       alert(`扫描恢复完成！\n已成功检索并合并：\n• 补充恢复做题记录：${restoredAnswers} 条\n• 补充恢复错题记录：${restoredWrong} 条\n• 补充恢复收藏题目：${restoredFavs} 条\n当前总做题记录数：${Object.keys(userStore.answers || {}).length} 条！`);
     }
 
+    let _clearDataConfirmStep = 1;
+
     function clearAllUserData() {
-      if (!confirm("确定要清空所有答题记录、错题本与模拟考试记录吗？\n\n清空后将重置为全新的初始做题状态，此操作无法撤销！\n（内置题库和您的 AI 助教配置不受影响）")) return;
+      _clearDataConfirmStep = 1;
+      const modal = document.getElementById('clearDataConfirmModal');
+      const titleSpan = document.querySelector('#clearDataModalTitle span');
+      const bodyEl = document.getElementById('clearDataModalBody');
+      const btnEl = document.getElementById('btnClearDataConfirmStep');
+      const ansCount = Object.keys(userStore.answers || {}).length;
+      const wrongCount = Object.keys(userStore.ebbinghausWrong || {}).length;
+      if (titleSpan) titleSpan.textContent = '清除本地数据确认（1/2）';
+      if (bodyEl) {
+        bodyEl.innerHTML = `即将清除本地所有答题记录（当前共 <strong>${ansCount}</strong> 条）、错题本（<strong>${wrongCount}</strong> 题）、收藏夹、模拟考卷与打卡热力图。<br><span style="color:var(--text-muted);font-size:12px;">建议在清除前先通过【学习记录备份与恢复】导出备份文件。是否继续？</span>`;
+      }
+      if (btnEl) {
+        btnEl.textContent = '下一步：继续确认';
+      }
+      if (modal) {
+        modal.classList.add('open');
+      }
+    }
+
+    function closeClearDataModal() {
+      _clearDataConfirmStep = 1;
+      document.getElementById('clearDataConfirmModal')?.classList.remove('open');
+    }
+
+    function advanceClearDataConfirm() {
+      const titleSpan = document.querySelector('#clearDataModalTitle span');
+      const bodyEl = document.getElementById('clearDataModalBody');
+      const btnEl = document.getElementById('btnClearDataConfirmStep');
+      if (_clearDataConfirmStep === 1) {
+        _clearDataConfirmStep = 2;
+        if (titleSpan) titleSpan.textContent = '最终确认：永久清空（2/2）';
+        if (bodyEl) {
+          bodyEl.innerHTML = `<strong style="color:#dc2626;">此操作不可撤销！</strong><br>点击下方红色按钮后，本地所有做题进度、错题记录与模考成绩将立即清空并重置为初始状态（内置题库与 AI 密钥将保留）。确定立即清空吗？`;
+        }
+        if (btnEl) {
+          btnEl.textContent = '确认永久清空本地数据';
+        }
+        return;
+      }
+      executeClearAllUserData();
+    }
+
+    function executeClearAllUserData() {
       userStore.answers = {};
+      userStore.wrongBook = {};
       userStore.ebbinghausWrong = {};
       userStore.favorites = [];
       userStore.progress = {};
       userStore.savedExams = [];
       userStore.studyDays = [];
       userStore.checkinHistory = {};
+      userStore.dailyActivity = {};
+      userStore.unfinishedSessions = {};
+      userStore.openedSubjects = {};
+      userStore.checkin = { days: 0, lastDate: '', history: [] };
       saveUserStore();
+      closeClearDataModal();
       showToast("所有做题数据已清空，系统已恢复为初始状态！");
       renderSubjectList();
       renderSavedExams();

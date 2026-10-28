@@ -1,4 +1,4 @@
-name: Build Android APK and Publish Release
+name: Build Android APK & iOS IPA and Publish Release
 
 on:
   push:
@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '发布版本号 (如 v1.2.1)'
+        description: '发布版本号 (如 v1.4.3)'
         required: true
-        default: 'v1.2.1'
+        default: 'v1.4.3'
 
 permissions:
   contents: write
@@ -55,59 +55,120 @@ jobs:
 
       - name: Organize APK Artifact
         run: |
-          find android/app/build/outputs/apk/ -name "*.apk"
           APK_PATH=$(find android/app/build/outputs/apk/ -name "*release*.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
             APK_PATH=$(find android/app/build/outputs/apk/ -name "*.apk" | head -n 1)
           fi
-          echo "Found APK: $APK_PATH"
           cp "$APK_PATH" "jsgsMock-${{ env.RELEASE_VERSION }}.apk"
-          ls -lh jsgsMock-${{ env.RELEASE_VERSION }}.apk
+          ls -lh "jsgsMock-${{ env.RELEASE_VERSION }}.apk"
 
       - name: Upload APK to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: jsgsMock-${{ env.RELEASE_VERSION }}
-          path: jsgsMock-${{ env.RELEASE_VERSION }}.apk
+          name: jsgsMock-android-apk
+          path: jsgsMock-*.apk
 
-      - name: Create GitHub Release and Upload APK
+  build-ipa:
+    name: Build iOS IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Release Version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+
+      - name: Prepare Web Assets for iOS Bundle
+        run: |
+          mkdir -p ios/JsgsMock/web
+          cp -r web/* ios/JsgsMock/web/
+          ls -la ios/JsgsMock/web/
+
+      - name: Generate Xcode Project with XcodeGen
+        working-directory: ios
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+
+      - name: Build Unsigned iOS App Bundle
+        working-directory: ios
+        run: |
+          xcodebuild -project JsgsMock.xcodeproj \
+            -scheme JsgsMock \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
+
+      - name: Package IPA Archive
+        run: |
+          APP_PATH=$(find ios/build/Build/Products/Release-iphoneos -name "JsgsMock.app" | head -n 1)
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/JsgsMock.app
+          zip -qry "jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa" Payload
+          ls -lh "jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa"
+
+      - name: Upload IPA to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsgsMock-ios-ipa
+          path: jsgsMock-*-ios.ipa
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: [build-apk, build-ipa]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Release Version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          fi
+
+      - name: Download APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jsgsMock-android-apk
+
+      - name: Download IPA Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jsgsMock-ios-ipa
+
+      - name: Create GitHub Release with Android APK & iOS IPA
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
-          name: jsgsMock ${{ env.RELEASE_VERSION }} - 智能刷题与抗遗忘 (含安卓APK)
+          name: jsgsMock ${{ env.RELEASE_VERSION }} - 智能刷题与名师视频 (含 Android APK & iOS IPA)
           draft: false
           prerelease: false
-          files: jsgsMock-${{ env.RELEASE_VERSION }}.apk
+          files: |
+            jsgsMock-${{ env.RELEASE_VERSION }}.apk
+            jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa
           body: |
-            ## 🚀 jsgsMock ${{ env.RELEASE_VERSION }} 正式发布
+            ## jsgsMock ${{ env.RELEASE_VERSION }} 正式发布
 
-            本版本支持作为**原生 Android APK 独立应用**运行，无需依赖浏览器即可离线秒开刷题！
+            本版本同时提供 **Android 原生安装包 (`.apk`)** 与 **Apple iOS 原生安装包 (`-ios.ipa`)**。全套真题库与考点精要讲义均已内置于安装包中，支持**纯离线秒开刷题**，并在**连接网络时直接在线观看 123 节名师精讲视频**。
 
-            ### 📱 安卓客户端直接下载安装
-            - 下载下方 Assets 中的 **`jsgsMock-${{ env.RELEASE_VERSION }}.apk`** 即可在安卓手机或平板直接安装。
-            - **离线运行**：全部真题库与权威讲义均已打包内置，断网也能秒开刷题。
-            - **全屏沉浸体验**：原生全屏无边框，自适应软键盘与防误触双击返回退出。
+            ### 1. Android 客户端安装
+            - 下载下方 Assets 中的 **`jsgsMock-${{ env.RELEASE_VERSION }}.apk`** 在安卓手机或平板直接安装。
 
-            ### ✨ 核心功能升级
-            1. **2026 全科真题库全量深度纠错与 100% 完整校验**：
-               - 逐一清洗校验 5 大科目全部 1100 道真题（800 单选 + 100 多选 + 200 判断）；
-               - 彻底修复历史 Word 排版遗漏造成的选项截断、题干缺失及上一题解析尾巴污染问题；
-               - 810 道填空考题全面实现留空处醒目划线与高亮底框（支持移动端与电脑端极佳辨识度）；
-               - 多选题答案全量规范订正（多字母大写如 ABCD/BCD），彻底解决答案与解析冲突；
-               - 智能比对新旧考题，对全新真题与答案订正考题打上专属标签支持重点复习；
-            2. **设置打卡升级为每月做题热力图日历**：
-               - 设置中心每日打卡升级为整月日历视图；
-               - 根据每日实际做题数量渲染渐变色彩热力图，备考足迹一目了然；
-            3. **AI 助教深入追问与多轮对话编辑**：
-               - 支持单条用户输入一键【复制】与【修改并重试】（全新精美 SVG 图形按钮）；
-               - 智能清洗多轮对话序列，根治 HTTP 400 网络错误；
-            4. **错题本与收藏体系深度融合**：
-               - 错题本新增【我的收藏】专属栏目；
-               - 收藏题目全面接入艾宾浩斯抗遗忘记忆曲线（支持【记得】、【模糊】、【忘记】三维即时反馈）；
-               - 错题与收藏做题模式拒绝提前泄露答案，真实还原考场体验；
-            5. **断点继续练习**：
-               - 点击已开启科目自动从上次做题中断处精准恢复，原题组与题号完整保留；
-            6. **多端双向同步**：
-               - 支持 GitHub Gist 云端免服同步与局域网热点同步，手机电脑随时随地互通。
+            ### 2. Apple iOS (iPhone / iPad) 客户端安装
+            - **方式一（离线 `.ipa` 安装包侧载）**：下载下方 Assets 中的 **`jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa`**，使用 **Sideloadly**、**AltStore / SideStore**、**爱思助手** 或 **TrollStore（巨魔商店）** 签名安装至 iPhone / iPad。
+            - **方式二（Safari 免签桌面安装）**：使用 iPhone / iPad 自带 Safari 浏览器打开 [https://simple53.github.io/jsgsMock/](https://simple53.github.io/jsgsMock/)，点击底部「分享」按钮 -> 选择「添加到主屏幕」，即可作为独立全屏 App 运行。
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
