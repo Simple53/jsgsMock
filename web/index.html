@@ -5095,7 +5095,30 @@
       loadUserStore();
 
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          // 每次访问时主动检查 Service Worker 更新
+          reg.update().catch(() => {});
+          reg.addEventListener('updatefound', () => {
+            const installing = reg.installing;
+            if (installing) {
+              installing.addEventListener('statechange', () => {
+                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                  // 新版本静默安装完毕，自动更新无需弹窗提示用户
+                  console.log('Web PWA 新资源已静默就绪');
+                }
+              });
+            }
+          });
+        }).catch(() => {});
+
+        // 监听到新 Service Worker 接管后，静默自动生效
+        var refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
       }
 
       // 题库加载三重保障体系 (解决 Android APK / file:// 协议 CORS 限制问题)
@@ -5119,16 +5142,22 @@
       // 启动时后台静默同步一次局域网历史记录
       syncWithServer(false);
 
-      // 启动后延迟检测新版本并轻量推送
+      // 启动后延迟检测新版本：仅线下原生安装包（Android APK / iOS 原生包）弹窗提示更新；纯网页版静默直接更新，不弹更新窗
       setTimeout(() => {
-        checkAppUpdate(false);
+        const isOfflineNativeApp = !!window.AndroidApp ||
+          window.location.hostname === "appassets.androidcache.net" ||
+          window.location.protocol === "app:" ||
+          window.location.protocol === "file:";
+        if (isOfflineNativeApp) {
+          checkAppUpdate(false);
+        }
       }, 2500);
     }
 
     // ==========================================
     // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.3";
+    const CURRENT_APP_VERSION = "1.4.4";
     let latestReleaseInfo = null;
 
     function detectRuntimeEnv() {
