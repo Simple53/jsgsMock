@@ -1,9 +1,10 @@
 """邀请码管理工具（jsgsMock）。
 
 用法：
-  python invite_tool.py new [数量] [备注]   生成新邀请码，哈希写入 web/invite.json，明文只记在本地 invite_codes.local.txt
-  python invite_tool.py revoke 邀请码        吊销一个邀请码（从 web/invite.json 删除其哈希）
-  python invite_tool.py list                 查看本地记录的邀请码及其当前是否有效
+  python invite_tool.py new [数量] [备注]         生成简短新邀请码（6位），哈希写入 web/invite.json，明文记在本地 invite_codes.local.txt
+  python invite_tool.py add <自定义码> [备注]     添加自定义简单邀请码（如 2026、888888、jsgs26）
+  python invite_tool.py revoke <邀请码>           吊销一个邀请码（从 web/invite.json 删除其哈希）
+  python invite_tool.py list                     查看本地记录的邀请码及其当前是否有效
 
 修改后需 git commit + push，GitHub Pages 约 1 分钟生效；已输入过该码的设备在下次打开且联网时会被重新锁定。
 invite.json 只含哈希，可以公开；invite_codes.local.txt 含明文，已加入 .gitignore，切勿提交。
@@ -41,8 +42,7 @@ def save_hashes(hashes: list) -> None:
 
 
 def new_code() -> str:
-    raw = "".join(secrets.choice(ALPHABET) for _ in range(12))
-    return f"{raw[:4]}-{raw[4:8]}-{raw[8:]}"
+    return "".join(secrets.choice(ALPHABET) for _ in range(6))
 
 
 def cmd_new(count: int, note: str) -> None:
@@ -50,12 +50,29 @@ def cmd_new(count: int, note: str) -> None:
     lines = []
     for _ in range(count):
         code = new_code()
-        hashes.append(hash_code(code))
+        h = hash_code(code)
+        if h not in hashes:
+            hashes.append(h)
         lines.append(f"{code}\t{date.today()}\t{note}")
         print(code)
     save_hashes(hashes)
     with LOCAL_LOG.open("a", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
+
+
+def cmd_add(code: str, note: str) -> None:
+    clean = normalize(code)
+    if len(clean) < 3:
+        print("邀请码至少需要 3 个字符")
+        return
+    hashes = load_hashes()
+    h = hash_code(clean)
+    if h not in hashes:
+        hashes.append(h)
+        save_hashes(hashes)
+    with LOCAL_LOG.open("a", encoding="utf-8") as f:
+        f.write(f"{clean}\t{date.today()}\t{note}\n")
+    print(f"已添加简单邀请码：{clean}")
 
 
 def cmd_revoke(code: str) -> None:
@@ -90,6 +107,9 @@ def main() -> None:
         count = int(args[1]) if len(args) > 1 and args[1].isdigit() else 1
         note = args[2] if len(args) > 2 else (args[1] if len(args) > 1 and not args[1].isdigit() else "")
         cmd_new(count, note)
+    elif args[0] == "add" and len(args) > 1:
+        note = args[2] if len(args) > 2 else "自定义邀请码"
+        cmd_add(args[1], note)
     elif args[0] == "revoke" and len(args) > 1:
         cmd_revoke(args[1])
     elif args[0] == "list":
@@ -100,3 +120,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

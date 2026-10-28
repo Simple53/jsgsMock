@@ -186,40 +186,33 @@
       margin-bottom: 8px;
     }
     .configured-model-item {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1.5px solid var(--border);
-      background: var(--card-bg);
-      font-size: 12px;
-      font-weight: 600;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 4px;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--text-main);
       cursor: pointer;
       user-select: none;
-      transition: all 0.15s ease;
+    }
+    .configured-model-item:last-child {
+      border-bottom: none;
     }
     .configured-model-item.active {
-      border-color: var(--primary);
-      background: var(--primary-light);
       color: var(--primary);
       font-weight: 700;
     }
-    .configured-model-del {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      font-size: 12px;
-      color: var(--text-muted);
+    .model-list-check {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
       cursor: pointer;
-      line-height: 1;
-    }
-    .configured-model-del:hover {
-      color: var(--wrong);
+      flex-shrink: 0;
     }
     .motto-box {
       flex: 1;
@@ -247,7 +240,7 @@
     .header-icons-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
     }
     .header-icon-btn {
       background: none;
@@ -2448,6 +2441,17 @@
       <g id="icon-minus">
         <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
       </g>
+      <!-- GitHub 图标 -->
+      <g id="icon-github">
+        <path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+      </g>
+      <!-- 全屏与退出全屏 -->
+      <g id="icon-fullscreen">
+        <path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g id="icon-fullscreen-exit">
+        <path d="M9 4v4a1 1 0 0 1-1 1H4M15 4v4a1 1 0 0 0 1 1h4M9 20v-4a1 1 0 0 0-1-1H4M15 20v-4a1 1 0 0 1 1-1h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
     </defs>
   </svg>
 
@@ -2467,6 +2471,14 @@
               <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">今日考点 · 开始练习</div>
             </div>
             <div class="header-icons-row">
+              <!-- 主题颜色切换按钮 -->
+              <button class="header-icon-btn" id="homeThemeCycleBtn" onclick="cycleThemeMode()" title="切换主题(日间/护眼/深色)">
+                <svg class="svg-icon" id="homeThemeIcon" viewBox="0 0 24 24"><use href="#icon-sun"/></svg>
+              </button>
+              <!-- GitHub 仓库入口 -->
+              <a class="header-icon-btn" href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" title="GitHub 仓库 (欢迎 Star)">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-github"/></svg>
+              </a>
               <!-- 收藏题目入口 -->
               <button class="header-icon-btn" onclick="startFavoritesQuizDirect()" title="我的收藏题目">
                 <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
@@ -2639,6 +2651,9 @@
                     <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
                     <button class="cinema-text-btn" id="btnCinemaSource" onclick="openSourceMenu()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
+                    <button class="cinema-ctrl-btn" id="btnCinemaFullscreen" onclick="toggleVideoFullscreen()" aria-label="全屏" title="全屏切换">
+                      <svg class="svg-icon" id="iconCinemaFullscreen" viewBox="0 0 24 24" style="width:19px;height:19px;"><use href="#icon-fullscreen"/></svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -2673,8 +2688,6 @@
             <div style="display:flex;align-items:center;gap:10px;">
               <button onclick="openSourceMenu()" id="btnQuickCdnSwitch" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="切换官方CDN或国内镜像加速">官方 CDN</button>
               <button onclick="cyclePlaybackRate()" id="btnQuickSpeed" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="调整播放速度">1.0x</button>
-              <!-- 快捷横竖转换按钮 -->
-              <button class="rotate-btn rotate-btn-light" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg></button>
             </div>
           </div>
 
@@ -2969,12 +2982,13 @@
             <input id="settingsProviderApiKey" type="password" style="width:100%;padding:8px 10px;margin-top:4px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 sk-xxxx">
           </div>
 
-          <!-- 该供应商已配置模型（支持配置多个模型并自由切换默认，做题时也可快速切换） -->
+          <!-- 该供应商已配置模型（无外框列表显示，支持多选删除） -->
           <div style="margin-top:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">3 · 使用模型</label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">3 · 使用模型 (点击名称设为默认，勾选可批量删除)</label>
+              <button type="button" id="btnDeleteSelectedModels" onclick="deleteSelectedConfiguredModels()" style="display:none;border:none;background:transparent;color:var(--wrong);font-size:12px;font-weight:700;cursor:pointer;padding:2px 4px;">删除所选</button>
             </div>
-            <div id="settingsConfiguredModelsBox" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
+            <div id="settingsConfiguredModelsBox" style="display:flex;flex-direction:column;margin-bottom:8px;"></div>
             
             <!-- 添加自定义模型输入行 -->
             <div class="ai-advanced-option" style="display:none;gap:6px;align-items:center;">
@@ -2986,11 +3000,11 @@
           <!-- 在线获取与推荐模型库 -->
           <div class="ai-advanced-option" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">推荐与在线模型库 (点击加入已配置)</label>
+              <label style="font-size:12px;font-weight:700;color:var(--text-sub);">推荐与在线模型库 (点击加入列表)</label>
               <button class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);" onclick="fetchSettingsProviderModelsOnline()">在线获取全部</button>
             </div>
             <input id="settingsModelSearchInput" style="width:100%;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;margin-bottom:6px;" placeholder="搜索过滤可用模型..." oninput="filterSettingsModelList(this.value)">
-            <div id="settingsModelPillPool" style="display:flex;gap:6px;flex-wrap:wrap;max-height:100px;overflow-y:auto;border:1px solid var(--border);padding:6px;border-radius:6px;background:var(--bg);"></div>
+            <div id="settingsModelPillPool" style="display:flex;flex-direction:column;max-height:140px;overflow-y:auto;"></div>
           </div>
 
           <!-- 当前激活模型字段 -->
@@ -3122,6 +3136,10 @@
             <button class="modal-submit-btn" style="width:100%;padding:10px;font-size:13px;" onclick="checkAppUpdate(true)">
               立即检查最新版本
             </button>
+            <a href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" class="bottom-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:13px;text-decoration:none;color:var(--text-main);">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-github"/></svg>
+              <span>访问 GitHub 仓库并点亮 Star</span>
+            </a>
             <div id="settingsUpdateResultArea" style="display:none;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:12px;line-height:1.6;"></div>
           </div>
         </div>
@@ -5388,14 +5406,24 @@
         menu.id = 'settingsMenu';
         menu.innerHTML = SETTINGS_SECTIONS.map(([id,title,desc]) =>
           `<button class="settings-menu-row" onclick="openSettingsSection('${id}')"><span><strong>${title}</strong><small>${desc}</small></span><span aria-hidden="true">›</span></button>`).join('');
+        const footerCard = document.createElement('a');
+        footerCard.href = 'https://github.com/Simple53/jsgsMock';
+        footerCard.target = '_blank';
+        footerCard.rel = 'noopener noreferrer';
+        footerCard.className = 'settings-menu-row';
+        footerCard.style.cssText = 'text-decoration:none;color:var(--text-main);margin-top:8px;';
+        footerCard.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--primary);"><use href="#icon-github"/></svg><span><strong>开源仓库 · GitHub</strong><small style="display:block;">访问 Simple53/jsgsMock 并点亮 Star 支持项目</small></span></span><span aria-hidden="true">›</span>`;
+        menu.appendChild(footerCard);
         host.prepend(menu);
       }
       const heading = pane.querySelector('.home-top-header');
       const currentTitle = SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置';
-      // 设置二级菜单返回按钮放置在文字左侧
+      const ghIconLink = `<a class="header-icon-btn" href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" title="访问 GitHub 仓库并点亮 Star"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-github"/></svg></a>`;
+      // 设置二级菜单返回按钮放置在文字左侧，右侧放置 GitHub 仓库入口
+      heading.style.cssText = 'padding:14px 20px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;';
       heading.innerHTML = section === 'menu'
-        ? '<span style="font-size:18px;font-weight:800">设置</span>'
-        : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>`;
+        ? `<span style="font-size:18px;font-weight:800">设置</span>${ghIconLink}`
+        : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>${ghIconLink}`;
       menu.style.display = section === 'menu' ? 'block' : 'none';
 
       // 映射到目标卡片子集合
@@ -5690,7 +5718,7 @@
 
     function returnFromVideoPlayer() {
       if (isCinemaFullscreen) {
-        toggleVideoOrientation();
+        toggleVideoFullscreen();
         return;
       }
       switchMainView('practice');
@@ -5831,15 +5859,24 @@
       }
     }
 
-    // 横竖屏切换（原生全屏 + 方向锁定；系统不支持锁定时用 CSS 旋转回退）
+    let isVideoLandscape = false;
+
+    function updateFullscreenBtnUI() {
+      const useEl = document.querySelector('#iconCinemaFullscreen use');
+      if (useEl) {
+        useEl.setAttribute('href', isCinemaFullscreen ? '#icon-fullscreen-exit' : '#icon-fullscreen');
+      }
+    }
+
     function syncForcedLandscape() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
-      const needForce = isCinemaFullscreen && window.innerHeight > window.innerWidth;
+      const needForce = isCinemaFullscreen && isVideoLandscape && window.innerHeight > window.innerWidth;
       container.classList.toggle('force-landscape', needForce);
     }
 
-    function toggleVideoOrientation() {
+    // 底部全屏按钮：进入或退出全屏播放
+    function toggleVideoFullscreen() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
       isCinemaFullscreen = !isCinemaFullscreen;
@@ -5848,12 +5885,9 @@
       if (isCinemaFullscreen) {
         const req = container.requestFullscreen ? container.requestFullscreen()
           : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
-        Promise.resolve(req)
-          .catch(() => {})
-          .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
-          .catch(() => {})
-          .then(() => setTimeout(syncForcedLandscape, 350));
+        Promise.resolve(req).catch(() => {}).then(() => setTimeout(syncForcedLandscape, 300));
       } else {
+        isVideoLandscape = false;
         container.classList.remove('force-landscape');
         toggleCinemaEpisodeDrawer(false);
         closeSourceMenu();
@@ -5866,13 +5900,47 @@
           document.webkitExitFullscreen();
         }
       }
+      updateFullscreenBtnUI();
+      showVideoControls();
+    }
+
+    // 顶部横竖切换按钮：仅在播放器内部显示，切换横屏与竖屏
+    function toggleVideoOrientation() {
+      const container = document.getElementById('videoContainer');
+      if (!container) return;
+      if (!isCinemaFullscreen) {
+        isCinemaFullscreen = true;
+        isVideoLandscape = true;
+        container.classList.add('fullscreen-mode');
+        document.body.style.overflow = 'hidden';
+        const req = container.requestFullscreen ? container.requestFullscreen()
+          : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
+        Promise.resolve(req)
+          .catch(() => {})
+          .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
+          .catch(() => {})
+          .then(() => setTimeout(syncForcedLandscape, 350));
+      } else {
+        isVideoLandscape = !isVideoLandscape;
+        if (isVideoLandscape) {
+          Promise.resolve(screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
+            .catch(() => {})
+            .then(() => setTimeout(syncForcedLandscape, 200));
+        } else {
+          container.classList.remove('force-landscape');
+          if (screen.orientation && screen.orientation.unlock) {
+            try { screen.orientation.unlock(); } catch (e) {}
+          }
+        }
+      }
+      updateFullscreenBtnUI();
       showVideoControls();
     }
 
     window.addEventListener('resize', syncForcedLandscape);
     window.addEventListener('orientationchange', () => setTimeout(syncForcedLandscape, 300));
     document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && isCinemaFullscreen) toggleVideoOrientation();
+      if (!document.fullscreenElement && isCinemaFullscreen) toggleVideoFullscreen();
     });
 
     // 控制栏自动隐藏
@@ -7334,16 +7402,10 @@
 
     function applyTheme(theme) {
       document.body.className = '';
-      const iconUse = document.querySelector("#themeCurrentIcon use");
-      if (theme === 'light') {
-        if (iconUse) iconUse.setAttribute("href", "#icon-sun");
-      } else if (theme === 'eye') {
-        document.body.classList.add('theme-eye');
-        if (iconUse) iconUse.setAttribute("href", "#icon-eye");
-      } else if (theme === 'dark') {
-        document.body.classList.add('theme-dark');
-        if (iconUse) iconUse.setAttribute("href", "#icon-moon");
-      }
+      const iconHref = theme === 'eye' ? '#icon-eye' : (theme === 'dark' ? '#icon-moon' : '#icon-sun');
+      if (theme === 'eye') document.body.classList.add('theme-eye');
+      else if (theme === 'dark') document.body.classList.add('theme-dark');
+      document.querySelectorAll("#themeCurrentIcon use, #homeThemeIcon use").forEach(u => u.setAttribute("href", iconHref));
     }
 
     // ==========================================
@@ -7988,7 +8050,46 @@
       renderSettingsModelPool(cfg.customModels || p.models);
     }
 
-    // 渲染当前供应商已配置的模型标签（支持切换默认和删除）
+    let selectedModelsForDeletion = new Set();
+
+    function updateModelDeleteBtnUI() {
+      const btn = document.getElementById("btnDeleteSelectedModels");
+      if (!btn) return;
+      if (selectedModelsForDeletion.size > 0) {
+        btn.style.display = "inline-block";
+        btn.textContent = `删除所选 (${selectedModelsForDeletion.size})`;
+      } else {
+        btn.style.display = "none";
+      }
+    }
+
+    function toggleModelDeleteCheck(m, checked, evt) {
+      if (evt) evt.stopPropagation();
+      if (checked) selectedModelsForDeletion.add(m);
+      else selectedModelsForDeletion.delete(m);
+      updateModelDeleteBtnUI();
+    }
+
+    function deleteSelectedConfiguredModels() {
+      const cfg = userStore.providersConfig[editingSettingsProviderKey];
+      if (!cfg || !Array.isArray(cfg.models)) return;
+      if (selectedModelsForDeletion.size === 0) return;
+      if (selectedModelsForDeletion.size >= cfg.models.length) {
+        alert("至少需要保留一个已配置模型！");
+        return;
+      }
+      cfg.models = cfg.models.filter(item => !selectedModelsForDeletion.has(item));
+      selectedModelsForDeletion.clear();
+      if (!cfg.models.includes(cfg.model)) {
+        cfg.model = cfg.models[0];
+        const selEl = document.getElementById("settingsProviderSelectedModel");
+        if (selEl) selEl.value = cfg.model;
+      }
+      saveUserStore();
+      renderSettingsConfiguredModels(editingSettingsProviderKey);
+    }
+
+    // 渲染当前供应商已配置的模型列表（无外框，支持多选删除与点击切换默认）
     function renderSettingsConfiguredModels(pKey = editingSettingsProviderKey) {
       const box = document.getElementById("settingsConfiguredModelsBox");
       if (!box) return;
@@ -8003,19 +8104,44 @@
         userStore.providersConfig[pKey].models = models;
       }
 
+      // 清理已不存在于当前列表的勾选项
+      Array.from(selectedModelsForDeletion).forEach(m => {
+        if (!models.includes(m)) selectedModelsForDeletion.delete(m);
+      });
+      updateModelDeleteBtnUI();
+
       const curActiveModel = document.getElementById("settingsProviderSelectedModel")?.value || cfg.model || models[0];
 
       models.forEach(m => {
         const item = document.createElement("div");
         const isActive = (m === curActiveModel);
+        const isChecked = selectedModelsForDeletion.has(m);
         item.className = `configured-model-item ${isActive ? 'active' : ''}`;
-        item.innerHTML = `
-          <span style="display:inline-flex;align-items:center;gap:4px;" onclick="selectSettingsActiveModel('${m}')">
-            ${isActive ? '<svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;color:var(--primary);"><use href="#icon-check"/></svg>' : ''}
-            <span>${m}</span>
-          </span>
-          ${models.length > 1 ? `<span class="configured-model-del" onclick="removeSettingsConfiguredModel('${m}', event)" title="从已配置中移除">×</span>` : ''}
-        `;
+
+        const left = document.createElement("div");
+        left.style.cssText = "display:flex;align-items:center;gap:8px;min-width:0;flex:1;";
+
+        const chk = document.createElement("input");
+        chk.type = "checkbox";
+        chk.className = "model-list-check";
+        chk.checked = isChecked;
+        chk.onclick = (e) => e.stopPropagation();
+        chk.onchange = (e) => toggleModelDeleteCheck(m, e.target.checked, e);
+
+        const nameSpan = document.createElement("span");
+        nameSpan.style.cssText = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;";
+        nameSpan.textContent = m;
+        nameSpan.onclick = () => selectSettingsActiveModel(m);
+
+        left.append(chk, nameSpan);
+
+        const right = document.createElement("span");
+        right.style.cssText = "font-size:11px;flex-shrink:0;";
+        right.textContent = isActive ? "当前默认" : "设为默认";
+        right.style.color = isActive ? "var(--primary)" : "var(--text-muted)";
+        right.onclick = () => selectSettingsActiveModel(m);
+
+        item.append(left, right);
         box.appendChild(item);
       });
     }
@@ -8074,7 +8200,7 @@
       renderSettingsConfiguredModels(editingSettingsProviderKey);
     }
 
-    // 渲染推荐与在线模型池（点击直接加入已配置并设为当前激活）
+    // 渲染推荐与在线模型池（无外框列表形式，点击直接加入已配置并设为当前激活）
     function renderSettingsModelPool(models) {
       const pool = document.getElementById("settingsModelPillPool");
       if (!pool) return;
@@ -8082,12 +8208,11 @@
       const curSel = document.getElementById("settingsProviderSelectedModel")?.value;
 
       models.forEach(m => {
-        const pill = document.createElement("span");
-        pill.className = `text-name-btn ${m === curSel ? 'active' : ''}`;
-        pill.style.cssText = "padding:3px 8px;font-size:11px;";
-        pill.textContent = m;
-        pill.title = "点击加入已配置列表并设为默认";
-        pill.onclick = () => {
+        const row = document.createElement("div");
+        const isSel = (m === curSel);
+        row.className = `configured-model-item ${isSel ? 'active' : ''}`;
+        row.innerHTML = `<span>${escapeHtml(m)}</span><span style="font-size:11px;color:${isSel ? 'var(--primary)' : 'var(--text-muted)'};">${isSel ? '已激活' : '+ 加入'}</span>`;
+        row.onclick = () => {
           if (!userStore.providersConfig[editingSettingsProviderKey]) {
             userStore.providersConfig[editingSettingsProviderKey] = {};
           }
@@ -8103,7 +8228,7 @@
           renderSettingsConfiguredModels(editingSettingsProviderKey);
           renderSettingsModelPool(models);
         };
-        pool.appendChild(pill);
+        pool.appendChild(row);
       });
     }
 
@@ -9244,7 +9369,7 @@
     <div style="width:100%;max-width:360px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:16px;padding:24px 20px;box-sizing:border-box;">
       <div style="font-size:20px;font-weight:800;color:var(--text-main);">高校教资题库</div>
       <div style="font-size:13px;color:var(--text-muted);margin:8px 0 18px;line-height:1.6;">请输入邀请码开始学习。验证通过后，本设备无需重复输入。</div>
-      <input id="inviteInput" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;letter-spacing:1px;background:var(--bg);color:var(--text-main);outline:none;">
+      <input id="inviteInput" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="请输入邀请码 (如: 2026)" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;letter-spacing:1px;background:var(--bg);color:var(--text-main);outline:none;">
       <button id="inviteSubmit" class="modal-submit-btn" style="width:100%;margin-top:12px;padding:12px;font-size:15px;">验证并进入</button>
       <div id="inviteMsg" style="min-height:18px;margin-top:10px;font-size:12.5px;color:#ef4444;text-align:center;"></div>
     </div>
@@ -9340,7 +9465,7 @@
 
   function submit() {
     var code = normalize(input.value);
-    if (code.length < 6) { msg.textContent = '请输入完整的邀请码'; return; }
+    if (code.length < 3) { msg.textContent = '请输入有效的邀请码'; return; }
     btn.disabled = true;
     msg.textContent = '验证中...';
     loadHashes().then(function (list) {

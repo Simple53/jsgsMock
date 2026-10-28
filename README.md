@@ -1,139 +1,112 @@
-# jsgsMock
-
-## Cloudflare 免费托管：Pages 网页 + R2 视频
-
-教程页已收录本地课程视频目录中的 5 门课程、123 节视频。仓库仅保存课程目录；视频文件不提交到 Git，也不由 PWA 离线缓存。
-
-先安装 `uv`，在项目根目录执行：
-
-```powershell
-uv run --with imageio-ffmpeg python build_course_videos.py --source "G:\onedrive\smallprjs\test\course_video_webbook\videos" --output web/videos --base-url ./videos
-```
-
-脚本将视频转换为 480p H.264 / AAC 单声道，完成后生成 `web/course_videos.js`。压缩期间可中断并重跑，已完成文件会跳过。`web/videos` 可用于本地预览。
-
-1. 注册 Cloudflare，进入 **R2 object storage**，完成 R2 开通流程。创建 `jsgsmock-videos` 存储桶，选择 **Standard** 存储类别。免费额度是每月 10 GB 存储、100 万次写入操作、1000 万次读取操作；超额会计费。
-2. 在 R2 中创建可写入该桶的 API Token，记录 Account ID、Access Key ID、Secret Access Key。安装 AWS CLI 后，运行 `aws configure --profile jsgsmock-r2`，按提示输入这两个密钥，region 填 `auto`。不要把密钥提交到仓库。
-3. 在项目根目录上传压缩视频，保留原有课程文件夹和文件名：
-
-```powershell
-aws s3 sync web/videos s3://jsgsmock-videos/ --endpoint-url https://<ACCOUNT_ID>.r2.cloudflarestorage.com --profile jsgsmock-r2 --content-type video/mp4
-```
-
-4. 在桶的 **Settings → Public Development URL** 启用公开测试地址，取得形如 `https://...r2.dev` 的 URL。该地址适合测试；正式大量访问应给 R2 绑定自有域名。确认一个视频 URL 可直接打开后，重新运行上面的压缩命令，把 `--base-url ./videos` 换为桶的公开 HTTPS 地址。已压缩文件会跳过，此次只更新课程目录 URL。
-5. 将更新后的 `web/course_videos.js` 提交到 GitHub。Cloudflare **Workers & Pages → Create → Pages → Connect to Git** 选择 `Simple53/jsgsMock`，不填构建命令，输出目录填 `web`。首次部署后可用 `*.pages.dev` 域名访问。后续推送会自动部署。
-
-网页和视频分开托管：Pages 单文件上限 25 MiB，压缩视频放 R2 更合适。打开网页后在教程页点视频测试播放及拖动进度条。
-
-请确认拥有这些课程视频的公开分发权限后再启用公开存储。
-
-> 江苏高校教师岗前培训刷题应用。首页展示从题库答案解析中选出的每日考点，并提供视频课程入口；支持做题、错题复习、教材阅读、AI 助教和学习记录导出。
-
-- 📦 **GitHub 仓库**：[Simple53/jsgsMock](https://github.com/Simple53/jsgsMock)
-- 📱 **安卓客户端下载**：前往 [Releases 页面](https://github.com/Simple53/jsgsMock/releases) 即可直接下载并安装 `jsgsMock.apk`，离线秒开刷题！
-- 🛠 **开发与运行环境**：现代极速包管理器 **uv** (Python 3.13) / Android SDK (Gradle 8.5)
+<div align="center">
+  <img src="web/icon.svg" width="96" height="96" alt="jsgsMock Icon" />
+  <h1>jsgsMock</h1>
+  <p><strong>江苏高校教师岗前培训全真题库与精讲学习系统</strong></p>
+  <p><strong>Jiangsu Higher Education Teacher Pre-service Training Quiz & Video Learning System</strong></p>
+  <p>
+    <a href="#中文介绍">中文介绍</a> ·
+    <a href="#english-documentation">English Documentation</a> ·
+    <a href="https://simple53.github.io/jsgsMock/">Online Demo</a> ·
+    <a href="https://github.com/Simple53/jsgsMock/releases">Android APK</a>
+  </p>
+</div>
 
 ---
 
-## 一、 核心功能特色
+<h2 id="中文介绍">中文介绍</h2>
 
-### 1. 首页与每日考点
-- 每天从题库答案解析中选出一句考点，同一天保持一致；首页直达视频课程。
-- 📅 **纯矢量 Icon 打卡、星标收藏与全局题目搜索**：
-  - 每日打卡图标（未完成带提示红点）；
-  - 星标收藏专属入口（点击一键聚合全部收藏题目并载入练习工作台）；
-  - 全局搜索图标（毫秒级模糊检索 1100 道真题题干、选项与解析，即搜即刷）。
+**jsgsMock** 是一款专为江苏高校教师岗前培训考试打造的纯扁平化、零广告、支持全离线运行的刷题与名师视频学习系统。内置 **2026 官网最新真题** 与 **历年题库** 双题库引擎，涵盖《高等教育学》《高等教育心理学》《高校教师职业道德修养》《高等教育法规概论》等全部统考科目，并集成 123 节官方名师视频课程与多服务商 AI 助教。
 
-### 2. 刷题工作台与 AI 助手体系
-- 🤖 **做题模式顶栏 AI 配置按钮与纯文字名称菜单**：
-  - 做题界面最上方一排平铺工具栏内置 AI 芯片图标按钮；
-  - 点击展开纯文字名称胶囊菜单（**严格按要求：不需要显示 icon，只需要名称按钮**）；
-  - 快捷切换供应商（DeepSeek/Kimi/通义/智谱/ChatGPT/硅基流动/OpenRouter/自定义）以及对应模型；
-  - 提供直达设置板块的配置跳转入口。
-- ⚡️ **助教对话深入追问 + 悬浮 AI 名师助教 (多轮对话)**：
-  - 题目下方解析区配备【助教对话深入追问】按钮，完整继承一键解析考点上下文；
-  - **单条输入复制与修改重试**：对话气泡右下方配备纯矢量 SVG 图标按钮，点击即可一键复制或回填输入框修改后重新生成回答；
-  - **严密上下文清洗**：具备智能消息清洗层，根治因网络波动导致连续 user 消息触发的 HTTP 400 报错；
-  - 支持自由多轮对话追问（如“为什么不选B？”、“这个知识点怎么区分？”），打字机流式输出；
-  - 抽屉支持清空对话与最小化收起；
-  - **设置总开关**：在设置板块中可随时开启或关闭悬浮 AI 助教。
-- 🔄 **手势与平铺工具栏**：
-  - 题目区域支持**左右滑屏切题**；
-  - 顶部平铺：返回退出、计时器、草稿画板（**支持单步撤销 Undo**）、星标收藏、太阳/月亮/护眼主题专属图标切换、答题卡。
+- **开源仓库**：[https://github.com/Simple53/jsgsMock](https://github.com/Simple53/jsgsMock)（欢迎点击右上角 **Star** 支持本项目）
+- **在线体验**：[https://simple53.github.io/jsgsMock/](https://simple53.github.io/jsgsMock/)
+- **安卓客户端**：前往 [Releases 页面](https://github.com/Simple53/jsgsMock/releases) 下载安装 `jsgsMock.apk`，支持应用内一键检查更新。
 
-### 3. 底部导航【设置】板块内置完整 AI 配置
-- ⚙️ **设置板块完整的 AI 大模型专区**：
-  - 支持一键切换与配置 DeepSeek、Kimi、通义千问、智谱清言、ChatGPT、硅基流动、OpenRouter、自定义 API；
-  - 支持为每个服务商自定义增删多个可用模型；
-  - 提供悬浮 AI 助教全局启用/关闭开关；
-  - 一键保存并激活当前供应商，所有密钥和配置完全持久保存在手机本地。
+### 一、核心功能特色
 
-### 4. 错题本、我的收藏与艾宾浩斯抗遗忘攻坚
-- 📕 **错题本真实做题（绝不剧透答案）**：列表卡片不再提前展示正确答案，做题进入后默认隐藏答案与解析，支持真实作答；
-- 🌟 **新增【我的收藏】专属栏目**：在错题本中支持一键切换到【我的收藏】，收藏题目全面纳入艾宾浩斯记忆追踪体系；
-- 🧠 **艾宾浩斯抗遗忘三维即时反馈**：题目下方配备【记得】（熟练掌握·自动切下一题）、【模糊】（展开官方精解与AI解析·查漏补缺）、【忘记】（重置复习周期·强化记忆）三个反馈按钮；
-- 📝 **全真模拟考试**：随机组卷并永久保存至本地试卷库，随时回溯重考。
-- 📊 **学情数据与考分预测**：根据已练题量和正确率，给出 100 分制 AI 智能预测分与等级建议。
-- 👤 **个人设置**：打卡统计看板（连续天数、总天数与近 7 天打卡点阵）、默认做题模式、外观跟随系统、题库导入/导出。
+#### 1. 首页与每日考点
+- **双题库无缝切换**：支持在首页一键切换「2026官网最新真题」与「历年题库」，并提供新旧题库对照 Excel 总表下载。
+- **每日一句全屏精读**：每日从真题解析中甄选高频考点金句，支持一键动画刷新与点击全屏沉浸式阅读考点溯源。
+- **极简顶栏工具**：集成日间/护眼/深色三态主题颜色切换、GitHub 仓库直达、收藏题目专练、每日学习打卡与平滑展开式全局搜索。
 
-### 5. 教程专区：教材阅读与视频课程
-- 📚 **权威教材全景书架**：
-  - 底部【教程】导航栏，集中展示教材与视频课程，收录《高等教育学》、《高等教育心理学》、《高校教师职业道德修养》、《高等教育法规概论》等核心统编教材；
-  - 支持导入本地 `.epub` 电子书或联网检索匹配对应专业教材。
-- 📖 **沉浸式 EPUB 考点阅读器**：
-  - 支持纯前端解析 EPUB 章节目录树、字号缩放调节、翻页与阅读进度记录；
-  - **毫秒级全文检索与考点高亮**：在阅读器内即搜即现对应章节高频考点，点击搜索结果一键精准跳至对应段落。
+#### 2. 视频课程与手势播放器
+- **5 大科目 123 节精讲**：按科目完整收录统编名师视频，视频与考点大纲同屏切换，课程导航占满整排，选集卡片横向滑动。
+- **专业影院级交互**：
+  - 播放器内部集成**全屏切换按钮**与**横竖屏切换按钮**；
+  - 保留移动端丝滑手势：左侧上下滑动调节画面亮度、右侧上下滑动调节音量大小、水平左右滑动预览并调节播放进度；
+  - 支持点击打开播放源菜单（在「官方 CDN」与「国内加速」间按需切换）、多档倍速调节与毫秒级断点记忆续播。
 
-### 6. PC 端极速刷题、文本选取复制与多选题复选框点选
-- 🖱 **滚轮平滑切题**：在题目顶底边界继续滚动滑轮，自动平滑翻至上一题/下一题（配备 380ms 惯性防抖）；
-- ⌨️ **全键盘快捷作答**：
-  - 方向键 `←` / `↑` / `PageUp` 切上一题，`→` / `↓` / `PageDown` 切下一题；
-  - 数字键 `1`/`2`/`3`/`4` 或字母键 `A`/`B`/`C`/`D` 快速选定或切换多选勾选；
-  - `Enter` / `Space` 确认提交多选答案或答卷。
-- 📋 **自由划词与文字复制**：全面开放题干、选项、答案考点解析与 AI 对话流的文本选择复制能力，方便整理个人考点笔记。
-- ☑️ **多选题复选框点选与确认提交机制**：
-  - 多选题采用原生方形 Checkbox 复选框，支持自由点击勾选与取消；
-  - 勾选选项时**绝不提前判题或暴露答案**，并在选项下方呈现【已选 X 项 · 确认提交本题】操作栏；
-  - 只有在点击确认提交后，系统才对比正确答案，将选对/漏选/错选直观高亮，并展开考点精解与 AI 解析。
+#### 3. 刷题工作台与 AI 名师助教
+- **科学刷题体验**：支持背题模式与做题模式、手写草稿画板（带单步撤销）、左右滑屏切题与 PC 全键盘/滚轮翻题；多选题采用复选框勾选并确认提交机制，杜绝提前剧透答案。
+- **多模型 AI 助教体系**：
+  - 支持接入 DeepSeek、Kimi、通义千问、智谱清言、ChatGPT、硅基流动、OpenRouter 及自定义 OpenAI 兼容端点；
+  - AI 模型设置采用无外框极简列表展示，支持点击设为默认模型及勾选批量删除；
+  - 支持题目下方一键流式生成考点精解，以及可自由拖拽位置的悬浮 AI 助教多轮追问。
 
-### 7. 未完成练习持久化与中途退出无缝继续
-- 💾 **练习状态实时存档**：15 题练习进行途中点击退出，当前题组、当前题号（如第 3/15 题）与计时秒数自动保存；
-- 🔄 **无缝继续上次**：首页科目卡片直观显示“继续(第3/15题)”，再次点击直接恢复原练习现场与题目，答完全部题目并点击提交后才会开启新的一轮练习，绝不遗漏或浪费任何做题进度。
+#### 4. 错题抗遗忘、全真模考与多端同步
+- **艾宾浩斯抗遗忘复习**：错题本与我的收藏均支持「记得 / 模糊 / 忘记」三维记忆反馈，动态计算复习临界期。
+- **分科目与综合全真模考**：支持按单科目或 5 科综合随机组建标准 55 题考卷（40 单选 + 5 多选 + 10 判断），自动批阅并归档至本地试卷库。
+- **全场景数据同步**：支持 GitHub Gist 免服务器跨网双向云同步、局域网直连合并、离线数据口令快照互传以及本地数据一键清空重置。
+
+### 二、邀请码访问控制管理
+
+系统内置纯前端 `SHA-256` 邀请码门禁（明文不入库，公开仓库仅保存哈希值，设备首次验证通过后永久记忆）。项目根目录提供管理工具 `invite_tool.py`：
+
+```powershell
+# 添加自定义简单邀请码（例如 2026、888888）
+python invite_tool.py add 2026 站长邀请码
+
+# 随机生成 6 位简短邀请码
+python invite_tool.py new 5 学员批次
+
+# 查看本地所有邀请码及有效状态
+python invite_tool.py list
+
+# 吊销指定邀请码（推送到 GitHub 后已激活该码的设备将自动重锁）
+python invite_tool.py revoke 2026
+```
+
+### 三、视频构建与部署说明
+
+若需从本地原始课程视频重新构建压缩版视频并生成目录索引，可在安装 `uv` 后执行：
+
+```powershell
+uv run --with imageio-ffmpeg python build_course_videos.py --source "本地视频目录" --output web/videos --base-url ./videos
+```
 
 ---
 
-## 二、 手机端访问与全场景多端双向同步
+<h2 id="english-documentation">English Documentation</h2>
 
-> 📖 **遇到无法连接或同步疑问？请首先查阅：**  
-> 📌 **[局域网访问与多端同步踩坑指南.md](局域网访问与多端同步踩坑指南.md)** —— 系统归纳了校园网 AP 隔离、Windows 公用网络防火墙放行、移动热点搭建、强制 HTTPS 重定向绕过、批处理换行符陷阱以及多端数据双向安全合并的详细实战解决方案。
+**jsgsMock** is a flat, distraction-free, offline-capableProgressive Web App (PWA) and Android client designed for the **Jiangsu Higher Education Teacher Pre-service Training Examination**. It integrates dual question banks (**2026 Official Latest Questions** and **Historical Question Bank**), **123 lecture videos** across 5 core subjects, Ebbinghaus spaced-repetition review, and a multi-provider AI teaching assistant.
 
-### 1. 为什么在 GitHub 网页上做题无法直接连局域网电脑？
-- 电脑控制台显示的 `10.x.x.x:8080` 是**局域网私网 IP**，仅在手机和电脑连接同一个 Wi-Fi 或热点时可达；
-- 当在 GitHub Pages（`https://simple53.github.io/jsgsMock/`）公网访问时，手机可能处于 4G/5G 移动网络，且浏览器因安全策略（Mixed Content）会禁止从 HTTPS 公网直接向 HTTP 内网发请求。
+- **GitHub Repository**: [https://github.com/Simple53/jsgsMock](https://github.com/Simple53/jsgsMock) (If you find this project helpful, please give it a **Star**!)
+- **Live Web App**: [https://simple53.github.io/jsgsMock/](https://simple53.github.io/jsgsMock/)
+- **Android APK**: Download the latest `jsgsMock.apk` from [GitHub Releases](https://github.com/Simple53/jsgsMock/releases) with built-in one-click OTA update support.
 
-### 2. 全场景多端双向同步方案（手机与电脑实时互通）
-为满足不同场景，设置板块提供了 **3 大多端同步通道**：
+### Key Features
 
-1. **方式一：GitHub Gist 极简云同步（全球随时随地 · 首选推荐）**：
-   - 无需自建服务器！利用 GitHub 官方提供的免服 API；
-   - 在设置中输入具有 `gist` 权限的 GitHub Token，系统会自动为您创建并关联私密的云端备份 Gist；
-   - 无论手机使用 4G/5G 流量还是任意网络，只要在各端输入相同 Token，点击【立即 Gist 同步】，做题记录、错题本、打卡天数与收藏瞬间全局双向合并，永不丢失！
-2. **方式二：局域网 / 自定义同步服务**：
-   - 手机和电脑在同一 Wi-Fi 或连接电脑移动热点时，电脑运行 `启动服务.bat`，手机可一键双向合并（`/api/sync`）；
-   - 也支持填入配置好的内网穿透（cpolar/frp）公网 HTTPS 地址。
-3. **方式三：离线数据快照口令**：
-   - 电脑点击【复制同步口令】，手机微信/备忘录粘贴到【粘贴口令合并】，零网络依赖秒级合并。
+1. **Dual Question Banks & Daily Key Points**
+   - Instant switching between the *2026 Official Question Bank* and *Historical Question Bank* covering Higher Education Pedagogy, Psychology, Teacher Ethics, and Education Law.
+   - Daily curated knowledge points extracted from official explanations with one-click refresh and full-screen immersive reading mode.
+   - Top header quick actions: three-mode theme switcher (Light / Eye-Care / Dark), GitHub repository link, Favorites quiz entry, daily check-in calendar, and inline instant search.
 
-### 3. 彻底的非局域网公网方案：GitHub Pages 免费托管（极力推荐）
-本项目是**纯前端轻量化 PWA 应用**，无需任何后端服务器支撑，所有刷题进度和配置均保存在手机本地，直接使用 GitHub Pages 托管最完美：
-- **全球公网 HTTPS**：手机无论用 4G/5G 流量还是任意 WiFi 随时随地都能访问；
-- **原生添加到主屏幕 (PWA)**：在 Safari 或 Chrome 点击“添加到主屏幕”，无需开启电脑，甚至**在手机断网、完全无信号的情况下也能离线秒开刷题**！
+2. **Lecture Video Player with Touch Gestures**
+   - Streams 123 course videos organized by subject with automatic breakpoint resume.
+   - Built-in **Fullscreen button** and **Portrait/Landscape orientation toggle** strictly inside the player control overlay.
+   - Full mobile touch gestures: vertical swipe on the left half for brightness, vertical swipe on the right half for volume, and horizontal swipe for smooth seeking.
+   - Two-step CDN source selector menu (*Official CDN* vs. *Domestic Mirror*) and multi-speed playback control.
 
-#### 开启步骤：
-1. 打开您的 GitHub 仓库：[Simple53/jsgsMock](https://github.com/Simple53/jsgsMock)；
-2. 进入 **Settings** ➔ **Pages**；
-3. 在 **Build and deployment** 下方的 **Source** 选择：
-   - **GitHub Actions**（推荐，仓库内已内置 `.github/workflows/deploy.yml` 自动打包发布 `web/`）；
-   - 或选择 **Deploy from a branch** ➔ 分支选 `main` ➔ 目录选 `/ (root)`。
-4. 部署完成后，即可在手机浏览器打开专属的全球公网链接：
-   `https://simple53.github.io/jsgsMock/`
+3. **Smart Quiz Workspace & AI Teaching Assistant**
+   - Supports both *Study Mode* (instant explanation) and *Exam Mode*, equipped with an undoable scratchpad canvas, touch swipe navigation, and PC keyboard/wheel shortcuts.
+   - Multi-provider AI integration (DeepSeek, Kimi, Qwen, Zhipu, OpenAI, SiliconFlow, OpenRouter, and custom endpoints).
+   - Clean borderless list view for AI model management with multi-select batch deletion.
+   - Draggable floating AI assistant drawer for multi-turn contextual Q&A.
+
+4. **Spaced Repetition, Mock Exams & Cross-Device Sync**
+   - **Ebbinghaus Review**: Tracks wrong questions and favorites with three-level memory feedback (*Remember*, *Vague*, *Forget*).
+   - **55-Question Standard Mock Exams**: Generates subject-specific or comprehensive 55-question mock papers (40 single-choice + 5 multiple-choice + 10 true/false).
+   - **Serverless Cloud Sync**: Bidirectional merge across mobile and desktop via GitHub Gist API, LAN server, or offline snapshot tokens.
+
+5. **Lightweight Invite Code Gate**
+   - Protects access on static hosting using salted `SHA-256` hashes stored in `web/invite.json` and persistent `localStorage` activation.
+   - Manage simple invite codes locally via `python invite_tool.py add <code>`, `new`, `list`, and `revoke`.
