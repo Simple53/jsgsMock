@@ -1814,9 +1814,33 @@
     .video-lesson-row{padding:11px 2px;font-size:13px}
     .video-lesson-row:hover,.wrong-compact-row:hover,.settings-menu-row:hover{background:var(--primary-light)}
     .home-video-entry{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 16px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--card-bg);color:var(--text-main);text-align:left;cursor:pointer}
-    .home-video-entry .svg-icon{width:22px;height:22px;color:var(--primary)}
-    .home-video-entry span:nth-child(2){flex:1}.home-video-entry strong,.home-video-entry small{display:block}.home-video-entry small{color:var(--text-muted);font-size:12px;margin-top:2px}
+    .home-video-entry .svg-icon{width:22px;height:22px;color:var(--primary);flex-shrink:0}
+    .home-video-entry span:nth-child(2){flex:1;min-width:0}.home-video-entry strong,.home-video-entry small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-video-entry small{color:var(--text-muted);font-size:11.5px;margin-top:2px}
     .home-video-entry:hover{background:var(--primary-light)}
+    .home-dual-entry-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 20px 16px}
+    .home-dual-entry-grid .home-video-entry{width:100%;margin:0;padding:12px 12px;gap:10px}
+    .sub-actions-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .sub-kp-btn{padding:6px 10px;border-radius:8px;border:1.5px solid var(--primary-border);background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+    .sub-kp-btn:active{opacity:0.8}
+    .reader-subbar{padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg);display:flex;flex-direction:column;gap:6px}
+    .reader-pill-row{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .reader-pill-row::-webkit-scrollbar{display:none}
+    .reader-pill{flex:0 0 auto;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-sub);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+    .reader-pill.active{background:var(--primary);color:#fff;border-color:var(--primary);font-weight:700}
+    .epub-chapter-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:var(--primary-light);color:var(--primary);font-size:11.5px;font-weight:800;margin-bottom:6px}
+    .epub-chapter-title{font-size:18px;font-weight:900;color:var(--text-main);line-height:1.4;margin:0 0 14px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+    .epub-kp-card{border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px;background:var(--card-bg)}
+    .epub-kp-title{font-size:15px;font-weight:800;color:var(--primary);line-height:1.45;margin:0 0 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .epub-sub-heading{font-size:13.5px;font-weight:800;color:var(--text-main);margin:12px 0 6px;padding-left:8px;border-left:3px solid var(--primary);line-height:1.35}
+    .epub-list{margin:0 0 10px;padding-left:18px}
+    .epub-list li{margin-bottom:7px;line-height:1.75;color:var(--text-main);text-indent:0}
+    .epub-key-term{background:var(--primary-light);color:var(--primary);font-weight:700;padding:1px 5px;border-radius:4px;border:1px solid var(--primary-border)}
+    .epub-index-box{margin-top:10px;padding:10px 12px;background:var(--bg);border:1px dashed var(--primary-border);border-radius:8px;font-size:12px;color:var(--text-sub);line-height:1.6}
+    .epub-q-chip{display:inline-block;padding:1px 6px;margin:2px 3px 2px 0;border-radius:4px;background:var(--card-bg);border:1px solid var(--border);color:var(--primary);font-size:11px;font-weight:700;cursor:pointer}
+    .epub-q-chip:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .epub-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px}
+    .epub-table th,.epub-table td{border:1px solid var(--border);padding:6px 8px;text-align:left}
+    .epub-table th{background:var(--bg);font-weight:800}
     .textbook-card {
       border: 1.5px solid var(--border);
       border-radius: 12px;
@@ -2249,20 +2273,23 @@
 }
 
 
-/* 播放器：圆润横竖切换按钮、手势提示、播放源菜单、强制横屏回退 */
+/* 播放器：圆润横竖切换按钮、手势提示、播放源与倍速菜单、强制横竖屏回退 */
 .video-player-wrapper { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-.rotate-btn { width:36px; height:36px; border-radius:50%; border:none; padding:0; cursor:pointer; background:rgba(255,255,255,0.16); color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:none; -webkit-tap-highlight-color:transparent; }
-.rotate-btn:active { background:rgba(255,255,255,0.32); }
+.rotate-btn { position:relative; z-index:55; width:38px; height:38px; border-radius:50%; border:none; padding:0; cursor:pointer; background:rgba(255,255,255,0.18); color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+.rotate-btn::after { content:""; position:absolute; inset:-8px; border-radius:50%; }
+.rotate-btn:active, .rotate-btn.active { background:var(--primary); color:#fff; }
 .rotate-btn-light { width:32px; height:32px; background:var(--bg); border:1.5px solid var(--border); color:var(--text-main); }
 .rotate-btn-light:active { background:var(--border); }
 .cinema-overlay-layer.hide-controls { opacity:0; }
 .cinema-overlay-layer.hide-controls * { pointer-events:none; }
+.cinema-overlay-layer.hide-controls .rotate-btn { pointer-events:auto; opacity:0; }
 .video-player-wrapper:not(.fullscreen-mode) .cinema-overlay-layer { padding:8px 12px; }
 .video-player-wrapper:not(.fullscreen-mode) .cinema-btn-group { gap:6px; }
 #cinemaVideoTitle { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.video-source-item { width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border:none; border-radius:8px; background:transparent; color:#fff; font-size:13px; cursor:pointer; text-align:left; }
+.video-source-item { width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border:none; border-radius:8px; background:transparent; color:#fff; font-size:13px; cursor:pointer; text-align:left; touch-action:manipulation; }
 .video-source-item.active { background:rgba(255,255,255,0.14); font-weight:700; }
 .video-player-wrapper.fullscreen-mode.force-landscape { width:100vh !important; height:100vw !important; top:0 !important; left:100vw !important; right:auto !important; bottom:auto !important; transform-origin:0 0; transform:rotate(90deg); max-height:none !important; }
+.video-player-wrapper.fullscreen-mode.force-portrait video { max-width:min(100vw, 56.25vh) !important; margin:0 auto !important; border-left:1px solid rgba(255,255,255,0.15); border-right:1px solid rgba(255,255,255,0.15); }
 
 </style>
 </head>
@@ -2468,7 +2495,6 @@
           <div class="home-header-normal-row" id="homeHeaderNormalRow">
             <div>
               <div style="font-size:17px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;" id="homeDateHeading">jsgsMock</div>
-              <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-top:1px;" id="homeDateSub">今日考点 · 开始练习</div>
             </div>
             <div class="header-icons-row">
               <!-- 主题颜色切换按钮 -->
@@ -2535,11 +2561,18 @@
         <div class="banner-dots-row" id="bannerDotsRow"></div>
       </div>
 
-      <button class="home-video-entry" type="button" onclick="openTutorialVideos()">
-        <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-play"/></svg>
-        <span><strong>视频课程</strong><small>按科目观看 123 节课程</small></span>
-        <span aria-hidden="true">›</span>
-      </button>
+      <div class="home-dual-entry-grid">
+        <button class="home-video-entry" type="button" onclick="openTutorialVideos()">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-play"/></svg>
+          <span><strong>视频课程</strong><small>123 节名师精讲</small></span>
+          <span aria-hidden="true">›</span>
+        </button>
+        <button class="home-video-entry" type="button" id="homeKnowledgeEntryBtn" onclick="openKnowledgeReaderModal()">
+          <svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-textbook"/></svg>
+          <span><strong>考点精要</strong><small>EPUB 预览 · 讲义融合</small></span>
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
 
       <!-- 题库模式切换条 (2026官网最新真题 / 历年题库) -->
       <div class="bank-switch-wrap">
@@ -2650,15 +2683,25 @@
                     </button>
                   </div>
                   <div class="cinema-btn-group">
-                    <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
+                    <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="openSpeedMenu()">倍速</button>
                     <button class="cinema-text-btn" id="btnCinemaSource" onclick="openSourceMenu()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
-                    <button class="rotate-btn" id="btnCinemaRotate" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换">
+                    <button class="rotate-btn" id="btnCinemaRotate" onclick="toggleVideoOrientation(event)" aria-label="横竖屏切换" title="横竖屏切换">
                       <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg>
                     </button>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- 倍速选择菜单（点击打开，再次点击选项才会切换） -->
+            <div id="videoSpeedMenu" style="display:none;position:absolute;right:68px;bottom:56px;z-index:70;min-width:136px;background:rgba(18,18,18,0.96);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:6px;">
+              <div style="font-size:11px;color:#9ca3af;padding:6px 12px 4px;">选择播放倍速</div>
+              <button class="video-source-item" data-rate="0.75" onclick="setPlaybackRate(0.75)"><span>0.75x</span><span class="src-tag"></span></button>
+              <button class="video-source-item" data-rate="1" onclick="setPlaybackRate(1.0)"><span>1.0x</span><span class="src-tag"></span></button>
+              <button class="video-source-item" data-rate="1.25" onclick="setPlaybackRate(1.25)"><span>1.25x</span><span class="src-tag"></span></button>
+              <button class="video-source-item" data-rate="1.5" onclick="setPlaybackRate(1.5)"><span>1.5x</span><span class="src-tag"></span></button>
+              <button class="video-source-item" data-rate="2" onclick="setPlaybackRate(2.0)"><span>2.0x</span><span class="src-tag"></span></button>
             </div>
 
             <!-- 播放源菜单（点击打开，再次点击选项才会切换） -->
@@ -2681,15 +2724,11 @@
             </div>
           </div>
 
-          <!-- 播放器下方 Tab 导航栏 -->
+          <!-- 播放器下方 Tab 导航栏（已取消右侧视频源和倍速按钮） -->
           <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:12px;padding-bottom:2px;">
             <div style="display:flex;gap:24px;">
               <button class="inner-tab-btn active" id="tabBtnVideoPlay" onclick="switchVideoMainTab('play')" style="padding:8px 4px;font-size:15px;font-weight:800;border:none;background:transparent;border-bottom:3px solid var(--primary);border-radius:0;">视频</button>
               <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">考点大纲</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <button onclick="openSourceMenu()" id="btnQuickCdnSwitch" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="切换官方CDN或国内镜像加速">官方 CDN</button>
-              <button onclick="cyclePlaybackRate()" id="btnQuickSpeed" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="调整播放速度">1.0x</button>
             </div>
           </div>
 
@@ -2764,14 +2803,25 @@
             </div>
           </div>
 
-          <!-- Tab 内容 2：讲义与大纲 -->
+          <!-- Tab 内容 2：讲义与大纲（支持直接在线 EPUB 预览与做题联动） -->
           <div id="videoTabNotesContent" style="display:none;margin-top:14px;">
-            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px;">
-              <div style="font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:8px;">配套考点精要讲义</div>
-              <div style="font-size:13px;line-height:1.7;color:var(--text-sub);">
-                系统已为您内置完整《2026年高校教资考点精要融合手册》（包含高等教育学、心理学、师德、法规四科）。可在【设置】-【资料与题库下载】中一键下载 Word 与 Markdown 完整讲义进行离线复习。
+            <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <div style="font-size:14.5px;font-weight:800;color:var(--text-main);">配套考点精要讲义 (EPUB 在线预览)</div>
+                <span style="font-size:11px;background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:4px;font-weight:700;">Markdown 实时解析</span>
               </div>
-              <button class="bottom-btn primary" style="margin-top:12px;padding:6px 14px;font-size:12.5px;" onclick="openSettingsSection('resources')">前往下载完整讲义手册</button>
+              <div style="font-size:12.5px;line-height:1.65;color:var(--text-sub);margin-bottom:12px;">
+                直接以 EPUB 沉浸式电子书格式在线阅读 5 大科目核心考点、采分要点与命题陷阱，并支持在阅读中一键跳转对应真题实战练习：
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                <button class="bottom-btn primary" style="padding:8px 10px;font-size:12.5px;height:auto;" onclick="openVideoCourseSubjectEpub()">预览当前课程科目考点</button>
+                <button class="bottom-btn" style="padding:8px 10px;font-size:12.5px;height:auto;" onclick="openKnowledgeReaderModal('merged')">预览新旧全量融合全书</button>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="bottom-btn" style="flex:1;padding:6px 10px;font-size:12px;height:auto;" onclick="openKnowledgeReaderModal('official_2026')">2026官网新版考点</button>
+                <button class="bottom-btn" style="flex:1;padding:6px 10px;font-size:12px;height:auto;" onclick="openKnowledgeReaderModal('word_legacy')">历年真题版考点</button>
+                <button class="bottom-btn" style="padding:6px 10px;font-size:12px;height:auto;" onclick="switchBottomTab('settings');openSettingsSection('resources')">下载讲义</button>
+              </div>
             </div>
           </div>
         </section>
@@ -3586,18 +3636,22 @@
   </div>
 
   <!-- =======================================
-       全屏 EPUB 教材阅读器 (支持章节目录与全文考点检索)
+       全屏 EPUB 考点与教材阅读器 (支持 Markdown 实时解析、章节目录、全文检索与做题融合)
        ======================================= -->
   <div class="reader-modal-mask" id="textbookReaderModal">
     <header class="reader-header">
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
         <button class="tool-icon-btn" onclick="closeTextbookReader()" title="退出阅读">
           <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg>
         </button>
-        <span class="reader-title" id="readerBookTitle">高校核心教材</span>
+        <span class="reader-title" id="readerBookTitle">高校教资考点精要</span>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <button class="tool-icon-btn" onclick="toggleReaderSearch()" title="教材内考点搜索">
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <label class="tool-icon-btn" title="导入本地 Markdown (.md) 或 EPUB (.epub) 文件预览" style="cursor:pointer;width:auto;padding:0 8px;font-size:11px;font-weight:700;">
+          <span>导入</span>
+          <input type="file" id="importMdOrEpubInput" accept=".md,.markdown,.epub,.txt" style="display:none;" onchange="handleImportMdOrEpub(event)">
+        </label>
+        <button class="tool-icon-btn" onclick="toggleReaderSearch()" title="全书考点搜索">
           <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-search"/></svg>
         </button>
         <button class="tool-icon-btn" onclick="openReaderTocDrawer()" title="章节目录">
@@ -3608,10 +3662,27 @@
       </div>
     </header>
 
+    <!-- 讲义版本切换与五科速跳栏（考点板块与做题板块深度融合） -->
+    <div class="reader-subbar">
+      <div class="reader-pill-row" id="readerBookSwitchRow">
+        <button class="reader-pill active" id="readerBookBtn_official_2026" onclick="switchReaderHandbook('official_2026')">2026官网新版考点</button>
+        <button class="reader-pill" id="readerBookBtn_merged" onclick="switchReaderHandbook('merged')">新旧全量融合全书</button>
+        <button class="reader-pill" id="readerBookBtn_word_legacy" onclick="switchReaderHandbook('word_legacy')">历年题库考点</button>
+      </div>
+      <div class="reader-pill-row" id="readerSubjectFilterRow">
+        <button class="reader-pill active" data-sub="all" onclick="filterReaderBySubject('all')">全部章节</button>
+        <button class="reader-pill" data-sub="习近平总书记教育重要论述" onclick="filterReaderBySubject('习近平总书记教育重要论述')">习思想论述</button>
+        <button class="reader-pill" data-sub="高等教育学" onclick="filterReaderBySubject('高等教育学')">高等教育学</button>
+        <button class="reader-pill" data-sub="高校教师职业道德规范" onclick="filterReaderBySubject('高校教师职业道德规范')">职业道德</button>
+        <button class="reader-pill" data-sub="高等教育心理学" onclick="filterReaderBySubject('高等教育心理学')">教育心理学</button>
+        <button class="reader-pill" data-sub="高等教育法律与法规" onclick="filterReaderBySubject('高等教育法律与法规')">教育法规</button>
+      </div>
+    </div>
+
     <!-- 阅读器内全文考点搜索抽屉面板 -->
     <div class="reader-search-drawer" id="readerSearchDrawer">
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-        <input id="inBookSearchInput" placeholder="输入当前教材考点 (如: 教学原则, 认知结构)..." style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;" oninput="handleInBookSearch(this.value)">
+        <input id="inBookSearchInput" placeholder="输入考点关键字 (如: 立德树人, 教学原则, 学习迁移)..." style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--card-bg);color:var(--text-main);" oninput="handleInBookSearch(this.value)">
         <button class="text-name-btn" style="padding:6px 12px;font-size:12px;" onclick="toggleReaderSearch()">关闭</button>
       </div>
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;" id="readerSearchHitCount">输入考点关键字开始在全书搜索</div>
@@ -3622,7 +3693,7 @@
     <div class="modal-mask" id="readerTocModal" onclick="closeReaderTocDrawer(event)">
       <div class="modal-panel" onclick="event.stopPropagation()" style="max-height:75vh;overflow-y:auto;">
         <div class="modal-top-row">
-          <span class="modal-main-title">教材章节目录</span>
+          <span class="modal-main-title">EPUB 章节目录</span>
           <button class="modal-close-icon" onclick="closeReaderTocDrawer()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
         </div>
         <div id="readerTocList" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
@@ -3634,11 +3705,14 @@
       <!-- 动态章节 HTML 内容 -->
     </main>
 
-    <!-- 底部翻章与进度 -->
+    <!-- 底部翻章、进度与一键刷本科真题 -->
     <footer class="reader-footer-bar">
-      <button class="bottom-btn" style="padding:4px 14px;font-size:12px;" onclick="navReaderChapter(-1)">上一章</button>
-      <span id="readerProgressText">第 1 章 · 0%</span>
-      <button class="bottom-btn primary" style="padding:4px 14px;font-size:12px;" onclick="navReaderChapter(1)">下一章</button>
+      <button class="bottom-btn" style="padding:5px 12px;font-size:12px;height:auto;" onclick="navReaderChapter(-1)">上一章</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="readerProgressText" style="font-weight:700;">第 1 章</span>
+        <button class="sub-kp-btn" id="readerPracticeSubBtn" onclick="startPracticeFromReader()" title="立即练习当前章节所属科目的真题">刷本科真题 ›</button>
+      </div>
+      <button class="bottom-btn primary" style="padding:5px 12px;font-size:12px;height:auto;" onclick="navReaderChapter(1)">下一章</button>
     </footer>
   </div>
 
@@ -4655,8 +4729,10 @@
         allSubjectsData = legacyWordQuizData;
       }
       updateBankSwitcherUI();
+      _cachedDailyPoints = [];
+      _currentDailyPoint = null;
+      renderDailyPoint();
       renderSubjectList();
-      renderBannerCarousel();
       showToast(bankId === 'official_2026' ? "已切换至【2026官网最新真题】" : "已切换至【历年题库】");
     }
 
@@ -4810,12 +4886,6 @@
       if (userStore.customSubjects) {
         Object.assign(allSubjectsData, userStore.customSubjects);
       }
-
-      // 初始化首页日期
-      const now = new Date();
-      const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-      const subEl = document.getElementById("homeDateSub");
-      if (subEl) subEl.textContent = `${dateStr} · 每日一条答案解析`;
 
       renderDailyPoint();
       renderSubjectList();
@@ -5762,6 +5832,7 @@
     function openSourceMenu() {
       const menu = document.getElementById('videoSourceMenu');
       if (!menu) return;
+      closeSpeedMenu();
       const willShow = menu.style.display === 'none';
       menu.style.display = willShow ? 'block' : 'none';
       if (willShow) {
@@ -5793,11 +5864,6 @@
         return;
       }
       isVideoMirrorActive = useMirror;
-      const qBtn = document.getElementById('btnQuickCdnSwitch');
-      if (qBtn) {
-        qBtn.textContent = useMirror ? '国内加速' : '官方 CDN';
-        qBtn.classList.toggle('primary', useMirror);
-      }
       const cinemaSource = document.getElementById('btnCinemaSource');
       if (cinemaSource) cinemaSource.textContent = useMirror ? '源：加速' : '源：官方';
 
@@ -5817,19 +5883,52 @@
       setVideoSource(!isVideoMirrorActive);
     }
 
-    // 倍速切换
-    function cyclePlaybackRate() {
-      currentRateIdx = (currentRateIdx + 1) % playbackRates.length;
-      const rate = playbackRates[currentRateIdx];
+    // 倍速菜单：点击按钮弹出菜单，再次点击菜单项才切换倍速
+    function openSpeedMenu() {
+      const menu = document.getElementById('videoSpeedMenu');
+      if (!menu) return;
+      closeSourceMenu();
+      const willShow = menu.style.display === 'none';
+      menu.style.display = willShow ? 'block' : 'none';
+      if (willShow) {
+        refreshSpeedMenu();
+        showVideoControls(true);
+      }
+    }
+
+    function closeSpeedMenu() {
+      const menu = document.getElementById('videoSpeedMenu');
+      if (menu) menu.style.display = 'none';
+    }
+
+    function refreshSpeedMenu() {
+      const menu = document.getElementById('videoSpeedMenu');
+      if (!menu) return;
+      const currentRate = playbackRates[currentRateIdx] || 1.0;
+      menu.querySelectorAll('.video-source-item[data-rate]').forEach(btn => {
+        const r = parseFloat(btn.getAttribute('data-rate'));
+        const active = Math.abs(r - currentRate) < 0.01;
+        btn.classList.toggle('active', active);
+        const tag = btn.querySelector('.src-tag');
+        if (tag) tag.textContent = active ? '当前' : '';
+      });
+    }
+
+    function setPlaybackRate(rate) {
+      closeSpeedMenu();
+      const idx = playbackRates.findIndex(r => Math.abs(r - rate) < 0.01);
+      if (idx !== -1) currentRateIdx = idx;
       const player = document.getElementById('tutorialVideoPlayer');
       if (player) {
         player.playbackRate = rate;
       }
-      const qSpeed = document.getElementById('btnQuickSpeed');
-      if (qSpeed) qSpeed.textContent = `${rate}x`;
       const cinemaSpeed = document.getElementById('btnCinemaSpeed');
-      if (cinemaSpeed) cinemaSpeed.textContent = `${rate}x`;
+      if (cinemaSpeed) cinemaSpeed.textContent = rate === 1 ? '倍速' : `${rate}x`;
       showToast(`播放倍速：${rate}x`);
+    }
+
+    function cyclePlaybackRate() {
+      openSpeedMenu();
     }
 
     // 上下集切换
@@ -5886,6 +5985,10 @@
       if (useEl) {
         useEl.setAttribute('href', isCinemaFullscreen ? '#icon-fullscreen-exit' : '#icon-fullscreen');
       }
+      const rotBtn = document.getElementById('btnCinemaRotate');
+      if (rotBtn) {
+        rotBtn.classList.toggle('active', isCinemaFullscreen && isVideoLandscape);
+      }
     }
 
     function syncForcedLandscape() {
@@ -5895,12 +5998,26 @@
       if (!isManualOrientationOverride) {
         isVideoLandscape = getDeviceIsLandscape();
       }
-      const needForce = isCinemaFullscreen && isVideoLandscape && window.innerHeight > window.innerWidth;
-      container.classList.toggle('force-landscape', needForce);
+      const isPortraitViewport = window.innerHeight > window.innerWidth;
+      const needForceLandscape = isCinemaFullscreen && isVideoLandscape && isPortraitViewport;
+      const needForcePortrait = isCinemaFullscreen && !isVideoLandscape && !isPortraitViewport;
+      container.classList.toggle('force-landscape', needForceLandscape);
+      container.classList.toggle('force-portrait', needForcePortrait);
+      updateFullscreenBtnUI();
     }
 
+    let _lastOrientationTapAt = 0;
+    let _lastFullscreenTapAt = 0;
+
     // 右上角全屏按钮：进入或退出全屏播放，并自动获取当前设备方向
-    function toggleVideoFullscreen() {
+    function toggleVideoFullscreen(ev) {
+      if (ev) {
+        ev.stopPropagation();
+      }
+      const now = Date.now();
+      if (now - _lastFullscreenTapAt < 220) return;
+      _lastFullscreenTapAt = now;
+
       const container = document.getElementById('videoContainer');
       if (!container) return;
       isCinemaFullscreen = !isCinemaFullscreen;
@@ -5909,15 +6026,17 @@
       if (isCinemaFullscreen) {
         isManualOrientationOverride = false;
         isVideoLandscape = getDeviceIsLandscape();
+        syncForcedLandscape();
         const req = container.requestFullscreen ? container.requestFullscreen()
           : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
-        Promise.resolve(req).catch(() => {}).then(() => setTimeout(syncForcedLandscape, 300));
+        Promise.resolve(req).catch(() => {}).then(() => syncForcedLandscape());
       } else {
         isVideoLandscape = false;
         isManualOrientationOverride = false;
-        container.classList.remove('force-landscape');
+        container.classList.remove('force-landscape', 'force-portrait');
         toggleCinemaEpisodeDrawer(false);
         closeSourceMenu();
+        closeSpeedMenu();
         if (screen.orientation && screen.orientation.unlock) {
           try { screen.orientation.unlock(); } catch (e) {}
         }
@@ -5931,34 +6050,48 @@
       showVideoControls();
     }
 
-    // 右下角横竖切换按钮：仅在播放器内部显示，手动切换横屏与竖屏
-    function toggleVideoOrientation() {
+    // 右下角横竖切换按钮：零延迟立即响应，手动切换横屏与竖屏
+    function toggleVideoOrientation(ev) {
+      if (ev) {
+        ev.stopPropagation();
+      }
+      const now = Date.now();
+      if (now - _lastOrientationTapAt < 220) return;
+      _lastOrientationTapAt = now;
+
       const container = document.getElementById('videoContainer');
       if (!container) return;
       isManualOrientationOverride = true;
+
       if (!isCinemaFullscreen) {
         isCinemaFullscreen = true;
         isVideoLandscape = true;
         container.classList.add('fullscreen-mode');
         document.body.style.overflow = 'hidden';
+        // 零延迟立即同步旋转样式，无需等待异步全屏 Promise
+        syncForcedLandscape();
         const req = container.requestFullscreen ? container.requestFullscreen()
           : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
         Promise.resolve(req)
           .catch(() => {})
           .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
           .catch(() => {})
-          .then(() => setTimeout(syncForcedLandscape, 350));
+          .then(() => syncForcedLandscape());
+        showToast('已切换至横屏模式');
       } else {
         isVideoLandscape = !isVideoLandscape;
+        // 零延迟立即同步横竖样式
+        syncForcedLandscape();
         if (isVideoLandscape) {
           Promise.resolve(screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
             .catch(() => {})
-            .then(() => setTimeout(syncForcedLandscape, 200));
+            .then(() => syncForcedLandscape());
+          showToast('已切换至横屏模式');
         } else {
-          container.classList.remove('force-landscape');
           if (screen.orientation && screen.orientation.unlock) {
             try { screen.orientation.unlock(); } catch (e) {}
           }
+          showToast('已切换至竖屏模式');
         }
       }
       updateFullscreenBtnUI();
@@ -6015,6 +6148,7 @@
       if (drawer && drawer.style.display !== 'none') return;
       if (!player || player.paused) return;
       closeSourceMenu();
+      closeSpeedMenu();
       overlay.classList.add('hide-controls');
     }
 
@@ -6026,10 +6160,30 @@
       const hud = document.getElementById('videoGestureHud');
       if (!box || !player || box.dataset.gesture) return;
       box.dataset.gesture = '1';
-      const IGNORE = 'button, #cinemaProgressRail, #cinemaEpisodeDrawer, #videoSourceMenu';
+      const IGNORE = 'button, .rotate-btn, .cinema-ctrl-btn, .cinema-text-btn, #cinemaProgressRail, #cinemaEpisodeDrawer, #videoSourceMenu, #videoSpeedMenu';
       const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
       let g = null;
       let hudTimer = null;
+
+      // 为横竖切换按钮与全屏按钮绑定直通快速触控（防止移动端 touch-action:none 吞掉轻点）
+      const rotBtn = document.getElementById('btnCinemaRotate');
+      if (rotBtn && !rotBtn.dataset.fastTap) {
+        rotBtn.dataset.fastTap = '1';
+        rotBtn.addEventListener('touchend', (ev) => {
+          ev.stopPropagation();
+          if (ev.cancelable) ev.preventDefault();
+          toggleVideoOrientation(ev);
+        }, { passive: false });
+      }
+      const fsBtn = document.getElementById('btnCinemaFullscreen');
+      if (fsBtn && !fsBtn.dataset.fastTap) {
+        fsBtn.dataset.fastTap = '1';
+        fsBtn.addEventListener('touchend', (ev) => {
+          ev.stopPropagation();
+          if (ev.cancelable) ev.preventDefault();
+          toggleVideoFullscreen(ev);
+        }, { passive: false });
+      }
 
       function showHud(text) {
         hud.textContent = text;
@@ -6048,8 +6202,10 @@
           : { x: t.clientX - r.left, y: t.clientY - r.top, w: r.width, h: r.height };
       }
       function toggleControlsByTap() {
-        const menu = document.getElementById('videoSourceMenu');
-        if (menu && menu.style.display !== 'none') { closeSourceMenu(); return; }
+        const srcMenu = document.getElementById('videoSourceMenu');
+        if (srcMenu && srcMenu.style.display !== 'none') { closeSourceMenu(); return; }
+        const spdMenu = document.getElementById('videoSpeedMenu');
+        if (spdMenu && spdMenu.style.display !== 'none') { closeSpeedMenu(); return; }
         const overlay = document.getElementById('cinemaOverlayLayer');
         if (overlay.classList.contains('hide-controls')) showVideoControls();
         else if (player.paused) showVideoControls(true);
@@ -6241,6 +6397,444 @@
       });
     }
 
+    // ==========================================
+    // EPUB 考点阅读器与 Markdown 实时解析引擎 (考点板块与做题板块深度融合)
+    // ==========================================
+    let currentReadingBook = null;
+    let currentChapterIndex = 0;
+    let readerFontSize = 15;
+    let currentReaderBookKey = 'official_2026';
+    let currentReaderSubjectFilter = 'all';
+    const _parsedMarkdownBooksCache = {};
+
+    const HANDBOOK_SOURCES = {
+      official_2026: {
+        id: 'official_2026',
+        title: '2026官网新版考点精要',
+        url: './高校教资考点精要_2026官网新版题库.md'
+      },
+      merged: {
+        id: 'merged',
+        title: '新旧全量融合考点全书',
+        url: './高校教资考点精要_新旧全量融合版.md'
+      },
+      word_legacy: {
+        id: 'word_legacy',
+        title: '历年官方真题考点精要',
+        url: './高校教资考点精要_旧版题库.md'
+      }
+    };
+
+    function formatMarkdownInline(text, subjectName) {
+      let s = escapeHtml(text || '');
+      // 加粗 **...**
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // 采分关键词高亮 【...】 (排除纯标题前缀)
+      s = s.replace(/【([^】]{1,36})】/g, '<span class="epub-key-term">【$1】</span>');
+      return s;
+    }
+
+    function renderTrueQuestionIndexLine(lineText, subjectName) {
+      // 解析例如：> **【真题全覆盖索引】**：共覆盖 14 道真题（单选题#1、单选题#24、多选题#7、判断题#14）
+      const clean = lineText.replace(/^>\s*/, '').trim();
+      const subEsc = escapeHtml(subjectName || '');
+      const chipHtml = escapeHtml(clean)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(单选题|多选题|判断题)#(\d+)/g, (m, tName, num) => {
+          return `<span class="epub-q-chip" onclick="jumpReaderToSpecificQuestion('${subEsc}','${tName}',${num})" title="点击直接做此题">${m}</span>`;
+        });
+      return `<div class="epub-index-box">${chipHtml}</div>`;
+    }
+
+    function convertChapterMarkdownToEpubHtml(lines, chapterTitle, subjectName) {
+      let html = '';
+      if (subjectName) {
+        html += `<div class="epub-chapter-badge">${escapeHtml(subjectName)}</div>`;
+      }
+      html += `<h2 class="epub-chapter-title">${escapeHtml(chapterTitle)}</h2>`;
+
+      let inKpCard = false;
+      let inList = false;
+      let inTable = false;
+      let tableRows = [];
+
+      const closeList = () => {
+        if (inList) { html += '</ul>'; inList = false; }
+      };
+      const closeTable = () => {
+        if (!inTable) return;
+        inTable = false;
+        if (tableRows.length > 0) {
+          html += '<table class="epub-table">';
+          tableRows.forEach((r, rIdx) => {
+            const cells = r.split('|').slice(1, -1).map(c => c.trim());
+            if (rIdx === 1 && cells.every(c => /^[-:]+$/.test(c))) return;
+            const tag = rIdx === 0 ? 'th' : 'td';
+            html += '<tr>' + cells.map(c => `<${tag}>${formatMarkdownInline(c, subjectName)}</${tag}>`).join('') + '</tr>';
+          });
+          html += '</table>';
+        }
+        tableRows = [];
+      };
+      const closeKpCard = () => {
+        closeList();
+        closeTable();
+        if (inKpCard) { html += '</div>'; inKpCard = false; }
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i];
+        const trimmed = raw.trim();
+        if (!trimmed || trimmed === '---') {
+          closeList();
+          closeTable();
+          continue;
+        }
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          closeList();
+          inTable = true;
+          tableRows.push(trimmed);
+          continue;
+        } else if (inTable) {
+          closeTable();
+        }
+
+        if (trimmed.startsWith('### ')) {
+          closeKpCard();
+          inKpCard = true;
+          const kpTitle = trimmed.replace(/^###\s+/, '');
+          html += `<div class="epub-kp-card"><div class="epub-kp-title"><span>${formatMarkdownInline(kpTitle, subjectName)}</span></div>`;
+        } else if (trimmed.startsWith('#### ')) {
+          closeList();
+          const subTitle = trimmed.replace(/^####\s+/, '').replace(/^【|】$/g, '');
+          html += `<div class="epub-sub-heading">${escapeHtml(subTitle)}</div>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          if (!inList) { html += '<ul class="epub-list">'; inList = true; }
+          const itemText = trimmed.replace(/^[-*]\s+/, '');
+          html += `<li>${formatMarkdownInline(itemText, subjectName)}</li>`;
+        } else if (trimmed.startsWith('>')) {
+          closeList();
+          html += renderTrueQuestionIndexLine(trimmed, subjectName);
+        } else {
+          closeList();
+          html += `<p>${formatMarkdownInline(trimmed, subjectName)}</p>`;
+        }
+      }
+      closeKpCard();
+      return html;
+    }
+
+    function parseMarkdownToEpubBook(mdText, bookMeta) {
+      const lines = String(mdText || '').split(/\r?\n/);
+      const chapters = [];
+      let currentSubject = '';
+      let curChapterTitle = '';
+      let curChapterLines = [];
+
+      const flushChapter = () => {
+        if (!curChapterTitle && curChapterLines.length === 0) return;
+        const title = curChapterTitle || '考点概览';
+        // 跳过纯目录大纲章节
+        if (title === '目录大纲') {
+          curChapterTitle = '';
+          curChapterLines = [];
+          return;
+        }
+        const displayTitle = currentSubject ? `[${currentSubject}] ${title}` : title;
+        const htmlContent = convertChapterMarkdownToEpubHtml(curChapterLines, title, currentSubject);
+        const plainText = curChapterLines.join('\n');
+        chapters.push({
+          title: displayTitle,
+          shortTitle: title,
+          subject: currentSubject || '综合考点',
+          content: htmlContent,
+          plainText
+        });
+        curChapterTitle = '';
+        curChapterLines = [];
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith('# ')) {
+          const h1 = line.replace(/^#\s+/, '').trim();
+          if (h1.startsWith('【科目】')) {
+            flushChapter();
+            currentSubject = h1.replace(/^【科目】\s*/, '').trim();
+          } else if (!curChapterTitle && chapters.length === 0 && !mdText.includes('# 【科目】')) {
+            flushChapter();
+            curChapterTitle = h1;
+          }
+        } else if (line.startsWith('## ')) {
+          flushChapter();
+          curChapterTitle = line.replace(/^##\s+/, '').trim();
+        } else {
+          if (curChapterTitle) {
+            curChapterLines.push(line);
+          }
+        }
+      }
+      flushChapter();
+
+      if (chapters.length === 0 && mdText.trim()) {
+        chapters.push({
+          title: bookMeta.title || '全文预览',
+          shortTitle: bookMeta.title || '全文预览',
+          subject: '综合考点',
+          content: convertChapterMarkdownToEpubHtml(lines, bookMeta.title || '考点预览', ''),
+          plainText: mdText
+        });
+      }
+
+      return {
+        id: bookMeta.id || 'md_book',
+        title: bookMeta.title || '高校教资考点精要',
+        allChapters: chapters,
+        chapters: chapters
+      };
+    }
+
+    async function loadMarkdownBook(bookKey) {
+      if (_parsedMarkdownBooksCache[bookKey]) {
+        return _parsedMarkdownBooksCache[bookKey];
+      }
+      const meta = HANDBOOK_SOURCES[bookKey] || HANDBOOK_SOURCES.official_2026;
+      const bodyEl = document.getElementById('readerContentBody');
+      if (bodyEl) {
+        bodyEl.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--text-muted);font-size:13px;">正在解析《${escapeHtml(meta.title)}》Markdown 章节结构...</div>`;
+      }
+      const resp = await fetch(meta.url);
+      if (!resp.ok) throw new Error(`加载讲义失败 (${resp.status})`);
+      const mdText = await resp.text();
+      const book = parseMarkdownToEpubBook(mdText, meta);
+      _parsedMarkdownBooksCache[bookKey] = book;
+      return book;
+    }
+
+    function updateReaderTopBarsUI() {
+      const bookRow = document.getElementById('readerBookSwitchRow');
+      if (bookRow) {
+        bookRow.querySelectorAll('.reader-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.id === `readerBookBtn_${currentReaderBookKey}`);
+        });
+      }
+      const subRow = document.getElementById('readerSubjectFilterRow');
+      if (subRow) {
+        subRow.querySelectorAll('.reader-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-sub') === currentReaderSubjectFilter);
+        });
+      }
+    }
+
+    function renderCurrentChapter() {
+      if (!currentReadingBook || !currentReadingBook.chapters || currentReadingBook.chapters.length === 0) return;
+      if (currentChapterIndex < 0) currentChapterIndex = 0;
+      if (currentChapterIndex >= currentReadingBook.chapters.length) {
+        currentChapterIndex = currentReadingBook.chapters.length - 1;
+      }
+      const ch = currentReadingBook.chapters[currentChapterIndex];
+      const titleEl = document.getElementById('readerBookTitle');
+      if (titleEl) titleEl.textContent = currentReadingBook.title;
+
+      const body = document.getElementById('readerContentBody');
+      if (body) {
+        body.style.fontSize = `${readerFontSize}px`;
+        body.innerHTML = ch.content;
+        body.scrollTop = 0;
+      }
+
+      const prog = document.getElementById('readerProgressText');
+      if (prog) {
+        prog.textContent = `第 ${currentChapterIndex + 1} / ${currentReadingBook.chapters.length} 章`;
+      }
+
+      const pracBtn = document.getElementById('readerPracticeSubBtn');
+      if (pracBtn) {
+        const subName = ch.subject && ch.subject !== '综合考点' ? ch.subject : '';
+        pracBtn.textContent = subName ? `练《${subName.slice(0, 4)}》真题 ›` : '去刷真题 ›';
+      }
+      updateReaderTopBarsUI();
+    }
+
+    function navReaderChapter(delta) {
+      if (!currentReadingBook || !currentReadingBook.chapters.length) return;
+      const next = currentChapterIndex + delta;
+      if (next < 0) {
+        showToast('已经是第一章了');
+        return;
+      }
+      if (next >= currentReadingBook.chapters.length) {
+        showToast('已经是最后一章了');
+        return;
+      }
+      currentChapterIndex = next;
+      renderCurrentChapter();
+    }
+
+    function closeTextbookReader() {
+      document.getElementById('textbookReaderModal')?.classList.remove('open');
+      document.getElementById('readerSearchDrawer')?.classList.remove('open');
+      document.getElementById('readerTocModal')?.classList.remove('open');
+    }
+
+    async function openKnowledgeReaderModal(bookKey, targetSubject = 'all', searchKeyword = '') {
+      const modal = document.getElementById('textbookReaderModal');
+      if (modal) modal.classList.add('open');
+
+      const effectiveKey = bookKey || (activeBankId === 'word_legacy' ? 'word_legacy' : 'official_2026');
+      currentReaderBookKey = effectiveKey;
+      try {
+        const book = await loadMarkdownBook(effectiveKey);
+        currentReadingBook = {
+          ...book,
+          chapters: [...book.allChapters]
+        };
+        filterReaderBySubject(targetSubject || 'all', searchKeyword);
+      } catch (err) {
+        const bodyEl = document.getElementById('readerContentBody');
+        if (bodyEl) {
+          bodyEl.innerHTML = `<div style="padding:32px 16px;text-align:center;color:var(--text-muted);">暂未读取到在线 Markdown 讲义 (${escapeHtml(err.message)})，可点击右上角【导入】选择本地 .md 或 .epub 文件预览。</div>`;
+        }
+      }
+    }
+
+    async function switchReaderHandbook(bookKey) {
+      await openKnowledgeReaderModal(bookKey, currentReaderSubjectFilter);
+    }
+
+    function filterReaderBySubject(subName, searchKeyword = '') {
+      if (!currentReadingBook || !currentReadingBook.allChapters) return;
+      currentReaderSubjectFilter = subName || 'all';
+      if (currentReaderSubjectFilter === 'all') {
+        currentReadingBook.chapters = [...currentReadingBook.allChapters];
+      } else {
+        const filtered = currentReadingBook.allChapters.filter(c =>
+          c.subject === currentReaderSubjectFilter ||
+          c.subject.includes(currentReaderSubjectFilter) ||
+          currentReaderSubjectFilter.includes(c.subject)
+        );
+        currentReadingBook.chapters = filtered.length > 0 ? filtered : [...currentReadingBook.allChapters];
+      }
+      currentChapterIndex = 0;
+
+      if (searchKeyword) {
+        const kw = searchKeyword.trim();
+        const matchIdx = currentReadingBook.chapters.findIndex(c =>
+          c.shortTitle.includes(kw) || (c.plainText && c.plainText.includes(kw))
+        );
+        if (matchIdx !== -1) currentChapterIndex = matchIdx;
+      }
+      renderCurrentChapter();
+
+      if (searchKeyword) {
+        const body = document.getElementById('readerContentBody');
+        if (body) {
+          const safeKw = searchKeyword.trim().slice(0, 14);
+          if (safeKw.length >= 2) {
+            const regex = new RegExp(safeKw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            body.innerHTML = body.innerHTML.replace(regex, m => `<mark class="highlight-search">${m}</mark>`);
+            const mark = body.querySelector('mark');
+            if (mark) setTimeout(() => mark.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+          }
+        }
+      }
+    }
+
+    // 从首页科目卡片直接打开对应科目的 EPUB 考点
+    function openSubjectKnowledgeEpub(sub, evt) {
+      if (evt) evt.stopPropagation();
+      const bookKey = activeBankId === 'word_legacy' ? 'word_legacy' : 'official_2026';
+      openKnowledgeReaderModal(bookKey, sub);
+    }
+
+    // 从视频课程页的“考点大纲”一键预览当前视频科目的 EPUB 考点
+    function openVideoCourseSubjectEpub() {
+      const map = ['高等教育学', '高等教育心理学', '高校教师职业道德规范', '高等教育法律与法规', '习近平总书记教育重要论述'];
+      const sub = map[currentCourseIndex] || '高等教育学';
+      openSubjectKnowledgeEpub(sub);
+    }
+
+    // 从做题页面（#quizView）一键打开当前题目所属科目与考点的 EPUB 预览
+    function openQuizCurrentKnowledgeEpub() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) {
+        openKnowledgeReaderModal();
+        return;
+      }
+      const sub = q.subject || currentSubject || 'all';
+      const kw = (q.knowledgePoint || '').replace(/^第\d+章\s*/, '').split(/[：:·\s]/)[0] || '';
+      const bookKey = activeBankId === 'word_legacy' ? 'word_legacy' : 'official_2026';
+      openKnowledgeReaderModal(bookKey, sub, kw);
+    }
+
+    // 从 EPUB 阅读器一键进入当前章节所属科目的真题刷题
+    function startPracticeFromReader() {
+      if (!currentReadingBook || !currentReadingBook.chapters[currentChapterIndex]) return;
+      const ch = currentReadingBook.chapters[currentChapterIndex];
+      let targetSub = ch.subject;
+      const availableSubs = Object.keys(allSubjectsData);
+      if (!availableSubs.includes(targetSub)) {
+        targetSub = availableSubs.find(s => s.includes(targetSub) || targetSub.includes(s)) || availableSubs[0];
+      }
+      if (!targetSub) return;
+      closeTextbookReader();
+      continueSubjectDirect(targetSub);
+    }
+
+    // 从 EPUB 阅读器内点击具体题号（如 单选题#1）直接跳转到做题界面练习该题
+    function jumpReaderToSpecificQuestion(subjectName, typeLabel, num) {
+      const typeMap = { '单选题': 'single', '多选题': 'multi', '判断题': 'judge' };
+      const qType = typeMap[typeLabel] || 'single';
+      const availableSubs = Object.keys(allSubjectsData);
+      const sub = availableSubs.find(s => s === subjectName || s.includes(subjectName) || subjectName.includes(s)) || availableSubs[0];
+      if (!sub || !allSubjectsData[sub]) return;
+
+      const list = allSubjectsData[sub];
+      const targetQ = list.find(q => (q.type === qType || q.typeName === typeLabel) && Number(q.num) === Number(num))
+        || list.find(q => Number(q.num) === Number(num));
+      if (!targetQ) {
+        showToast('未在当前题库检索到该编号题目，为您打开本科练习');
+        closeTextbookReader();
+        continueSubjectDirect(sub);
+        return;
+      }
+      closeTextbookReader();
+      currentSubject = sub;
+      activeQuestions = [targetQ];
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      openQuizView();
+      showToast(`已定位至：${sub} ${typeLabel}#${num}`);
+    }
+
+    // 支持本地导入 .md / .markdown / .txt 或 .epub 文件并在 EPUB 阅读器中预览
+    async function handleImportMdOrEpub(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const name = file.name || '';
+      if (/\.epub$/i.test(name)) {
+        await handleImportLocalEpub(event);
+        event.target.value = '';
+        return;
+      }
+      try {
+        const text = await file.text();
+        const title = name.replace(/\.(md|markdown|txt)$/i, '');
+        const book = parseMarkdownToEpubBook(text, { id: 'custom_md_' + Date.now(), title });
+        currentReaderBookKey = 'custom';
+        currentReaderSubjectFilter = 'all';
+        currentReadingBook = book;
+        currentChapterIndex = 0;
+        document.getElementById('textbookReaderModal')?.classList.add('open');
+        renderCurrentChapter();
+        showToast(`已成功解析 Markdown：《${title}》(${book.chapters.length}章)`);
+      } catch (e) {
+        alert('解析 Markdown 文件失败：' + (e.message || e));
+      } finally {
+        event.target.value = '';
+      }
+    }
+
     function adjustReaderFontSize(delta) {
       readerFontSize = Math.min(24, Math.max(13, readerFontSize + delta));
       const body = document.getElementById("readerContentBody");
@@ -6423,8 +7017,10 @@
         if (!userStore.customTextbooks) userStore.customTextbooks = [];
         userStore.customTextbooks.unshift(newBook);
         saveUserStore();
-        renderTextbookCards();
-        openTextbookReader(newBook.id);
+        currentReadingBook = { ...newBook, allChapters: newBook.chapters };
+        currentChapterIndex = 0;
+        document.getElementById("textbookReaderModal")?.classList.add("open");
+        renderCurrentChapter();
         showToast(`成功解析并加载《${bookTitle}》！`);
       } catch (err) {
         console.error("解析本地 EPUB 失败", err);
@@ -6517,9 +7113,15 @@
               </div>
             </div>
           </div>
-          <div class="sub-right-btn" onclick="handleSubjectCardClick('${sub}', event)">
-            <span>${actionText}</span>
-            <span>›</span>
+          <div class="sub-actions-group">
+            <button type="button" class="sub-kp-btn" onclick="openSubjectKnowledgeEpub('${sub}', event)" title="以 EPUB 模式预览本科目核心考点讲义">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><use href="#icon-textbook"/></svg>
+              <span>考点</span>
+            </button>
+            <div class="sub-right-btn" onclick="handleSubjectCardClick('${sub}', event)">
+              <span>${actionText}</span>
+              <span>›</span>
+            </div>
           </div>
         `;
         card.onclick = (e) => handleSubjectCardClick(sub, e);
@@ -7133,6 +7735,10 @@
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
             ${badgeHtml}
+            <button type="button" class="sub-kp-btn" style="padding:2px 8px;font-size:11px;" onclick="openQuizCurrentKnowledgeEpub()" title="在 EPUB 阅读器中对照查看本题关联考点">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-textbook"/></svg>
+              <span>看考点</span>
+            </button>
           </div>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
         </div>
