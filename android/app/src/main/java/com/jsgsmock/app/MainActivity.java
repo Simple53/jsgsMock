@@ -1,4 +1,4 @@
-package com.file2quiz.app;
+package com.jsgsmock.app;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

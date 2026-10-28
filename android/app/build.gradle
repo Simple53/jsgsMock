@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.file2quiz.app'
+    namespace 'com.jsgsmock.app'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.file2quiz.app"
+        applicationId "com.jsgsmock.app"
         minSdk 21
         targetSdk 34
         versionCode 19

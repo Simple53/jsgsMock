@@ -2226,6 +2226,35 @@
   background: rgba(255,255,255,0.15);
 }
 
+
+/* 充满整排的课程切换栏 */
+.video-course-nav-full {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  margin: 12px 0 14px;
+}
+.video-course-tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 8px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.video-course-tab-item.active {
+  background: rgba(29, 78, 216, 0.08) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  font-weight: 800 !important;
+}
+
 </style>
 </head>
 <body>
@@ -2484,18 +2513,16 @@
         <span aria-hidden="true">›</span>
       </button>
 
-      <!-- 题库模式切换条 (2026官网全真模拟题库 / 历年官方真题库) -->
+      <!-- 题库模式切换条 (2026官网最新真题 / 历年题库) -->
       <div class="bank-switch-wrap">
         <div class="bank-switch-segmented">
           <button class="bank-switch-btn active" id="btnBank_official_2026" onclick="switchActiveBank('official_2026')">
             <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-sparkles"/></svg>
-            <span>2026官网全真模拟</span>
-            <span class="sub-new-pill" id="badgeBankOfficial" style="background:#ef4444;color:#fff;border-radius:6px;padding:1px 5px;font-size:10px;">最新</span>
+            <span>2026官网最新真题</span>
           </button>
           <button class="bank-switch-btn" id="btnBank_word_legacy" onclick="switchActiveBank('word_legacy')">
             <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-book"/></svg>
-            <span>历年官方真题库</span>
-            <span class="sub-new-pill" id="badgeBankLegacy" style="background:var(--border);color:var(--text-muted);border-radius:6px;padding:1px 5px;font-size:10px;">前期</span>
+            <span>历年题库</span>
           </button>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:6px;padding:0 2px;">
@@ -2542,9 +2569,14 @@
 
           <!-- 播放器核心窗口（支持竖屏常规与全屏横屏影院模式） -->
           <div id="videoContainer" class="video-player-wrapper">
-            <!-- 播放器左上角返回按钮（图2样式） -->
+            <!-- 播放器左上角返回按钮 -->
             <button class="video-corner-back-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+
+            <!-- 播放器右上角横竖转换按钮（横竖方框叠加 SVG 图标） -->
+            <button class="video-corner-back-btn" style="left:auto;right:10px;" onclick="toggleVideoOrientation()" aria-label="横竖转换" title="横竖屏转换">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
             </button>
 
             <!-- 视频标签 -->
@@ -2558,35 +2590,36 @@
 
             <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
             <div id="cinemaOverlayLayer" class="cinema-overlay-layer" style="display:none;">
-              <!-- 顶部控制栏（左侧返回与标题，右侧状态） -->
+              <!-- 顶部控制栏（左侧返回与标题，右侧横竖转换/时间） -->
               <div class="cinema-top-bar">
                 <div style="display:flex;align-items:center;gap:10px;">
-                  <button class="cinema-ctrl-btn" onclick="toggleCinemaFullscreen()" aria-label="退出全屏" style="padding:4px;">
+                  <button class="cinema-ctrl-btn" onclick="toggleVideoOrientation()" aria-label="退出全屏" style="padding:4px;">
                     <svg class="svg-icon" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                   </button>
                   <span id="cinemaVideoTitle" style="font-size:14px;font-weight:700;letter-spacing:0.5px;"></span>
                 </div>
                 <div style="display:flex;align-items:center;gap:14px;font-size:12px;">
                   <span id="cinemaClockDisplay">09:15</span>
-                  <button class="cinema-ctrl-btn" onclick="toggleCinemaFullscreen()" title="切换全屏">
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path fill="currentColor" d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                  <!-- 横竖转换图标 -->
+                  <button class="cinema-ctrl-btn" onclick="toggleVideoOrientation()" title="横竖屏转换">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
                   </button>
                 </div>
               </div>
 
-              <!-- 底部控制面板（图1底部结构） -->
+              <!-- 底部控制面板（支持拖动进度条，去除片头片尾） -->
               <div class="cinema-bottom-panel">
-                <!-- 进度条行：00:00:32 / 进度滑块 / 00:47:39 -->
+                <!-- 进度条行：支持点击与顺滑触摸/拖拽 -->
                 <div class="cinema-progress-wrapper">
                   <span id="cinemaCurTimeText">00:00:00</span>
-                  <div class="cinema-progress-rail" id="cinemaProgressRail" onclick="seekCinemaVideo(event)">
+                  <div class="cinema-progress-rail" id="cinemaProgressRail">
                     <div class="cinema-progress-current" id="cinemaProgressFill"></div>
                     <div class="cinema-progress-thumb" id="cinemaProgressThumb"></div>
                   </div>
                   <span id="cinemaTotalTimeText">00:00:00</span>
                 </div>
 
-                <!-- 控制按钮行（左侧播放/下一集/音量；右侧片头尾/倍速/播放源/选集） -->
+                <!-- 控制按钮行（去除片头/尾按钮，保留播放、下一集、音量、倍速、播放源、选集） -->
                 <div class="cinema-btns-row">
                   <div class="cinema-btn-group">
                     <button class="cinema-ctrl-btn" id="btnCinemaPlayPause" onclick="togglePlayPause()" aria-label="播放/暂停">
@@ -2600,7 +2633,6 @@
                     </button>
                   </div>
                   <div class="cinema-btn-group">
-                    <button class="cinema-text-btn" onclick="skipVideoIntro()" title="跳过片头60秒">片头/尾</button>
                     <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
                     <button class="cinema-text-btn" id="btnCinemaSource" onclick="toggleVideoCdnMirror()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
@@ -2619,32 +2651,43 @@
             </div>
           </div>
 
-          <!-- 播放器下方 Tab 导航栏（图2） -->
+          <!-- 播放器下方 Tab 导航栏 -->
           <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-top:12px;padding-bottom:2px;">
             <div style="display:flex;gap:24px;">
               <button class="inner-tab-btn active" id="tabBtnVideoPlay" onclick="switchVideoMainTab('play')" style="padding:8px 4px;font-size:15px;font-weight:800;border:none;background:transparent;border-bottom:3px solid var(--primary);border-radius:0;">视频</button>
               <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">考点大纲</button>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <span id="badgeCurrentCdn" style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:4px;font-weight:700;">官方 CDN</span>
-              <button onclick="toggleCinemaFullscreen()" title="横屏全屏播放" style="border:none;background:transparent;cursor:pointer;color:var(--text-main);padding:4px;display:flex;align-items:center;">
-                <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <button onclick="toggleVideoCdnMirror()" id="btnQuickCdnSwitch" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="切换官方CDN或国内镜像加速">官方 CDN</button>
+              <button onclick="cyclePlaybackRate()" id="btnQuickSpeed" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="调整播放速度">1.0x</button>
+              <!-- 快捷横竖转换按钮 -->
+              <button onclick="toggleVideoOrientation()" title="横竖屏转换" style="border:none;background:transparent;cursor:pointer;color:var(--text-main);padding:4px;display:flex;align-items:center;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
               </button>
             </div>
           </div>
 
-          <!-- Tab 内容 1：视频播放核心区（图2主体） -->
+          <!-- 课程切换栏：放在视频/考点大纲下方，占满整排！ -->
+          <div class="video-course-nav-full" id="videoCourseNavFull">
+            <button class="video-course-tab-item active" onclick="switchCourseGroup(0)">高等教育学</button>
+            <button class="video-course-tab-item" onclick="switchCourseGroup(1)">心理学</button>
+            <button class="video-course-tab-item" onclick="switchCourseGroup(2)">职业道德</button>
+            <button class="video-course-tab-item" onclick="switchCourseGroup(3)">教育法规</button>
+            <button class="video-course-tab-item" onclick="switchCourseGroup(4)">教学实践</button>
+          </div>
+
+          <!-- Tab 内容 1：视频播放核心区 -->
           <div id="videoTabPlayContent">
-            <!-- 课程大标题与简介折叠入口（图2） -->
-            <div style="margin-top:14px;padding:2px 4px;">
+            <!-- 课程大标题与简介折叠入口 -->
+            <div style="margin-top:4px;padding:2px 4px;">
               <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div id="videoCourseMainTitle" style="font-size:19px;font-weight:800;color:var(--text-main);letter-spacing:0.3px;">高等教育学</div>
+                <div id="videoCourseMainTitle" style="font-size:18px;font-weight:800;color:var(--text-main);letter-spacing:0.3px;">高等教育学</div>
                 <button onclick="toggleCourseIntro()" style="border:none;background:transparent;cursor:pointer;font-size:12.5px;color:var(--text-muted);display:flex;align-items:center;gap:2px;">
                   <span>简介</span>
                   <span aria-hidden="true">›</span>
                 </button>
               </div>
-              <div id="videoCourseSubMeta" style="font-size:12px;color:var(--text-muted);margin-top:4px;">2026统编版 / 高校教资官方精讲 / 共 28 节</div>
+              <div id="videoCourseSubMeta" style="font-size:12px;color:var(--text-muted);margin-top:3px;">2026统编版 / 高校教资官方精讲 / 共 28 节</div>
               
               <!-- 展开的简介详情 -->
               <div id="videoCourseIntroBox" style="display:none;margin-top:10px;padding:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;font-size:12.5px;line-height:1.6;color:var(--text-sub);">
@@ -2652,70 +2695,31 @@
               </div>
             </div>
 
-            <!-- 4 个核心功能图标按钮行（严格复刻图2的换源、倍速、收藏、分享） -->
-            <div class="video-action-grid-card">
-              <!-- 1. 换源 -->
-              <button class="video-act-item" onclick="toggleVideoCdnMirror()" title="切换播放源">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
-                <span class="title">换源</span>
-                <span class="status" id="labelActionSource">官方线路</span>
-              </button>
-              <!-- 2. 倍速 -->
-              <button class="video-act-item" onclick="cyclePlaybackRate()" title="切换倍速">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.28-10.43zM10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/></svg>
-                <span class="title">倍速</span>
-                <span class="status" id="labelActionSpeed">1.0x</span>
-              </button>
-              <!-- 3. 收藏 -->
-              <button class="video-act-item" onclick="toggleFavoriteCurrentLesson()" title="收藏本集">
-                <svg class="svg-icon" id="iconActionFav" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                <span class="title" id="labelActionFav">收藏</span>
-                <span class="status">加入错题本</span>
-              </button>
-              <!-- 4. 分享 -->
-              <button class="video-act-item" onclick="shareCurrentLesson()" title="复制直达链接">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                <span class="title">分享</span>
-                <span class="status">复制集链接</span>
-              </button>
-            </div>
-
-            <!-- 选集区（图2精髓部分） -->
-            <div style="margin-top:16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <!-- 选集区 -->
+            <div style="margin-top:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                 <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-size:16px;font-weight:800;color:var(--text-main);">选集</span>
+                  <span style="font-size:15px;font-weight:800;color:var(--text-main);">选集</span>
                   <span id="labelCourseCompletion" style="font-size:12px;color:var(--text-muted);">已完结</span>
                 </div>
-                <select id="selectCourseGroup" onchange="switchCourseBySelect(this.value)" style="border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text-main);padding:4px 8px;font-size:12px;outline:none;">
-                  <option value="0">高等教育学</option>
-                  <option value="1">高等教育心理学</option>
-                  <option value="2">高校教师职业道德</option>
-                  <option value="3">高等教育法规概论</option>
-                  <option value="4">教学实践与试讲精析</option>
-                </select>
               </div>
 
-              <!-- 集数卡片横向可滑动行（图2样式） -->
+              <!-- 集数卡片横向可滑动行 -->
               <div class="video-ep-scroll-row" id="videoEpisodeTrack"></div>
 
               <!-- 当前播放小节名称提示 -->
-              <div id="videoCurrentPlayingSubTitle" style="font-size:13px;font-weight:700;color:var(--text-main);margin-top:6px;padding:6px 2px;"></div>
+              <div id="videoCurrentPlayingSubTitle" style="font-size:13px;font-weight:700;color:var(--text-main);margin-top:6px;padding:4px 2px;"></div>
             </div>
 
-            <!-- 详情介绍区（完全还原图2） -->
-            <div style="margin-top:24px;border-top:1px dashed var(--border);padding-top:16px;">
-              <div style="text-align:center;font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:1px;margin-bottom:14px;">
-                ◀◀ 详情介绍 ▶▶
-              </div>
-
+            <!-- 详情卡片（已去除“详情介绍”文字和箭头） -->
+            <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:14px;">
               <!-- 演职人员 / 编著主讲 -->
-              <div style="margin-bottom:16px;">
-                <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
+              <div style="margin-bottom:14px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
                   <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
                   <span>教研与主讲团队</span>
                 </div>
-                <div style="font-size:13px;line-height:1.6;color:var(--text-sub);">
+                <div style="font-size:12.5px;line-height:1.6;color:var(--text-sub);">
                   统编教材：全国高校教师资格认定指导中心 组编<br>
                   主讲专家：陈何芳、王一军、宋华明、刘小强等高校博导、教授团队全程领衔主讲
                 </div>
@@ -2723,11 +2727,11 @@
 
               <!-- 课程核心大纲介绍 -->
               <div>
-                <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;color:var(--text-main);margin-bottom:6px;">
                   <span style="width:3px;height:14px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
                   <span>课程大纲与重点</span>
                 </div>
-                <div style="font-size:13px;line-height:1.7;color:var(--text-sub);" id="videoCourseFullOutline">
+                <div style="font-size:12.5px;line-height:1.7;color:var(--text-sub);" id="videoCourseFullOutline">
                   涵盖高校教育基本规律、大学三大职能演进、现代高校教学与科研原则、教师专业化发展与考核评价。系统剖析历年教资真题高频命题点。
                 </div>
               </div>
@@ -3064,7 +3068,7 @@
 
         <div data-settings-section="backup" style="border:1px solid var(--border);border-radius:12px;padding:14px;">
           <div style="font-size:14px;font-weight:700;">学习记录备份与恢复</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">导入旧 file2quiz 的备份文件，合并做题、错题、收藏与打卡记录；不包含 AI 密钥。</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5;">导入备份文件，合并做题、错题、收藏与打卡记录；不包含 AI 密钥。</div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button class="bottom-btn" style="flex:1;padding:9px;font-size:13px;" onclick="exportLearningBackup()">下载备份</button>
             <label class="bottom-btn primary" style="flex:1;padding:9px;font-size:13px;text-align:center;cursor:pointer;">导入备份
@@ -3161,7 +3165,7 @@
               <a href="./高校教资题库_2026官网最新题库带答案.md" download="高校教资题库_2026官网最新题库带答案.md" class="bottom-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;font-size:12px;padding:8px;">
                 <span>下载 2026官网题库.md</span>
               </a>
-              <a href="./高校教资题库_历年官方真题库带答案.md" download="高校教资题库_历年官方真题库带答案.md" class="bottom-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;font-size:12px;padding:8px;">
+              <a href="./高校教资题库_历年题库带答案.md" download="高校教资题库_历年题库带答案.md" class="bottom-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;text-decoration:none;font-size:12px;padding:8px;">
                 <span>下载 历年真题库.md</span>
               </a>
             </div>
@@ -3987,11 +3991,11 @@
 
     function loadUserStore() {
       // 1. 尝试读取当前标准 key
-      const s = localStorage.getItem("jsgsMock_v3_store") || localStorage.getItem("file2quiz_v3_store");
+      const s = localStorage.getItem("jsgsMock_v3_store");
       if (s) {
         try { userStore = { ...userStore, ...JSON.parse(s) }; } catch (e) {}
       }
-      const c = localStorage.getItem("jsgsMock_v3_cfg") || localStorage.getItem("file2quiz_v3_cfg");
+      const c = localStorage.getItem("jsgsMock_v3_cfg");
       if (c) {
         try { appConfig = { ...appConfig, ...JSON.parse(c) }; } catch (e) {}
       }
@@ -4000,10 +4004,7 @@
       const legacyCandidateKeys = [
         "jsgsMock_v2_store",
         "jsgsMock_core_store",
-        "file2quiz_v2_store",
-        "file2quiz_core_store",
-        "file2quiz_user_state",
-        "duxue_quiz_store",
+                "duxue_quiz_store",
         "jsgsMock_user_state"
       ];
       legacyCandidateKeys.forEach(ck => {
@@ -4271,7 +4272,7 @@
           });
           if (listResp.ok) {
             const listData = await listResp.json();
-            const found = listData.find(g => g.description && (g.description.includes("jsgsMock_sync_store") || g.description.includes("file2quiz_sync_store")));
+            const found = listData.find(g => g.description && (g.description.includes("jsgsMock_sync_store") ));
             if (found) {
               gistId = found.id;
               cfg.gistId = gistId;
@@ -4297,7 +4298,7 @@
           });
           if (getResp.ok) {
             const gistData = await getResp.json();
-            const f = gistData.files && (gistData.files["jsgsMock_store.json"] || gistData.files["file2quiz_store.json"]);
+            const f = gistData.files && (gistData.files["jsgsMock_store.json"] );
             if (f && f.content) {
               try {
                 const remoteStore = JSON.parse(f.content);
@@ -4493,7 +4494,7 @@
     function exportLearningBackup() {
       const fields = ['answers', 'favorites', 'wrongBook', 'ebbinghausWrong', 'checkin', 'dailyActivity', 'unfinishedSessions'];
       const store = Object.fromEntries(fields.map(key => [key, userStore[key] ?? (key === 'favorites' ? [] : {})]));
-      const payload = { format: 'file2quiz-learning-backup', version: 1, exportedAt: new Date().toISOString(), store };
+      const payload = { format: 'jsgsMock-learning-backup', version: 1, exportedAt: new Date().toISOString(), store };
       const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
       const link = document.createElement('a');
       link.href = url;
@@ -4509,7 +4510,7 @@
         if (file.size > 20 * 1024 * 1024) throw new Error('备份文件超过 20 MB');
         const payload = JSON.parse(await file.text());
         const store = payload?.store;
-        if (payload.format !== 'file2quiz-learning-backup' || payload.version !== 1 || !store ||
+        if (payload.format !== 'jsgsMock-learning-backup' || payload.version !== 1 || !store ||
             !store.answers || typeof store.answers !== 'object' || Array.isArray(store.answers) ||
             Object.values(store.answers).some(value => !value || typeof value !== 'object' || Array.isArray(value))) {
           throw new Error('不是有效的学习记录备份');
@@ -4556,7 +4557,7 @@
     function importSyncToken() {
       const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 JSGSMOCK_SYNC: 开头)：");
       if (!input) return;
-      const clean = input.trim().replace(/^(JSGSMOCK|FILE2QUIZ)_SYNC:/, '');
+      const clean = input.trim().replace(/^JSGSMOCK_SYNC:/, '');
       try {
         const jsonStr = decodeURIComponent(escape(atob(clean)));
         const data = JSON.parse(jsonStr);
@@ -4586,7 +4587,7 @@
         } catch (e) {}
       }
 
-      // 2. 尝试载入历年官方真题库 (Word版)
+      // 2. 尝试载入历年题库 (Word版)
       if (typeof window.DEFAULT_QUIZ_DATA === 'object' && window.DEFAULT_QUIZ_DATA && Object.keys(window.DEFAULT_QUIZ_DATA).length > 0) {
         legacyWordQuizData = window.DEFAULT_QUIZ_DATA;
       } else {
@@ -4625,7 +4626,7 @@
       updateBankSwitcherUI();
       renderSubjectList();
       renderBannerCarousel();
-      showToast(bankId === 'official_2026' ? "已切换至【2026官网全真模拟题库】" : "已切换至【历年官方真题库】");
+      showToast(bankId === 'official_2026' ? "已切换至【2026官网最新真题】" : "已切换至【历年题库】");
     }
 
     function updateBankSwitcherUI() {
@@ -5469,7 +5470,36 @@
     let isCinemaFullscreen = false;
     let playbackRates = [1.0, 1.25, 1.5, 2.0, 0.75];
     let currentRateIdx = 0;
-    let videoFavoriteIds = JSON.parse(localStorage.getItem('jsgs_video_favs') || '[]');
+    let isDraggingCinemaProgress = false;
+
+    // 断点记忆恢复本地存储管理
+    function getVideoSavedProgress(url) {
+      if (!url) return 0;
+      try {
+        const map = JSON.parse(localStorage.getItem('jsgs_video_progress') || '{}');
+        return Number(map[url]) || 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function saveVideoProgress(url, sec) {
+      if (!url || isNaN(sec) || sec <= 0) return;
+      try {
+        const map = JSON.parse(localStorage.getItem('jsgs_video_progress') || '{}');
+        map[url] = Math.floor(sec);
+        localStorage.setItem('jsgs_video_progress', JSON.stringify(map));
+      } catch (e) {}
+    }
+
+    function clearVideoProgress(url) {
+      if (!url) return;
+      try {
+        const map = JSON.parse(localStorage.getItem('jsgs_video_progress') || '{}');
+        delete map[url];
+        localStorage.setItem('jsgs_video_progress', JSON.stringify(map));
+      } catch (e) {}
+    }
 
     function renderTutorialVideos() {
       const catalog = document.getElementById('videoEpisodeTrack');
@@ -5487,23 +5517,42 @@
           if (!isVideoMirrorActive && currentPlayingLessonUrl && currentPlayingLessonUrl.includes('github.com')) {
             toggleVideoCdnMirror();
           } else {
-            showToast('若播放遇到网络缓冲，可点击“换源”切换加速线路');
+            showToast('若播放遇到网络缓冲，可点击“官方CDN”按钮切换线路');
           }
         };
-        // 自动连播下一集
+
+        // 播放结束自动连播下一集并清除进度
         player.onended = () => {
+          if (currentPlayingLessonUrl) clearVideoProgress(currentPlayingLessonUrl);
           playNextLesson(true);
         };
-        // 时间更新
+
+        // 时间走时与断点保存 (每隔2秒记忆一次)
+        let lastSavedTime = 0;
         player.ontimeupdate = () => {
-          updateCinemaProgress();
+          if (!isDraggingCinemaProgress) {
+            updateCinemaProgress();
+          }
+          const cur = player.currentTime;
+          if (currentPlayingLessonUrl && Math.abs(cur - lastSavedTime) >= 2) {
+            lastSavedTime = cur;
+            saveVideoProgress(currentPlayingLessonUrl, cur);
+          }
         };
+
+        player.onpause = () => {
+          updatePlayPauseIcon(false);
+          if (currentPlayingLessonUrl) {
+            saveVideoProgress(currentPlayingLessonUrl, player.currentTime);
+          }
+        };
+
         player.onplay = () => {
           updatePlayPauseIcon(true);
         };
-        player.onpause = () => {
-          updatePlayPauseIcon(false);
-        };
+
+        // 绑定拖拽进度条交互 (触摸与鼠标)
+        bindProgressBarDrag();
       }
 
       // 影院模式时间走时
@@ -5514,6 +5563,10 @@
         const clock = document.getElementById('cinemaClockDisplay');
         if (clock) clock.textContent = `${hh}:${mm}`;
       }, 1000);
+    }
+
+    function switchCourseGroup(cIdx) {
+      updateCourseView(cIdx);
     }
 
     function updateCourseView(cIdx) {
@@ -5530,17 +5583,16 @@
       const compEl = document.getElementById('labelCourseCompletion');
       if (compEl) compEl.textContent = `共 ${course.lessons.length} 节 · 已完结`;
 
-      // 同步下拉框
-      const sel = document.getElementById('selectCourseGroup');
-      if (sel) sel.value = String(cIdx);
+      // 联动整排课程切换按钮高亮
+      const navFull = document.getElementById('videoCourseNavFull');
+      if (navFull) {
+        Array.from(navFull.children).forEach((btn, idx) => {
+          btn.classList.toggle('active', idx === cIdx);
+        });
+      }
 
-      // 渲染选集横向滑动轨道（图2风格）
+      // 渲染选集横向滑动轨道
       renderEpisodeCards(cIdx);
-    }
-
-    function switchCourseBySelect(val) {
-      const idx = Number(val);
-      updateCourseView(idx);
     }
 
     function renderEpisodeCards(cIdx) {
@@ -5588,6 +5640,16 @@
         player.style.display = 'block';
         player.src = getEffectiveVideoUrl(lesson.url);
         player.playbackRate = playbackRates[currentRateIdx];
+
+        // 断点记忆跳转与恢复
+        const savedSec = getVideoSavedProgress(lesson.url);
+        player.onloadedmetadata = () => {
+          if (savedSec > 5 && player.duration && savedSec < (player.duration - 8)) {
+            player.currentTime = savedSec;
+            showToast(`已恢复至上次进度 ${formatTimeStr(savedSec)}`);
+          }
+        };
+
         player.load();
         player.play().catch(() => {});
       }
@@ -5604,7 +5666,6 @@
 
       // 刷新选集激活状态
       renderEpisodeCards(cIdx);
-      updateFavoriteButtonState();
 
       // 滚动居中选中的卡片
       const track = document.getElementById('videoEpisodeTrack');
@@ -5615,12 +5676,10 @@
     }
 
     function returnFromVideoPlayer() {
-      // 如果处于全屏影院模式，先退出全屏
       if (isCinemaFullscreen) {
-        toggleCinemaFullscreen();
+        toggleVideoOrientation();
         return;
       }
-      // 否则返回首页
       switchMainView('practice');
     }
 
@@ -5656,16 +5715,13 @@
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    // 核心功能 1：换源
+    // 播放源切换
     function toggleVideoCdnMirror() {
       isVideoMirrorActive = !isVideoMirrorActive;
-      const labelSource = document.getElementById('labelActionSource');
-      if (labelSource) {
-        labelSource.textContent = isVideoMirrorActive ? '国内加速' : '官方线路';
-      }
-      const badge = document.getElementById('badgeCurrentCdn');
-      if (badge) {
-        badge.textContent = isVideoMirrorActive ? '国内加速线路' : '官方 CDN';
+      const qBtn = document.getElementById('btnQuickCdnSwitch');
+      if (qBtn) {
+        qBtn.textContent = isVideoMirrorActive ? '国内加速' : '官方 CDN';
+        qBtn.classList.toggle('primary', isVideoMirrorActive);
       }
       const cinemaSource = document.getElementById('btnCinemaSource');
       if (cinemaSource) {
@@ -5683,7 +5739,7 @@
       }
     }
 
-    // 核心功能 2：倍速循环切换
+    // 倍速切换
     function cyclePlaybackRate() {
       currentRateIdx = (currentRateIdx + 1) % playbackRates.length;
       const rate = playbackRates[currentRateIdx];
@@ -5691,60 +5747,14 @@
       if (player) {
         player.playbackRate = rate;
       }
-      const speedLabel = document.getElementById('labelActionSpeed');
-      if (speedLabel) speedLabel.textContent = `${rate}x`;
+      const qSpeed = document.getElementById('btnQuickSpeed');
+      if (qSpeed) qSpeed.textContent = `${rate}x`;
       const cinemaSpeed = document.getElementById('btnCinemaSpeed');
       if (cinemaSpeed) cinemaSpeed.textContent = `${rate}x`;
       showToast(`播放倍速：${rate}x`);
     }
 
-    // 核心功能 3：收藏
-    function toggleFavoriteCurrentLesson() {
-      const key = `${currentCourseIndex}_${currentLessonIndex}`;
-      const idx = videoFavoriteIds.indexOf(key);
-      if (idx >= 0) {
-        videoFavoriteIds.splice(idx, 1);
-        showToast('已取消收藏该节');
-      } else {
-        videoFavoriteIds.push(key);
-        showToast('已收藏该节视频');
-      }
-      localStorage.setItem('jsgs_video_favs', JSON.stringify(videoFavoriteIds));
-      updateFavoriteButtonState();
-    }
-
-    function updateFavoriteButtonState() {
-      const key = `${currentCourseIndex}_${currentLessonIndex}`;
-      const isFav = videoFavoriteIds.includes(key);
-      const icon = document.getElementById('iconActionFav');
-      const label = document.getElementById('labelActionFav');
-      if (icon) {
-        icon.style.color = isFav ? '#eab308' : 'var(--text-main)';
-      }
-      if (label) {
-        label.textContent = isFav ? '已收藏' : '收藏';
-        label.style.color = isFav ? '#eab308' : 'var(--text-main)';
-      }
-    }
-
-    // 核心功能 4：分享
-    function shareCurrentLesson() {
-      const courses = window.COURSE_VIDEOS || [];
-      const curCourse = courses[currentCourseIndex];
-      const curLesson = curCourse?.lessons[currentLessonIndex];
-      const text = `我在研读高校教师资格证课程：【${curCourse?.title || ''}】${curLesson?.title || ''}，推荐一起学习！`;
-      if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('已复制课程与视频信息');
-        }).catch(() => {
-          showToast('复制失败');
-        });
-      } else {
-        showToast('已复制课程信息');
-      }
-    }
-
-    // 核心功能 5：上下集切换
+    // 上下集切换
     function playNextLesson(isAuto = false) {
       const courses = window.COURSE_VIDEOS || [];
       if (!courses.length) return;
@@ -5773,8 +5783,8 @@
       }
     }
 
-    // 全屏影院模式控制（图1）
-    function toggleCinemaFullscreen() {
+    // 横竖屏转换核心逻辑 (横竖方框叠加按钮触发)
+    function toggleVideoOrientation() {
       const container = document.getElementById('videoContainer');
       const overlay = document.getElementById('cinemaOverlayLayer');
       if (!container) return;
@@ -5782,9 +5792,14 @@
       if (isCinemaFullscreen) {
         container.classList.add('fullscreen-mode');
         if (overlay) overlay.style.display = 'flex';
-        // 尝试锁定横屏模式 (移动端支持)
+        // 尝试切换并锁定横屏
         if (screen.orientation && screen.orientation.lock) {
           screen.orientation.lock('landscape').catch(() => {});
+        }
+        if (container.requestFullscreen) {
+          container.requestFullscreen().catch(() => {});
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
         }
       } else {
         container.classList.remove('fullscreen-mode');
@@ -5792,6 +5807,11 @@
         toggleCinemaEpisodeDrawer(false);
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock().catch(() => {});
+        }
+        if (document.exitFullscreen && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+          document.webkitExitFullscreen();
         }
       }
     }
@@ -5827,13 +5847,6 @@
       }
     }
 
-    function skipVideoIntro() {
-      const player = document.getElementById('tutorialVideoPlayer');
-      if (!player) return;
-      player.currentTime = Math.min(player.duration || 9999, player.currentTime + 60);
-      showToast('已快进 60 秒跳过片头');
-    }
-
     function formatTimeStr(sec) {
       if (isNaN(sec) || sec < 0) return '00:00';
       const m = Math.floor(sec / 60);
@@ -5858,14 +5871,79 @@
       if (thumb) thumb.style.left = `${percent}%`;
     }
 
-    function seekCinemaVideo(e) {
+    // 拖动进度条逻辑 (Touch 与 Mouse 顺畅拖拽)
+    function bindProgressBarDrag() {
       const rail = document.getElementById('cinemaProgressRail');
       const player = document.getElementById('tutorialVideoPlayer');
-      if (!rail || !player || !player.duration) return;
-      const rect = rail.getBoundingClientRect();
-      const pos = (e.clientX - rect.left) / rect.width;
-      const targetTime = Math.max(0, Math.min(player.duration, pos * player.duration));
-      player.currentTime = targetTime;
+      if (!rail || !player) return;
+
+      function handleDragProgress(clientX) {
+        const rect = rail.getBoundingClientRect();
+        if (rect.width <= 0) return 0;
+        const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        const percent = pos * 100;
+        const fill = document.getElementById('cinemaProgressFill');
+        if (fill) fill.style.width = `${percent}%`;
+        const thumb = document.getElementById('cinemaProgressThumb');
+        if (thumb) thumb.style.left = `${percent}%`;
+        if (player.duration) {
+          const targetSec = pos * player.duration;
+          const curEl = document.getElementById('cinemaCurTimeText');
+          if (curEl) curEl.textContent = formatTimeStr(targetSec);
+        }
+        return pos;
+      }
+
+      function applySeek(pos) {
+        if (!player || !player.duration) return;
+        player.currentTime = Math.max(0, Math.min(player.duration, pos * player.duration));
+      }
+
+      // Mouse 事件
+      rail.addEventListener('mousedown', (e) => {
+        isDraggingCinemaProgress = true;
+        const pos = handleDragProgress(e.clientX);
+
+        function onMouseMove(moveEv) {
+          handleDragProgress(moveEv.clientX);
+        }
+
+        function onMouseUp(upEv) {
+          const finalPos = handleDragProgress(upEv.clientX);
+          applySeek(finalPos);
+          isDraggingCinemaProgress = false;
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+
+      // Touch 事件
+      rail.addEventListener('touchstart', (e) => {
+        if (!e.touches.length) return;
+        isDraggingCinemaProgress = true;
+        const pos = handleDragProgress(e.touches[0].clientX);
+
+        function onTouchMove(moveEv) {
+          if (moveEv.touches.length) {
+            handleDragProgress(moveEv.touches[0].clientX);
+          }
+        }
+
+        function onTouchEnd(endEv) {
+          const touch = endEv.changedTouches[0];
+          const finalPos = handleDragProgress(touch ? touch.clientX : 0);
+          applySeek(finalPos);
+          isDraggingCinemaProgress = false;
+          window.removeEventListener('touchmove', onTouchMove);
+          window.removeEventListener('touchend', onTouchEnd);
+        }
+
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd);
+      }, { passive: false });
     }
 
     function toggleCinemaEpisodeDrawer(show) {
