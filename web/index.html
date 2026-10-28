@@ -2608,7 +2608,7 @@
 
             <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
             <div id="cinemaOverlayLayer" class="cinema-overlay-layer">
-              <!-- 顶部控制栏（左侧返回与标题，右侧横竖转换/时间） -->
+              <!-- 顶部控制栏（左侧返回与标题，右上角全屏切换按钮） -->
               <div class="cinema-top-bar">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
                   <button class="cinema-ctrl-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回" style="padding:4px;">
@@ -2618,11 +2618,13 @@
                 </div>
                 <div style="display:flex;align-items:center;gap:12px;font-size:12px;flex-shrink:0;">
                   <span id="cinemaClockDisplay">09:15</span>
-                  <button class="rotate-btn" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg></button>
+                  <button class="rotate-btn" id="btnCinemaFullscreen" onclick="toggleVideoFullscreen()" aria-label="全屏切换" title="全屏切换">
+                    <svg class="svg-icon" id="iconCinemaFullscreen" viewBox="0 0 24 24" style="width:19px;height:19px;"><use href="#icon-fullscreen"/></svg>
+                  </button>
                 </div>
               </div>
 
-              <!-- 底部控制面板（支持拖动进度条，去除片头片尾） -->
+              <!-- 底部控制面板（支持拖动进度条，右下角横竖屏切换） -->
               <div class="cinema-bottom-panel">
                 <!-- 进度条行：支持点击与顺滑触摸/拖拽 -->
                 <div class="cinema-progress-wrapper">
@@ -2634,7 +2636,7 @@
                   <span id="cinemaTotalTimeText">00:00:00</span>
                 </div>
 
-                <!-- 控制按钮行（去除片头/尾按钮，保留播放、下一集、音量、倍速、播放源、选集） -->
+                <!-- 控制按钮行（保留播放、下一集、音量、倍速、播放源、选集、右下角横竖切换） -->
                 <div class="cinema-btns-row">
                   <div class="cinema-btn-group">
                     <button class="cinema-ctrl-btn" id="btnCinemaPlayPause" onclick="togglePlayPause()" aria-label="播放/暂停">
@@ -2651,8 +2653,8 @@
                     <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
                     <button class="cinema-text-btn" id="btnCinemaSource" onclick="openSourceMenu()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
-                    <button class="cinema-ctrl-btn" id="btnCinemaFullscreen" onclick="toggleVideoFullscreen()" aria-label="全屏" title="全屏切换">
-                      <svg class="svg-icon" id="iconCinemaFullscreen" viewBox="0 0 24 24" style="width:19px;height:19px;"><use href="#icon-fullscreen"/></svg>
+                    <button class="rotate-btn" id="btnCinemaRotate" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换">
+                      <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg>
                     </button>
                   </div>
                 </div>
@@ -5860,6 +5862,24 @@
     }
 
     let isVideoLandscape = false;
+    let isManualOrientationOverride = false;
+
+    // 自动获取当前设备方向：优先读取 screen.orientation 与 matchMedia，其次根据视口宽高比判断
+    function getDeviceIsLandscape() {
+      try {
+        if (screen.orientation && typeof screen.orientation.type === 'string') {
+          if (screen.orientation.type.startsWith('landscape')) return true;
+          if (screen.orientation.type.startsWith('portrait')) return false;
+        }
+        if (typeof window.orientation === 'number') {
+          return Math.abs(window.orientation) === 90;
+        }
+        if (window.matchMedia) {
+          return window.matchMedia('(orientation: landscape)').matches;
+        }
+      } catch (e) {}
+      return window.innerWidth > window.innerHeight;
+    }
 
     function updateFullscreenBtnUI() {
       const useEl = document.querySelector('#iconCinemaFullscreen use');
@@ -5871,11 +5891,15 @@
     function syncForcedLandscape() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
+      // 当用户未手动锁死方向时，实时自动跟随设备方向
+      if (!isManualOrientationOverride) {
+        isVideoLandscape = getDeviceIsLandscape();
+      }
       const needForce = isCinemaFullscreen && isVideoLandscape && window.innerHeight > window.innerWidth;
       container.classList.toggle('force-landscape', needForce);
     }
 
-    // 底部全屏按钮：进入或退出全屏播放
+    // 右上角全屏按钮：进入或退出全屏播放，并自动获取当前设备方向
     function toggleVideoFullscreen() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
@@ -5883,11 +5907,14 @@
       container.classList.toggle('fullscreen-mode', isCinemaFullscreen);
       document.body.style.overflow = isCinemaFullscreen ? 'hidden' : '';
       if (isCinemaFullscreen) {
+        isManualOrientationOverride = false;
+        isVideoLandscape = getDeviceIsLandscape();
         const req = container.requestFullscreen ? container.requestFullscreen()
           : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
         Promise.resolve(req).catch(() => {}).then(() => setTimeout(syncForcedLandscape, 300));
       } else {
         isVideoLandscape = false;
+        isManualOrientationOverride = false;
         container.classList.remove('force-landscape');
         toggleCinemaEpisodeDrawer(false);
         closeSourceMenu();
@@ -5904,10 +5931,11 @@
       showVideoControls();
     }
 
-    // 顶部横竖切换按钮：仅在播放器内部显示，切换横屏与竖屏
+    // 右下角横竖切换按钮：仅在播放器内部显示，手动切换横屏与竖屏
     function toggleVideoOrientation() {
       const container = document.getElementById('videoContainer');
       if (!container) return;
+      isManualOrientationOverride = true;
       if (!isCinemaFullscreen) {
         isCinemaFullscreen = true;
         isVideoLandscape = true;
@@ -5937,8 +5965,31 @@
       showVideoControls();
     }
 
+    function handleAutoDeviceOrientationChange() {
+      // 当设备发生旋转且正在播放视频（或已在全屏中）时，自动获取设备方向并同步横竖状态
+      const videoPane = document.getElementById('paneVideo');
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!videoPane || videoPane.style.display === 'none') return;
+      const devLandscape = getDeviceIsLandscape();
+      isManualOrientationOverride = false;
+      isVideoLandscape = devLandscape;
+      if (devLandscape && !isCinemaFullscreen && player && !player.paused) {
+        const container = document.getElementById('videoContainer');
+        if (container) {
+          isCinemaFullscreen = true;
+          container.classList.add('fullscreen-mode');
+          document.body.style.overflow = 'hidden';
+          updateFullscreenBtnUI();
+        }
+      }
+      setTimeout(syncForcedLandscape, 200);
+    }
+
     window.addEventListener('resize', syncForcedLandscape);
-    window.addEventListener('orientationchange', () => setTimeout(syncForcedLandscape, 300));
+    window.addEventListener('orientationchange', handleAutoDeviceOrientationChange);
+    if (screen.orientation && screen.orientation.addEventListener) {
+      screen.orientation.addEventListener('change', handleAutoDeviceOrientationChange);
+    }
     document.addEventListener('fullscreenchange', () => {
       if (!document.fullscreenElement && isCinemaFullscreen) toggleVideoFullscreen();
     });
