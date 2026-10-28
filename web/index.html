@@ -2255,6 +2255,22 @@
   font-weight: 800 !important;
 }
 
+
+/* 播放器：圆润横竖切换按钮、手势提示、播放源菜单、强制横屏回退 */
+.video-player-wrapper { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.rotate-btn { width:36px; height:36px; border-radius:50%; border:none; padding:0; cursor:pointer; background:rgba(255,255,255,0.16); color:#fff; display:inline-flex; align-items:center; justify-content:center; transition:none; -webkit-tap-highlight-color:transparent; }
+.rotate-btn:active { background:rgba(255,255,255,0.32); }
+.rotate-btn-light { width:32px; height:32px; background:var(--bg); border:1.5px solid var(--border); color:var(--text-main); }
+.rotate-btn-light:active { background:var(--border); }
+.cinema-overlay-layer.hide-controls { opacity:0; }
+.cinema-overlay-layer.hide-controls * { pointer-events:none; }
+.video-player-wrapper:not(.fullscreen-mode) .cinema-overlay-layer { padding:8px 12px; }
+.video-player-wrapper:not(.fullscreen-mode) .cinema-btn-group { gap:6px; }
+#cinemaVideoTitle { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.video-source-item { width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border:none; border-radius:8px; background:transparent; color:#fff; font-size:13px; cursor:pointer; text-align:left; }
+.video-source-item.active { background:rgba(255,255,255,0.14); font-weight:700; }
+.video-player-wrapper.fullscreen-mode.force-landscape { width:100vh !important; height:100vw !important; top:0 !important; left:100vw !important; right:auto !important; bottom:auto !important; transform-origin:0 0; transform:rotate(90deg); max-height:none !important; }
+
 </style>
 </head>
 <body>
@@ -2569,16 +2585,6 @@
 
           <!-- 播放器核心窗口（支持竖屏常规与全屏横屏影院模式） -->
           <div id="videoContainer" class="video-player-wrapper">
-            <!-- 播放器左上角返回按钮 -->
-            <button class="video-corner-back-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-
-            <!-- 播放器右上角横竖转换按钮（横竖方框叠加 SVG 图标） -->
-            <button class="video-corner-back-btn" style="left:auto;right:10px;" onclick="toggleVideoOrientation()" aria-label="横竖转换" title="横竖屏转换">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
-            </button>
-
             <!-- 视频标签 -->
             <video id="tutorialVideoPlayer" playsinline preload="metadata" style="display:none;"></video>
 
@@ -2589,21 +2595,18 @@
             </div>
 
             <!-- 全屏影院模式内部控制覆盖层（严格还原图1） -->
-            <div id="cinemaOverlayLayer" class="cinema-overlay-layer" style="display:none;">
+            <div id="cinemaOverlayLayer" class="cinema-overlay-layer">
               <!-- 顶部控制栏（左侧返回与标题，右侧横竖转换/时间） -->
               <div class="cinema-top-bar">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <button class="cinema-ctrl-btn" onclick="toggleVideoOrientation()" aria-label="退出全屏" style="padding:4px;">
+                <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+                  <button class="cinema-ctrl-btn" onclick="returnFromVideoPlayer()" aria-label="返回" title="返回" style="padding:4px;">
                     <svg class="svg-icon" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                   </button>
-                  <span id="cinemaVideoTitle" style="font-size:14px;font-weight:700;letter-spacing:0.5px;"></span>
+                  <span id="cinemaVideoTitle" style="font-size:14px;font-weight:700;letter-spacing:0.5px;">请选择课程</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;font-size:12px;">
+                <div style="display:flex;align-items:center;gap:12px;font-size:12px;flex-shrink:0;">
                   <span id="cinemaClockDisplay">09:15</span>
-                  <!-- 横竖转换图标 -->
-                  <button class="cinema-ctrl-btn" onclick="toggleVideoOrientation()" title="横竖屏转换">
-                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
-                  </button>
+                  <button class="rotate-btn" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg></button>
                 </div>
               </div>
 
@@ -2634,12 +2637,22 @@
                   </div>
                   <div class="cinema-btn-group">
                     <button class="cinema-text-btn" id="btnCinemaSpeed" onclick="cyclePlaybackRate()">倍速</button>
-                    <button class="cinema-text-btn" id="btnCinemaSource" onclick="toggleVideoCdnMirror()">播放源</button>
+                    <button class="cinema-text-btn" id="btnCinemaSource" onclick="openSourceMenu()">播放源</button>
                     <button class="cinema-text-btn" style="font-weight:700;" onclick="toggleCinemaEpisodeDrawer()">选集</button>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- 播放源菜单（点击打开，再次点击选项才会切换） -->
+            <div id="videoSourceMenu" style="display:none;position:absolute;right:12px;bottom:56px;z-index:70;min-width:160px;background:rgba(18,18,18,0.96);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:6px;">
+              <div style="font-size:11px;color:#9ca3af;padding:6px 12px 4px;">选择播放源</div>
+              <button class="video-source-item" id="srcItemOfficial" onclick="setVideoSource(false)"><span>官方 CDN</span><span class="src-tag"></span></button>
+              <button class="video-source-item" id="srcItemMirror" onclick="setVideoSource(true)"><span>国内加速</span><span class="src-tag"></span></button>
+            </div>
+
+            <!-- 手势提示（亮度 / 音量 / 进度） -->
+            <div id="videoGestureHud" style="display:none;position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);z-index:80;background:rgba(0,0,0,0.72);color:#fff;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:700;pointer-events:none;text-align:center;min-width:110px;"></div>
 
             <!-- 全屏选集侧边滑出抽屉 -->
             <div id="cinemaEpisodeDrawer" style="display:none;position:absolute;top:0;right:0;bottom:0;width:78%;max-width:320px;background:rgba(18,18,18,0.96);backdrop-filter:blur(14px);z-index:60;border-left:1px solid rgba(255,255,255,0.15);flex-direction:column;box-sizing:border-box;">
@@ -2658,12 +2671,10 @@
               <button class="inner-tab-btn" id="tabBtnVideoNotes" onclick="switchVideoMainTab('notes')" style="padding:8px 4px;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text-muted);border-radius:0;">考点大纲</button>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <button onclick="toggleVideoCdnMirror()" id="btnQuickCdnSwitch" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="切换官方CDN或国内镜像加速">官方 CDN</button>
+              <button onclick="openSourceMenu()" id="btnQuickCdnSwitch" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="切换官方CDN或国内镜像加速">官方 CDN</button>
               <button onclick="cyclePlaybackRate()" id="btnQuickSpeed" class="bottom-btn" style="padding:2px 8px;font-size:11px;" title="调整播放速度">1.0x</button>
               <!-- 快捷横竖转换按钮 -->
-              <button onclick="toggleVideoOrientation()" title="横竖屏转换" style="border:none;background:transparent;cursor:pointer;color:var(--text-main);padding:4px;display:flex;align-items:center;">
-                <svg class="svg-icon" viewBox="0 0 24 24" style="width:19px;height:19px;"><path fill="currentColor" d="M16 7V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h4v3c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-4zM6 16V4h8v3H9c-.55 0-1 .45-1 1v8H6zm13 5H10v-8h9v8z"/></svg>
-              </button>
+              <button class="rotate-btn rotate-btn-light" onclick="toggleVideoOrientation()" aria-label="横竖屏切换" title="横竖屏切换"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M8.5 15H4.5a2.5 2.5 0 0 1-2.5-2.5v-6A2.5 2.5 0 0 1 4.5 4h9A2.5 2.5 0 0 1 16 6.5V7.5"/><rect x="10" y="9" width="10" height="13" rx="2.5"/></svg></button>
             </div>
           </div>
 
@@ -4794,7 +4805,6 @@
       initPcNavigation();
       initDraggableAiBubble();
       renderSavedExams();
-      renderTextbookCards();
       renderTutorialVideos();
       updateSettingsUI();
 
@@ -5542,6 +5552,7 @@
 
         player.onpause = () => {
           updatePlayPauseIcon(false);
+          showVideoControls(true);
           if (currentPlayingLessonUrl) {
             saveVideoProgress(currentPlayingLessonUrl, player.currentTime);
           }
@@ -5549,10 +5560,12 @@
 
         player.onplay = () => {
           updatePlayPauseIcon(true);
+          showVideoControls();
         };
 
         // 绑定拖拽进度条交互 (触摸与鼠标)
         bindProgressBarDrag();
+        bindVideoGestures();
       }
 
       // 影院模式时间走时
@@ -5715,28 +5728,63 @@
       box.style.display = box.style.display === 'none' ? 'block' : 'none';
     }
 
-    // 播放源切换
-    function toggleVideoCdnMirror() {
-      isVideoMirrorActive = !isVideoMirrorActive;
+    // 播放源：点击按钮只打开菜单，选择另一条线路才会切换
+    function openSourceMenu() {
+      const menu = document.getElementById('videoSourceMenu');
+      if (!menu) return;
+      const willShow = menu.style.display === 'none';
+      menu.style.display = willShow ? 'block' : 'none';
+      if (willShow) {
+        refreshSourceMenu();
+        showVideoControls(true);
+      }
+    }
+
+    function closeSourceMenu() {
+      const menu = document.getElementById('videoSourceMenu');
+      if (menu) menu.style.display = 'none';
+    }
+
+    function refreshSourceMenu() {
+      const items = [['srcItemOfficial', false], ['srcItemMirror', true]];
+      items.forEach(([id, mirror]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const active = isVideoMirrorActive === mirror;
+        el.classList.toggle('active', active);
+        el.querySelector('.src-tag').textContent = active ? '当前' : '';
+      });
+    }
+
+    function setVideoSource(useMirror) {
+      closeSourceMenu();
+      if (useMirror === isVideoMirrorActive) {
+        showToast('已是当前播放源');
+        return;
+      }
+      isVideoMirrorActive = useMirror;
       const qBtn = document.getElementById('btnQuickCdnSwitch');
       if (qBtn) {
-        qBtn.textContent = isVideoMirrorActive ? '国内加速' : '官方 CDN';
-        qBtn.classList.toggle('primary', isVideoMirrorActive);
+        qBtn.textContent = useMirror ? '国内加速' : '官方 CDN';
+        qBtn.classList.toggle('primary', useMirror);
       }
       const cinemaSource = document.getElementById('btnCinemaSource');
-      if (cinemaSource) {
-        cinemaSource.textContent = isVideoMirrorActive ? '源：加速' : '源：官方';
-      }
+      if (cinemaSource) cinemaSource.textContent = useMirror ? '源：加速' : '源：官方';
 
       const player = document.getElementById('tutorialVideoPlayer');
       if (player && currentPlayingLessonUrl) {
         const curTime = player.currentTime;
         player.src = getEffectiveVideoUrl(currentPlayingLessonUrl);
-        player.currentTime = curTime;
+        player.onloadedmetadata = () => { if (curTime > 0) player.currentTime = curTime; };
         player.load();
         player.play().catch(() => {});
-        showToast(isVideoMirrorActive ? '已切换至国内高速加速线路' : '已切换至 GitHub 官方线路');
       }
+      showToast(useMirror ? '已切换至国内加速线路' : '已切换至官方 CDN 线路');
+    }
+
+    // 播放出错时的自动回退（保留旧入口名）
+    function toggleVideoCdnMirror() {
+      setVideoSource(!isVideoMirrorActive);
     }
 
     // 倍速切换
@@ -5783,37 +5831,165 @@
       }
     }
 
-    // 横竖屏转换核心逻辑 (横竖方框叠加按钮触发)
+    // 横竖屏切换（原生全屏 + 方向锁定；系统不支持锁定时用 CSS 旋转回退）
+    function syncForcedLandscape() {
+      const container = document.getElementById('videoContainer');
+      if (!container) return;
+      const needForce = isCinemaFullscreen && window.innerHeight > window.innerWidth;
+      container.classList.toggle('force-landscape', needForce);
+    }
+
     function toggleVideoOrientation() {
       const container = document.getElementById('videoContainer');
-      const overlay = document.getElementById('cinemaOverlayLayer');
       if (!container) return;
       isCinemaFullscreen = !isCinemaFullscreen;
+      container.classList.toggle('fullscreen-mode', isCinemaFullscreen);
+      document.body.style.overflow = isCinemaFullscreen ? 'hidden' : '';
       if (isCinemaFullscreen) {
-        container.classList.add('fullscreen-mode');
-        if (overlay) overlay.style.display = 'flex';
-        // 尝试切换并锁定横屏
-        if (screen.orientation && screen.orientation.lock) {
-          screen.orientation.lock('landscape').catch(() => {});
-        }
-        if (container.requestFullscreen) {
-          container.requestFullscreen().catch(() => {});
-        } else if (container.webkitRequestFullscreen) {
-          container.webkitRequestFullscreen();
-        }
+        const req = container.requestFullscreen ? container.requestFullscreen()
+          : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
+        Promise.resolve(req)
+          .catch(() => {})
+          .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
+          .catch(() => {})
+          .then(() => setTimeout(syncForcedLandscape, 350));
       } else {
-        container.classList.remove('fullscreen-mode');
-        if (overlay) overlay.style.display = 'none';
+        container.classList.remove('force-landscape');
         toggleCinemaEpisodeDrawer(false);
+        closeSourceMenu();
         if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock().catch(() => {});
+          try { screen.orientation.unlock(); } catch (e) {}
         }
-        if (document.exitFullscreen && document.fullscreenElement) {
+        if (document.fullscreenElement && document.exitFullscreen) {
           document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+        } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
           document.webkitExitFullscreen();
         }
       }
+      showVideoControls();
+    }
+
+    window.addEventListener('resize', syncForcedLandscape);
+    window.addEventListener('orientationchange', () => setTimeout(syncForcedLandscape, 300));
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && isCinemaFullscreen) toggleVideoOrientation();
+    });
+
+    // 控制栏自动隐藏
+    let videoControlsTimer = null;
+    function showVideoControls(keep) {
+      const overlay = document.getElementById('cinemaOverlayLayer');
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!overlay) return;
+      overlay.classList.remove('hide-controls');
+      clearTimeout(videoControlsTimer);
+      if (!keep && player && !player.paused) {
+        videoControlsTimer = setTimeout(hideVideoControls, 3500);
+      }
+    }
+
+    function hideVideoControls() {
+      const overlay = document.getElementById('cinemaOverlayLayer');
+      const drawer = document.getElementById('cinemaEpisodeDrawer');
+      const player = document.getElementById('tutorialVideoPlayer');
+      if (!overlay || isDraggingCinemaProgress) return;
+      if (drawer && drawer.style.display !== 'none') return;
+      if (!player || player.paused) return;
+      closeSourceMenu();
+      overlay.classList.add('hide-controls');
+    }
+
+    // 手势：左侧上下滑动调亮度，右侧上下滑动调音量，左右滑动调进度，单击显示/隐藏控制栏
+    let videoBrightness = 1;
+    function bindVideoGestures() {
+      const box = document.getElementById('videoContainer');
+      const player = document.getElementById('tutorialVideoPlayer');
+      const hud = document.getElementById('videoGestureHud');
+      if (!box || !player || box.dataset.gesture) return;
+      box.dataset.gesture = '1';
+      const IGNORE = 'button, #cinemaProgressRail, #cinemaEpisodeDrawer, #videoSourceMenu';
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      let g = null;
+      let hudTimer = null;
+
+      function showHud(text) {
+        hud.textContent = text;
+        hud.style.display = 'block';
+        clearTimeout(hudTimer);
+      }
+      function hideHudSoon() {
+        clearTimeout(hudTimer);
+        hudTimer = setTimeout(() => { hud.style.display = 'none'; }, 600);
+      }
+      function point(t) {
+        const forced = box.classList.contains('force-landscape');
+        const r = box.getBoundingClientRect();
+        return forced
+          ? { x: t.clientY - r.top, y: -(t.clientX - r.left), w: r.height, h: r.width }
+          : { x: t.clientX - r.left, y: t.clientY - r.top, w: r.width, h: r.height };
+      }
+      function toggleControlsByTap() {
+        const menu = document.getElementById('videoSourceMenu');
+        if (menu && menu.style.display !== 'none') { closeSourceMenu(); return; }
+        const overlay = document.getElementById('cinemaOverlayLayer');
+        if (overlay.classList.contains('hide-controls')) showVideoControls();
+        else if (player.paused) showVideoControls(true);
+        else hideVideoControls();
+      }
+
+      box.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1 || e.target.closest(IGNORE)) { g = null; return; }
+        const p = point(e.touches[0]);
+        g = { x0: p.x, y0: p.y, w: p.w, h: p.h, side: p.x < p.w / 2 ? 'left' : 'right',
+              mode: null, moved: false, t0: player.currentTime || 0, br: videoBrightness, vol: player.volume };
+      }, { passive: true });
+
+      box.addEventListener('touchmove', (e) => {
+        if (!g || e.touches.length !== 1) return;
+        const p = point(e.touches[0]);
+        const dx = p.x - g.x0, dy = p.y - g.y0;
+        if (!g.mode) {
+          if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+          g.mode = Math.abs(dx) > Math.abs(dy) ? 'seek' : (g.side === 'left' ? 'brightness' : 'volume');
+        }
+        g.moved = true;
+        e.preventDefault();
+        showVideoControls(true);
+        if (g.mode === 'seek') {
+          if (!player.duration) return;
+          g.target = clamp(g.t0 + dx / g.w * 120, 0, player.duration);
+          showHud(`${dx >= 0 ? '快进' : '快退'}  ${formatTimeStr(g.target)} / ${formatTimeStr(player.duration)}`);
+        } else if (g.mode === 'brightness') {
+          videoBrightness = clamp(g.br - dy / g.h * 1.4, 0.2, 1.6);
+          player.style.filter = `brightness(${videoBrightness})`;
+          showHud(`亮度  ${Math.round(videoBrightness * 100)}%`);
+        } else {
+          const v = clamp(g.vol - dy / g.h * 1.4, 0, 1);
+          player.volume = v;
+          player.muted = v === 0;
+          showHud(`音量  ${Math.round(v * 100)}%`);
+        }
+      }, { passive: false });
+
+      box.addEventListener('touchend', (e) => {
+        if (!g) return;
+        const cur = g;
+        g = null;
+        if (cur.moved) {
+          if (cur.mode === 'seek' && cur.target != null) player.currentTime = cur.target;
+          hideHudSoon();
+          showVideoControls();
+        } else {
+          toggleControlsByTap();
+        }
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+
+      // 桌面鼠标：单击切换控制栏（触屏已在 touchend 处理并阻止了合成 click）
+      box.addEventListener('click', (e) => {
+        if (e.target.closest(IGNORE)) return;
+        toggleControlsByTap();
+      });
     }
 
     function togglePlayPause() {
@@ -5871,79 +6047,48 @@
       if (thumb) thumb.style.left = `${percent}%`;
     }
 
-    // 拖动进度条逻辑 (Touch 与 Mouse 顺畅拖拽)
+    // 拖动进度条（Pointer Events，鼠标/触摸通用，兼容强制横屏旋转）
     function bindProgressBarDrag() {
       const rail = document.getElementById('cinemaProgressRail');
       const player = document.getElementById('tutorialVideoPlayer');
       if (!rail || !player) return;
+      rail.style.touchAction = 'none';
 
-      function handleDragProgress(clientX) {
+      function fractionAt(ev) {
         const rect = rail.getBoundingClientRect();
-        if (rect.width <= 0) return 0;
-        const pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-        const percent = pos * 100;
+        const forced = document.getElementById('videoContainer').classList.contains('force-landscape');
+        const pos = forced ? (ev.clientY - rect.top) / rect.height : (ev.clientX - rect.left) / rect.width;
+        return Math.max(0, Math.min(1, pos));
+      }
+      function paint(pos) {
         const fill = document.getElementById('cinemaProgressFill');
-        if (fill) fill.style.width = `${percent}%`;
         const thumb = document.getElementById('cinemaProgressThumb');
-        if (thumb) thumb.style.left = `${percent}%`;
-        if (player.duration) {
-          const targetSec = pos * player.duration;
-          const curEl = document.getElementById('cinemaCurTimeText');
-          if (curEl) curEl.textContent = formatTimeStr(targetSec);
-        }
-        return pos;
+        if (fill) fill.style.width = `${pos * 100}%`;
+        if (thumb) thumb.style.left = `${pos * 100}%`;
+        const curEl = document.getElementById('cinemaCurTimeText');
+        if (curEl && player.duration) curEl.textContent = formatTimeStr(pos * player.duration);
       }
 
-      function applySeek(pos) {
-        if (!player || !player.duration) return;
-        player.currentTime = Math.max(0, Math.min(player.duration, pos * player.duration));
-      }
-
-      // Mouse 事件
-      rail.addEventListener('mousedown', (e) => {
+      rail.addEventListener('pointerdown', (ev) => {
         isDraggingCinemaProgress = true;
-        const pos = handleDragProgress(e.clientX);
-
-        function onMouseMove(moveEv) {
-          handleDragProgress(moveEv.clientX);
-        }
-
-        function onMouseUp(upEv) {
-          const finalPos = handleDragProgress(upEv.clientX);
-          applySeek(finalPos);
-          isDraggingCinemaProgress = false;
-          window.removeEventListener('mousemove', onMouseMove);
-          window.removeEventListener('mouseup', onMouseUp);
-        }
-
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
+        rail.setPointerCapture(ev.pointerId);
+        paint(fractionAt(ev));
+        showVideoControls(true);
+        ev.stopPropagation();
       });
-
-      // Touch 事件
-      rail.addEventListener('touchstart', (e) => {
-        if (!e.touches.length) return;
-        isDraggingCinemaProgress = true;
-        const pos = handleDragProgress(e.touches[0].clientX);
-
-        function onTouchMove(moveEv) {
-          if (moveEv.touches.length) {
-            handleDragProgress(moveEv.touches[0].clientX);
-          }
-        }
-
-        function onTouchEnd(endEv) {
-          const touch = endEv.changedTouches[0];
-          const finalPos = handleDragProgress(touch ? touch.clientX : 0);
-          applySeek(finalPos);
-          isDraggingCinemaProgress = false;
-          window.removeEventListener('touchmove', onTouchMove);
-          window.removeEventListener('touchend', onTouchEnd);
-        }
-
-        window.addEventListener('touchmove', onTouchMove, { passive: false });
-        window.addEventListener('touchend', onTouchEnd);
-      }, { passive: false });
+      rail.addEventListener('pointermove', (ev) => {
+        if (!isDraggingCinemaProgress) return;
+        paint(fractionAt(ev));
+      });
+      function finish(ev) {
+        if (!isDraggingCinemaProgress) return;
+        const pos = fractionAt(ev);
+        if (player.duration) player.currentTime = pos * player.duration;
+        isDraggingCinemaProgress = false;
+        showVideoControls();
+      }
+      rail.addEventListener('pointerup', finish);
+      rail.addEventListener('pointercancel', () => { isDraggingCinemaProgress = false; });
     }
 
     function toggleCinemaEpisodeDrawer(show) {
@@ -9092,6 +9237,142 @@
       </div>
     </div>
   </div>
+
+
+  <!-- 邀请码门禁：未验证的设备只能看到这一页 -->
+  <div id="inviteGate" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
+    <div style="width:100%;max-width:360px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:16px;padding:24px 20px;box-sizing:border-box;">
+      <div style="font-size:20px;font-weight:800;color:var(--text-main);">高校教资题库</div>
+      <div style="font-size:13px;color:var(--text-muted);margin:8px 0 18px;line-height:1.6;">请输入邀请码开始学习。验证通过后，本设备无需重复输入。</div>
+      <input id="inviteInput" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;letter-spacing:1px;background:var(--bg);color:var(--text-main);outline:none;">
+      <button id="inviteSubmit" class="modal-submit-btn" style="width:100%;margin-top:12px;padding:12px;font-size:15px;">验证并进入</button>
+      <div id="inviteMsg" style="min-height:18px;margin-top:10px;font-size:12.5px;color:#ef4444;text-align:center;"></div>
+    </div>
+  </div>
+  <script>
+(function () {
+  var KEY = 'jsgsMock_invite';
+  var REMOTE = 'https://simple53.github.io/jsgsMock/invite.json';
+  var gate = document.getElementById('inviteGate');
+  var input = document.getElementById('inviteInput');
+  var btn = document.getElementById('inviteSubmit');
+  var msg = document.getElementById('inviteMsg');
+  if (!gate) return;
+
+  // 纯 JS SHA-256（http 局域网下 crypto.subtle 不可用，故不依赖它）
+  function sha256Hex(str) {
+    var bytes = new TextEncoder().encode(str);
+    var primes = [];
+    for (var n = 2; primes.length < 64; n++) {
+      if (primes.every(function (p) { return n % p; })) primes.push(n);
+    }
+    var frac = function (x) { return Math.floor((x - Math.floor(x)) * 4294967296) >>> 0; };
+    var K = primes.map(function (p) { return frac(Math.cbrt(p)); });
+    var st = primes.slice(0, 8).map(function (p) { return frac(Math.sqrt(p)); });
+    var len = bytes.length;
+    var total = ((len + 9 + 63) >> 6) << 6;
+    var buf = new Uint8Array(total);
+    buf.set(bytes);
+    buf[len] = 0x80;
+    var dv = new DataView(buf.buffer);
+    dv.setUint32(total - 8, Math.floor(len * 8 / 4294967296));
+    dv.setUint32(total - 4, (len * 8) >>> 0);
+    var rotr = function (x, k) { return (x >>> k) | (x << (32 - k)); };
+    var W = new Uint32Array(64);
+    for (var o = 0; o < total; o += 64) {
+      for (var i = 0; i < 16; i++) W[i] = dv.getUint32(o + i * 4);
+      for (i = 16; i < 64; i++) {
+        var a15 = W[i - 15], a2 = W[i - 2];
+        var s0 = rotr(a15, 7) ^ rotr(a15, 18) ^ (a15 >>> 3);
+        var s1 = rotr(a2, 17) ^ rotr(a2, 19) ^ (a2 >>> 10);
+        W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0;
+      }
+      var a = st[0], b = st[1], c = st[2], d = st[3], e = st[4], f = st[5], g = st[6], h = st[7];
+      for (i = 0; i < 64; i++) {
+        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+        var ch = (e & f) ^ (~e & g);
+        var t1 = (h + S1 + ch + K[i] + W[i]) >>> 0;
+        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+        var mj = (a & b) ^ (a & c) ^ (b & c);
+        var t2 = (S0 + mj) >>> 0;
+        h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+      }
+      var v = [a, b, c, d, e, f, g, h];
+      for (i = 0; i < 8; i++) st[i] = (st[i] + v[i]) >>> 0;
+    }
+    return st.map(function (x) { return ('00000000' + x.toString(16)).slice(-8); }).join('');
+  }
+
+  function normalize(code) {
+    return String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+  function hashOf(code) {
+    return sha256Hex('jsgsmock:' + normalize(code));
+  }
+
+  function fetchList(url, timeoutMs) {
+    var ctl = new AbortController();
+    var timer = setTimeout(function () { ctl.abort(); }, timeoutMs);
+    return fetch(url + '?_t=' + Date.now(), { cache: 'no-store', signal: ctl.signal })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (j) { return Array.isArray(j.codes) ? j.codes : null; })
+      .finally(function () { clearTimeout(timer); });
+  }
+
+  // 优先读线上名单（可随时吊销/新增邀请码），失败再回退到同目录文件（离线/APK 内置）
+  function loadHashes() {
+    var onPages = location.hostname.indexOf('github.io') !== -1;
+    var first = onPages ? 'invite.json' : REMOTE;
+    return fetchList(first, 6000).catch(function () {
+      return onPages ? null : fetchList('invite.json', 4000).catch(function () { return null; });
+    });
+  }
+
+  function showGate(text) {
+    gate.style.display = 'flex';
+    if (text) { msg.textContent = text; }
+    setTimeout(function () { input.focus(); }, 50);
+  }
+  function hideGate() {
+    gate.style.display = 'none';
+    msg.textContent = '';
+  }
+
+  function submit() {
+    var code = normalize(input.value);
+    if (code.length < 6) { msg.textContent = '请输入完整的邀请码'; return; }
+    btn.disabled = true;
+    msg.textContent = '验证中...';
+    loadHashes().then(function (list) {
+      btn.disabled = false;
+      if (!list) { msg.textContent = '无法获取邀请码名单，请检查网络后重试'; return; }
+      if (list.indexOf(hashOf(code)) === -1) { msg.textContent = '邀请码无效或已失效'; return; }
+      localStorage.setItem(KEY, code);
+      input.value = '';
+      hideGate();
+    });
+  }
+
+  btn.addEventListener('click', submit);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+
+  // 已验证过：直接放行，然后后台复核名单（被吊销则重新锁定；离线时保持放行）
+  var stored = localStorage.getItem(KEY);
+  if (stored) {
+    hideGate();
+    loadHashes().then(function (list) {
+      if (list && list.indexOf(hashOf(stored)) === -1) {
+        localStorage.removeItem(KEY);
+        showGate('该邀请码已失效，请输入新的邀请码');
+      }
+    });
+  } else {
+    showGate();
+  }
+
+})();
+
+  </script>
 
 </body>
 </html>

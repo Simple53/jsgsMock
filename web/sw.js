@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jsgsMock-v36';
+const CACHE_NAME = 'jsgsMock-v37';
 const ASSETS = [
   './',
   './index.html',
@@ -37,6 +37,9 @@ self.addEventListener('activate', (event) => {
 // HTML 页面采用网络优先 (Network-First)，断网时回退离线缓存；静态资源缓存优先
 self.addEventListener('fetch', (event) => {
   const url = event.request.url;
+
+  // 邀请码名单需实时读取（吊销/新增立即生效），不走缓存
+  if (/invite\.json/.test(url)) return;
 
   // 视频体积较大，交给浏览器原生流式播放，不进入 PWA 离线缓存。
   if (event.request.destination === 'video' || /\.mp4(?:\?|$)/i.test(url)) return;

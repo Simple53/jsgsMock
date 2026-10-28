@@ -17,3 +17,6 @@ video-compress*.log
 user_sync_store.json
 chunks/
 raw_official_*.json
+
+# 邀请码明文记录（切勿提交）
+invite_codes.local.txt
