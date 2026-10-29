@@ -62,7 +62,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build macOS DMG (Universal: arm64 + x64)
+      - name: Build macOS DMG (Universal arm64 and x64)
         run: npx electron-builder --mac dmg --arm64 --x64
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -222,20 +222,23 @@ jobs:
           path: jsgsMock-*-ios.ipa
 
       - name: Optional Upload to TestFlight (if Apple API Key provided)
-        if: env.APPLE_API_KEY_ID != '' && env.APPLE_API_ISSUER != '' && env.APPLE_API_PRIVATE_KEY != ''
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPSTORE_ISSUER_ID }}
           APPLE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
-          echo "检测到 App Store Connect 凭据，正在上传至 TestFlight..."
-          mkdir -p ~/.private_keys
-          echo "$APPLE_API_PRIVATE_KEY" > ~/.private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
-          xcrun altool --upload-app \
-            --type ios \
-            --file "jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa" \
-            --apiKey "$APPLE_API_KEY_ID" \
-            --apiIssuer "$APPLE_API_ISSUER"
+          if [ -n "$APPLE_API_KEY_ID" ] && [ -n "$APPLE_API_ISSUER" ] && [ -n "$APPLE_API_PRIVATE_KEY" ]; then
+            echo "检测到 App Store Connect 凭据，正在上传至 TestFlight..."
+            mkdir -p ~/.private_keys
+            echo "$APPLE_API_PRIVATE_KEY" > ~/.private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
+            xcrun altool --upload-app \
+              --type ios \
+              --file "jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa" \
+              --apiKey "$APPLE_API_KEY_ID" \
+              --apiIssuer "$APPLE_API_ISSUER"
+          else
+            echo "未配置 App Store Connect 密钥，跳过 TestFlight 自动上传"
+          fi
 
   # ==========================================================
   # 6. 统一汇聚所有平台安装包并发布到 GitHub Releases
