@@ -34,9 +34,7 @@ jobs:
         run: npm install
 
       - name: Build Windows Installer (NSIS)
-        run: npx electron-builder --win nsis --x64
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win nsis --x64 --publish never
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -63,9 +61,9 @@ jobs:
         run: npm install
 
       - name: Build macOS DMG (Universal arm64 and x64)
-        run: npx electron-builder --mac dmg --arm64 --x64
+        run: npx electron-builder --mac dmg --arm64 --x64 --publish never
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Upload macOS Artifacts
         uses: actions/upload-artifact@v4
@@ -97,9 +95,7 @@ jobs:
         run: npm install
 
       - name: Build Linux AppImage
-        run: npx electron-builder --linux AppImage --x64
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --linux AppImage --x64 --publish never
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4

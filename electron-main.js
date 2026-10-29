@@ -8,7 +8,7 @@ function createWindow() {
     minWidth: 420,
     minHeight: 600,
     title: 'jsgsMock - 高校教资智能刷题助手',
-    icon: path.join(__dirname, 'build', 'icon.png'),
+    icon: path.join(__dirname, 'web', 'icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

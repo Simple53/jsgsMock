@@ -34,7 +34,8 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "web/icon.svg"
+      "icon": "web/icon.png",
+      "artifactName": "${productName}-v${version}-windows-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -51,10 +52,13 @@
           "arch": ["x64", "arm64"]
         }
       ],
-      "icon": "web/icon.svg",
+      "icon": "web/icon.png",
+      "identity": null,
+      "artifactName": "${productName}-v${version}-macos-${arch}.${ext}",
       "category": "public.app-category.education"
     },
     "dmg": {
+      "sign": false,
       "contents": [
         {
           "x": 130,
@@ -75,7 +79,8 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "web/icon.svg",
+      "icon": "web/icon.png",
+      "artifactName": "${productName}-v${version}-linux-${arch}.${ext}",
       "category": "Education"
     }
   }
