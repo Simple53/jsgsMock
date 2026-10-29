@@ -1,0 +1,82 @@
+{
+  "name": "jsgs-mock",
+  "version": "1.4.5",
+  "description": "jsgsMock - 高校教资智能刷题与名师视频系统",
+  "main": "electron-main.js",
+  "author": "Simple53",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "pack:win": "electron-builder --win nsis --x64",
+    "pack:mac": "electron-builder --mac dmg --universal",
+    "pack:linux": "electron-builder --linux AppImage --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.jsgsmock.app",
+    "productName": "jsgsMock",
+    "copyright": "Copyright © 2026 Simple53",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron-main.js",
+      "web/**/*",
+      "!web/videos/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "web/icon.svg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "jsgsMock"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "web/icon.svg",
+      "category": "public.app-category.education"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "web/icon.svg",
+      "category": "Education"
+    }
+  }
+}

@@ -1,14 +1,14 @@
 {
-  "version": "1.4.4",
-  "versionCode": 20,
-  "title": "jsgsMock v1.4.4 - 原生 iOS 支持与播放器交互优化",
-  "releaseDate": "2026-10-28",
+  "version": "1.4.5",
+  "versionCode": 21,
+  "title": "jsgsMock v1.4.5 - 全平台客户端与 APK 体验修复",
+  "releaseDate": "2026-10-29",
   "changelog": [
-    "支持 Apple iOS 原生客户端（.ipa）与免签桌面模式",
-    "播放器控制栏优化：全屏与画中画按钮布局互换，支持垂直音量滑块与上下手势调音",
-    "邀请码门禁优化：私信联系获取，界面更加简明",
-    "仓库全面整理瘦身：归类资料至 docs_and_materials 目录，去除冗余临时文件"
+    "修复 Android APK 打开时出现 net::ERR_NAME_NOT_RESOLVED 无法加载页面的问题",
+    "新增全平台桌面客户端支持：Windows (.exe NSIS)、macOS (.dmg Universal)、Linux (.AppImage)",
+    "移动端持续支持 Android (.apk) 与 iOS (.ipa) / TestFlight",
+    "所有安装包均内置离线真题库与考点精要，支持离线刷题与联网观看名师视频"
   ],
-  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.4/jsgsMock-v1.4.4.apk",
-  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.4/jsgsMock-v1.4.4.apk"
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.5/jsgsMock-v1.4.5.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.5/jsgsMock-v1.4.5.apk"
 }

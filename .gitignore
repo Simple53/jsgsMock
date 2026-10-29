@@ -20,3 +20,6 @@ raw_official_*.json
 
 # 邀请码明文记录（切勿提交）
 invite_codes.local.txt
+
+node_modules/
+dist/

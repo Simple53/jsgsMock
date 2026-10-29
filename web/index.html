@@ -5145,7 +5145,7 @@
       // 启动后延迟检测新版本：仅线下原生安装包（Android APK / iOS 原生包）弹窗提示更新；纯网页版静默直接更新，不弹更新窗
       setTimeout(() => {
         const isOfflineNativeApp = !!window.AndroidApp ||
-          window.location.hostname === "appassets.androidcache.net" ||
+          window.location.hostname === "appassets.androidplatform.net" ||
           window.location.protocol === "app:" ||
           window.location.protocol === "file:";
         if (isOfflineNativeApp) {
@@ -5157,11 +5157,11 @@
     // ==========================================
     // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.4";
+    const CURRENT_APP_VERSION = "1.4.5";
     let latestReleaseInfo = null;
 
     function detectRuntimeEnv() {
-      const isAndroidApp = !!window.AndroidApp || window.location.hostname === "appassets.androidcache.net";
+      const isAndroidApp = !!window.AndroidApp || window.location.hostname === "appassets.androidplatform.net";
       const envText = document.getElementById("appRuntimeEnvText");
       if (envText) {
         envText.innerHTML = isAndroidApp

@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                if (url.startsWith("https://appassets.androidcache.net/") || url.startsWith("file:///")) {
+                if (url.startsWith("https://appassets.androidplatform.net/") || url.startsWith("file:///")) {
                     return false;
                 }
                 if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWebView.loadUrl("https://appassets.androidcache.net/assets/web/index.html");
+        mWebView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html");
 
         // 双击返回键退出
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {

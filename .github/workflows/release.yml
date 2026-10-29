@@ -1,4 +1,4 @@
-name: Build Android APK & iOS IPA and Publish Release
+name: Build Multi-Platform Releases and Publish
 
 on:
   push:
@@ -7,18 +7,112 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '发布版本号 (如 v1.4.3)'
+        description: '发布版本号 (如 v1.4.5)'
         required: true
-        default: 'v1.4.3'
+        default: 'v1.4.5'
 
 permissions:
   contents: write
 
 jobs:
+  # ==========================================================
+  # 1. 桌面端构建: Windows x64 (.exe / NSIS)
+  # ==========================================================
+  build-windows:
+    name: Build Windows (.exe)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Windows Installer (NSIS)
+        run: npx electron-builder --win nsis --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-windows
+          path: dist/*.exe
+
+  # ==========================================================
+  # 2. 桌面端构建: macOS arm64 + x64 (.dmg)
+  # ==========================================================
+  build-macos:
+    name: Build macOS (.dmg)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build macOS DMG (Universal: arm64 + x64)
+        run: npx electron-builder --mac dmg --arm64 --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-macos
+          path: dist/*.dmg
+
+  # ==========================================================
+  # 3. 桌面端构建: Linux x64 (.AppImage)
+  # ==========================================================
+  build-linux:
+    name: Build Linux (.AppImage)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Linux Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Linux AppImage
+        run: npx electron-builder --linux AppImage --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-linux
+          path: dist/*.AppImage
+
+  # ==========================================================
+  # 4. 移动端构建: Android (.apk)
+  # ==========================================================
   build-apk:
     name: Build Android APK
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -68,10 +162,12 @@ jobs:
           name: jsgsMock-android-apk
           path: jsgsMock-*.apk
 
+  # ==========================================================
+  # 5. 移动端构建: iOS (.ipa & 可选 TestFlight 自动上传)
+  # ==========================================================
   build-ipa:
-    name: Build iOS IPA
+    name: Build iOS IPA & TestFlight
     runs-on: macos-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -98,7 +194,7 @@ jobs:
           fi
           xcodegen generate
 
-      - name: Build Unsigned iOS App Bundle
+      - name: Build iOS App Bundle
         working-directory: ios
         run: |
           xcodebuild -project JsgsMock.xcodeproj \
@@ -125,11 +221,29 @@ jobs:
           name: jsgsMock-ios-ipa
           path: jsgsMock-*-ios.ipa
 
-  publish-release:
-    name: Publish GitHub Release
-    needs: [build-apk, build-ipa]
-    runs-on: ubuntu-latest
+      - name: Optional Upload to TestFlight (if Apple API Key provided)
+        if: env.APPLE_API_KEY_ID != '' && env.APPLE_API_ISSUER != '' && env.APPLE_API_PRIVATE_KEY != ''
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPLE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          echo "检测到 App Store Connect 凭据，正在上传至 TestFlight..."
+          mkdir -p ~/.private_keys
+          echo "$APPLE_API_PRIVATE_KEY" > ~/.private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
+          xcrun altool --upload-app \
+            --type ios \
+            --file "jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa" \
+            --apiKey "$APPLE_API_KEY_ID" \
+            --apiIssuer "$APPLE_API_ISSUER"
 
+  # ==========================================================
+  # 6. 统一汇聚所有平台安装包并发布到 GitHub Releases
+  # ==========================================================
+  publish-release:
+    name: Publish All Platform Releases
+    needs: [build-windows, build-macos, build-linux, build-apk, build-ipa]
+    runs-on: ubuntu-latest
     steps:
       - name: Set Release Version
         run: |
@@ -139,36 +253,40 @@ jobs:
             echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           fi
 
-      - name: Download APK Artifact
+      - name: Download All Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: jsgsMock-android-apk
+          path: release-assets
+          merge-multiple: true
 
-      - name: Download IPA Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jsgsMock-ios-ipa
+      - name: List Artifacts to Publish
+        run: |
+          ls -lh release-assets/
 
-      - name: Create GitHub Release with Android APK & iOS IPA
+      - name: Create Multi-Platform GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.RELEASE_VERSION }}
-          name: jsgsMock ${{ env.RELEASE_VERSION }} - 智能刷题与名师视频 (含 Android APK & iOS IPA)
+          name: jsgsMock ${{ env.RELEASE_VERSION }} - 全平台安装包 (Windows / macOS / Linux / Android / iOS)
           draft: false
           prerelease: false
           files: |
-            jsgsMock-${{ env.RELEASE_VERSION }}.apk
-            jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa
+            release-assets/*
           body: |
-            ## jsgsMock ${{ env.RELEASE_VERSION }} 正式发布
+            ## jsgsMock ${{ env.RELEASE_VERSION }} 全平台正式版本发布
 
-            本版本同时提供 **Android 原生安装包 (`.apk`)** 与 **Apple iOS 原生安装包 (`-ios.ipa`)**。全套真题库与考点精要讲义均已内置于安装包中，支持**纯离线秒开刷题**，并在**连接网络时直接在线观看 123 节名师精讲视频**。
+            本版本提供针对 **Windows、macOS、Linux、Android 和 iOS** 的全平台原生安装包。离线真题库、考点精要讲义手册全部内置，支持纯离线秒开刷题，并在连接网络时可顺畅在线流式观看 123 节名师精讲视频。
 
-            ### 1. Android 客户端安装
-            - 下载下方 Assets 中的 **`jsgsMock-${{ env.RELEASE_VERSION }}.apk`** 在安卓手机或平板直接安装。
+            ### 💻 桌面端安装包
+            - **Windows (x64)**：下载 **`jsgsMock Setup *.exe`**（标准 NSIS 安装包，支持创建桌面快捷方式与自由选择安装目录）。
+            - **macOS (Apple Silicon & Intel)**：下载 **`jsgsMock-*.dmg`**（通用架构，拖拽直接安装）。
+            - **Linux (x64)**：下载 **`jsgsMock-*.AppImage`**（免安装，赋予执行权限后直接运行）。
 
-            ### 2. Apple iOS (iPhone / iPad) 客户端安装
-            - **方式一（离线 `.ipa` 安装包侧载）**：下载下方 Assets 中的 **`jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa`**，使用 **Sideloadly**、**AltStore / SideStore**、**爱思助手** 或 **TrollStore（巨魔商店）** 签名安装至 iPhone / iPad。
-            - **方式二（Safari 免签桌面安装）**：使用 iPhone / iPad 自带 Safari 浏览器打开 [https://simple53.github.io/jsgsMock/](https://simple53.github.io/jsgsMock/)，点击底部「分享」按钮 -> 选择「添加到主屏幕」，即可作为独立全屏 App 运行。
+            ### 📱 移动端安装包
+            - **Android 手机/平板**：下载 **`jsgsMock-${{ env.RELEASE_VERSION }}.apk`** 直接安装。已彻底修复内置安全域映射，即装即用。
+            - **Apple iOS (iPhone / iPad)**：
+              - **方式一（.ipa 侧载签名）**：下载 **`jsgsMock-${{ env.RELEASE_VERSION }}-ios.ipa`**，使用 爱思助手 / Sideloadly / AltStore / TrollStore 安装。
+              - **方式二（Safari 免签安装）**：使用 iPhone/iPad 自带 Safari 浏览器打开 [https://simple53.github.io/jsgsMock/](https://simple53.github.io/jsgsMock/)，点击底部分享按钮 -> 选择「添加到主屏幕」即可作为独立全屏 App 运行。
+              - **方式三（TestFlight）**：若配置了 App Store Connect 证书凭据，将自动同步推送到 TestFlight 测试通道。
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
