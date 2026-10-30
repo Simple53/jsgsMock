@@ -1,14 +1,14 @@
 {
-  "version": "1.4.5",
-  "versionCode": 21,
-  "title": "jsgsMock v1.4.5 - 全平台客户端与 APK 体验修复",
-  "releaseDate": "2026-10-29",
+  "version": "1.4.6",
+  "versionCode": 22,
+  "title": "jsgsMock v1.4.6 - 滚轮误触修复、体积瘦身与横竖屏画中画增强",
+  "releaseDate": "2026-10-30",
   "changelog": [
-    "修复 Android APK 打开时出现 net::ERR_NAME_NOT_RESOLVED 无法加载页面的问题",
-    "新增全平台桌面客户端支持：Windows (.exe NSIS)、macOS (.dmg Universal)、Linux (.AppImage)",
-    "移动端持续支持 Android (.apk) 与 iOS (.ipa) / TestFlight",
-    "所有安装包均内置离线真题库与考点精要，支持离线刷题与联网观看名师视频"
+    "修复电脑端/网页端滑动滚轮直接显示“继续下一组”的误触问题，增加蓄力防抖且最后一题严禁自动交卷",
+    "全平台安装包极致压缩瘦身：启用 7z/LZMA 最高压缩比，过滤冗余构建文件，显著减小安装包体积",
+    "手机端视频播放全屏横竖切换支持解除系统旋转锁定限制，彻底修复 Android 与 Web 画中画小窗功能",
+    "首页 Excel 下载迁移整合至“设置 - 数据管理”板块，页面结构更加简洁纯粹"
   ],
-  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.5/jsgsMock-v1.4.5.apk",
-  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.5/jsgsMock-v1.4.5.apk"
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.6/jsgsMock-v1.4.6.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.6/jsgsMock-v1.4.6.apk"
 }

@@ -10,13 +10,15 @@ android {
         applicationId "com.jsgsmock.app"
         minSdk 21
         targetSdk 34
-        versionCode 19
-        versionName "1.4.3"
+        versionCode 20
+        versionName "1.4.6"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
         debug {
@@ -43,7 +45,11 @@ dependencies {
 }
 
 tasks.register('syncWebAssets', Copy) {
-    from("${rootDir}/../web")
+    from("${rootDir}/../web") {
+        exclude 'videos/**'
+        exclude '**/*.docx'
+        exclude '**/*.md'
+    }
     into("${projectDir}/src/main/assets/web")
 }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jsgsMock-v44';
+const CACHE_NAME = 'jsgsMock-v46';
 const ASSETS = [
   './',
   './index.html',
@@ -8,9 +8,9 @@ const ASSETS = [
   './quiz_data.json',
   './quiz_data.js',
   './course_videos.js',
-  './高校教资考点精要_2026官网新版题库.md',
   './manifest.json',
-  './icon.svg'
+  './icon.svg',
+  './icon.png'
 ];
 
 self.addEventListener('install', (event) => {

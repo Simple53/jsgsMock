@@ -2678,12 +2678,6 @@
             <span>历年题库</span>
           </button>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:6px;padding:0 2px;">
-          <a href="./高校教资题库全套_新旧两版对照带答案.xlsx" download="高校教资题库全套_新旧两版对照带答案.xlsx" style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--primary);text-decoration:none;font-weight:600;">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;"><use href="#icon-share"/></svg>
-            <span>下载全套题库Excel对照表 (含新旧2164题+答案)</span>
-          </a>
-        </div>
       </div>
 
 
@@ -2743,6 +2737,13 @@
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;font-size:12px;flex-shrink:0;">
                   <span id="cinemaClockDisplay">09:15</span>
+                  <button class="rotate-btn" id="btnCinemaOrientation" onclick="toggleCinemaOrientation(event)" aria-label="横竖屏切换" title="解除系统锁定横竖旋转">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                      <path d="M12 18h.01"/>
+                      <path d="M19 9l3 3-3 3"/>
+                    </svg>
+                  </button>
                   <button class="rotate-btn" id="btnCinemaCast" onclick="triggerVideoCast(event)" aria-label="投屏播放" title="无线投屏 / AirPlay">
                     <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
                       <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
@@ -3276,6 +3277,15 @@
               <input type="file" accept=".json,application/json" style="display:none;" onchange="importLearningBackup(event)">
             </label>
           </div>
+          <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);">
+            <div style="font-size:12px;font-weight:700;color:var(--text-main);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--primary);"><use href="#icon-share"/></svg>
+              <span>全套题库 Excel 对照表（支持电脑本地离线查阅）</span>
+            </div>
+            <a href="./高校教资题库全套_新旧两版对照带答案.xlsx" download="高校教资题库全套_新旧两版对照带答案.xlsx" class="bottom-btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:12.5px;padding:9px;color:var(--primary);font-weight:600;">
+              <span>下载全套题库Excel对照表 (含新旧2164题+官方答案+题型分布)</span>
+            </a>
+          </div>
         </div>
 
         <!-- 版本更新与 APK / iOS IPA 推送 -->
@@ -3285,7 +3295,7 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
               <span>版本与客户端下载（Android / iOS）</span>
             </div>
-            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.3</span>
+            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.6</span>
           </div>
           <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;" id="appRuntimeEnvText">
             当前环境：检测中...
@@ -3514,9 +3524,9 @@
       </div>
 
       <footer class="quiz-bottom-actions">
-        <button class="bottom-btn" onclick="navigateQuestion(-1)">上一题</button>
+        <button class="bottom-btn" onclick="navigateQuestion(-1, true)">上一题</button>
         <div style="font-size:11px;color:var(--text-muted);">左右滑屏切题</div>
-        <button class="bottom-btn primary" id="nextActionBtn" onclick="navigateQuestion(1)">下一题</button>
+        <button class="bottom-btn primary" id="nextActionBtn" onclick="navigateQuestion(1, true)">下一题</button>
       </footer>
     </div>
 
@@ -5157,7 +5167,7 @@
     // ==========================================
     // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.5";
+    const CURRENT_APP_VERSION = "1.4.6";
     let latestReleaseInfo = null;
 
     function detectRuntimeEnv() {
@@ -5703,15 +5713,15 @@
     const SETTINGS_SECTIONS = [
       ['preference', '偏好与外观', '做题模式与界面外观主题'],
       ['ai', 'AI 助教', '模型服务商、密钥与悬浮助教'],
-      ['data', '数据管理', '云端同步、备份恢复、题库与清空重置'],
-      ['resources', '资料与题库下载', '考点精要手册讲义与 Excel 对照表'],
-      ['update', '版本与更新', '检查最新版本及 APK 一键升级']
+      ['data', '数据管理', '云端同步、备份恢复、全套题库 Excel 下载与清空重置'],
+      ['resources', '考点精要讲义', '考点精要手册直接下载 (Word/MD)'],
+      ['update', '版本与更新', '检查最新版本及客户端下载']
     ];
 
     const SETTINGS_SECTION_MAP = {
       preference: ['mode', 'theme'],
       ai: ['ai'],
-      data: ['sync', 'backup', 'bank', 'export', 'reset'],
+      data: ['sync', 'backup', 'downloads', 'bank', 'export', 'reset'],
       resources: ['handbook', 'downloads'],
       update: ['update']
     };
@@ -6435,28 +6445,95 @@
       if (ev) ev.stopPropagation();
       const player = document.getElementById('tutorialVideoPlayer');
       if (!player) return;
+
+      // 1. Android 原生客户端：调用 Android 系统级 Picture-in-Picture 悬浮小窗
+      if (window.AndroidApp && typeof window.AndroidApp.enterPip === 'function') {
+        try {
+          if (player.paused && player.readyState >= 1) {
+            player.play().catch(() => {});
+          }
+          window.AndroidApp.enterPip();
+          showToast('已开启系统级画中画小窗悬浮播放');
+          toggleCinemaCastDrawer(false);
+          return;
+        } catch (err) {
+          console.warn('AndroidApp enterPip error:', err);
+        }
+      }
+
+      // 2. 网页端退出已存在的画中画
       if (document.pictureInPictureElement) {
         document.exitPictureInPicture().catch(() => {});
         toggleCinemaCastDrawer(false);
-      } else if (typeof player.requestPictureInPicture === 'function') {
+        return;
+      }
+
+      // 如果当前全屏，先退出全屏以防 PiP 窗口被全屏遮挡
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      if (player.paused && player.readyState >= 1) {
+        player.play().catch(() => {});
+      }
+
+      // 3. Web 标准与 Safari 画中画
+      if (typeof player.requestPictureInPicture === 'function') {
         player.requestPictureInPicture()
           .then(() => {
             showToast('已开启画中画悬浮播放');
             toggleCinemaCastDrawer(false);
           })
-          .catch(() => {
-            showToast('当前开始播放视频后即可开启画中画');
+          .catch((err) => {
+            console.warn('requestPictureInPicture error:', err);
+            showToast('请在视频开始播放后点击画中画按钮');
           });
       } else if (typeof player.webkitSetPresentationMode === 'function') {
         try {
           player.webkitSetPresentationMode(player.webkitPresentationMode === 'picture-in-picture' ? 'inline' : 'picture-in-picture');
           toggleCinemaCastDrawer(false);
         } catch (e) {
-          showToast('当前环境暂不支持画中画');
+          showToast('当前浏览器暂不支持画中画');
         }
       } else {
-        showToast('当前环境暂不支持画中画模式');
+        showToast('当前浏览器环境暂不支持画中画模式');
       }
+    }
+
+    // Android 原生画中画状态变化回调
+    window.onAndroidPipModeChanged = function(isInPip) {
+      const container = document.getElementById('videoContainer');
+      const overlay = document.getElementById('cinemaOverlayLayer');
+      if (isInPip) {
+        if (container) container.classList.add('pip-active');
+        if (overlay) overlay.style.display = 'none';
+      } else {
+        if (container) container.classList.remove('pip-active');
+        if (overlay) overlay.style.display = '';
+      }
+    };
+
+    // 强制横竖屏切换控制（突破系统旋转锁定）
+    function toggleCinemaOrientation(ev) {
+      if (ev) ev.stopPropagation();
+      const container = document.getElementById('videoContainer');
+      if (!container) return;
+
+      isManualOrientationOverride = true;
+      isVideoLandscape = !isVideoLandscape;
+
+      // 1. Android 原生端强制设置屏幕方向，直接突破系统竖屏锁定
+      if (window.AndroidApp && typeof window.AndroidApp.setScreenOrientation === 'function') {
+        window.AndroidApp.setScreenOrientation(isVideoLandscape ? 'landscape' : 'portrait');
+      }
+
+      // 2. 现代浏览器调用 Screen Orientation API
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock(isVideoLandscape ? 'landscape' : 'portrait').catch(() => {});
+      }
+
+      syncForcedLandscape();
+      showToast(isVideoLandscape ? '已切换并锁定横屏影院模式（突破系统旋转锁定）' : '已切换为竖屏模式');
     }
 
     function copyCurrentVideoStreamUrl() {
@@ -6510,6 +6587,13 @@
       if (isCinemaFullscreen) {
         isManualOrientationOverride = false;
         isVideoLandscape = getDeviceIsLandscape();
+        // 进入全屏时，Android 原生端与现代浏览器尝试锁定横屏突破系统锁定
+        if (window.AndroidApp && typeof window.AndroidApp.setScreenOrientation === 'function') {
+          window.AndroidApp.setScreenOrientation('landscape');
+        }
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
         syncForcedLandscape();
         const req = container.requestFullscreen ? container.requestFullscreen()
           : (container.webkitRequestFullscreen ? container.webkitRequestFullscreen() : null);
@@ -6522,6 +6606,10 @@
         closeSourceMenu();
         closeSpeedMenu();
         closeVolumePopup();
+        // 退出全屏时恢复系统方向判断
+        if (window.AndroidApp && typeof window.AndroidApp.setScreenOrientation === 'function') {
+          window.AndroidApp.setScreenOrientation('unspecified');
+        }
         if (screen.orientation && screen.orientation.unlock) {
           try { screen.orientation.unlock(); } catch (e) {}
         }
@@ -6778,6 +6866,15 @@
           ev.stopPropagation();
           if (ev.cancelable) ev.preventDefault();
           toggleVideoFullscreen(ev);
+        }, { passive: false });
+      }
+      const orientBtn = document.getElementById('btnCinemaOrientation');
+      if (orientBtn && !orientBtn.dataset.fastTap) {
+        orientBtn.dataset.fastTap = '1';
+        orientBtn.addEventListener('touchend', (ev) => {
+          ev.stopPropagation();
+          if (ev.cancelable) ev.preventDefault();
+          toggleCinemaOrientation(ev);
         }, { passive: false });
       }
       const castBtn = document.getElementById('btnCinemaCast');
@@ -8535,16 +8632,24 @@
       }
     }
 
-    function navigateQuestion(step) {
+    function navigateQuestion(step, isExplicitClick = false) {
       const total = activeQuestions.length;
       const target = currentQuizIndex + step;
       if (target >= total) {
-        if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
-          submitExamPaper();
+        // 关键保护：只有当用户明确点击“下一题/交卷/查看结果”按钮（isExplicitClick === true）时才触发交卷结算
+        // 如果是滚轮滚动或手势滑动到达末尾，严禁自动弹出结算弹窗，避免未答完题或误滑滚轮直接被带入“继续下一组”
+        if (isExplicitClick) {
+          if (appConfig.quizMode === 'exam' && !isExamSubmitted) {
+            submitExamPaper();
+          } else {
+            submitPracticeQuiz();
+          }
         } else {
-          // 普通练习完成最后一题：弹出练习结算报告弹窗，不再卡死
-          submitPracticeQuiz();
+          showToast('已到达本组最后一题，请检查答案后点击下方按钮完成练习');
         }
+        return;
+      }
+      if (target < 0) {
         return;
       }
       if (target >= 0 && target < total) {
@@ -8592,48 +8697,66 @@
         // 确保水平滑动幅度明显大于垂直滚动，防止误触
         if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
           if (diffX < 0) {
-            navigateQuestion(1); // 向左划 -> 下一题
+            navigateQuestion(1, false); // 向左划 -> 下一题（手势不自动交卷）
           } else {
-            navigateQuestion(-1); // 向右划 -> 上一题
+            navigateQuestion(-1, false); // 向右划 -> 上一题
           }
         }
       }
     }
 
-    // 电脑端鼠标滚轮上下切题与快捷键支持 (需求1)
+    // 电脑端鼠标滚轮上下切题与快捷键支持 (需求1彻底优化，增加蓄力防误触与严禁滚轮自动交卷)
     let pcWheelThrottle = false;
+    let pcWheelAccumulator = 0;
+    let pcWheelResetTimer = null;
     function initPcNavigation() {
       const quizView = document.getElementById("quizView");
 
-      // 滚轮事件监听：内容滚动到顶部或底部边界时触发切题
+      // 滚轮事件监听：只在题目主体视图中，且内容真正触底且持续用力滚动才切题
       window.addEventListener("wheel", (e) => {
         if (!quizView || quizView.style.display === "none") return;
-        // 如果有弹窗打开，则忽略切题
+        // 如果有任何弹窗打开，则忽略切题
         if (document.getElementById("sheetDrawer")?.classList.contains("open") ||
             document.getElementById("draftCanvasMask")?.classList.contains("open") ||
             document.getElementById("practiceResultModal")?.classList.contains("open") ||
-            document.getElementById("floatingAiDrawer")?.classList.contains("open")) {
+            document.getElementById("floatingAiDrawer")?.classList.contains("open") ||
+            document.getElementById("videoEpisodeDrawer")?.classList.contains("open") ||
+            document.getElementById("cinemaCastDrawer")?.classList.contains("open")) {
           return;
         }
 
         const body = document.getElementById("quizScrollBody");
         if (!body) return;
 
+        // 仅当滚轮发生在答题主体区域内时响应
+        if (!quizView.contains(e.target)) return;
+
         if (pcWheelThrottle) return;
 
-        const atTop = body.scrollTop <= 2;
-        const atBottom = (body.scrollTop + body.clientHeight) >= (body.scrollHeight - 3);
+        // 累积滚轮位移：防抖重置
+        clearTimeout(pcWheelResetTimer);
+        pcWheelResetTimer = setTimeout(() => { pcWheelAccumulator = 0; }, 320);
+        pcWheelAccumulator += e.deltaY;
 
-        if (e.deltaY > 25 && atBottom) {
-          // 向下滚且内容已到达底部 -> 下一题
+        const atTop = body.scrollTop <= 2;
+        const atBottom = (body.scrollTop + body.clientHeight) >= (body.scrollHeight - 4);
+
+        // 如果页面本身可垂直滚动，需要明确触底后再蓄力；如果无需滚动，也需要足够蓄力防止微晃
+        const isScrollable = body.scrollHeight > (body.clientHeight + 8);
+        const threshold = isScrollable ? 140 : 200;
+
+        if (pcWheelAccumulator > threshold && atBottom) {
+          // 向下滚且内容已到达底部 -> 下一题（传入 false，绝不自动弹出交卷弹窗）
           pcWheelThrottle = true;
-          navigateQuestion(1);
-          setTimeout(() => { pcWheelThrottle = false; }, 380);
-        } else if (e.deltaY < -25 && atTop) {
+          pcWheelAccumulator = 0;
+          navigateQuestion(1, false);
+          setTimeout(() => { pcWheelThrottle = false; }, 480);
+        } else if (pcWheelAccumulator < -threshold && atTop) {
           // 向上滚且内容已到达顶部 -> 上一题
           pcWheelThrottle = true;
-          navigateQuestion(-1);
-          setTimeout(() => { pcWheelThrottle = false; }, 380);
+          pcWheelAccumulator = 0;
+          navigateQuestion(-1, false);
+          setTimeout(() => { pcWheelThrottle = false; }, 480);
         }
       }, { passive: true });
 
@@ -8649,10 +8772,10 @@
 
         if (e.key === "ArrowRight" || e.key === "ArrowDown") {
           e.preventDefault();
-          navigateQuestion(1);
+          navigateQuestion(1, false);
         } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
           e.preventDefault();
-          navigateQuestion(-1);
+          navigateQuestion(-1, false);
         } else if (e.key === "Enter" || e.key === " ") {
           if (isMulti && !isSubmitted) {
             e.preventDefault();
@@ -10635,7 +10758,7 @@
       <div class="modal-top-row">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="modal-main-title">发现新版本</span>
-          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.3</span>
+          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.6</span>
         </div>
         <button class="modal-close-icon" onclick="closeUpdateModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>

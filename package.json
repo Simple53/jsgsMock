@@ -1,6 +1,6 @@
 {
   "name": "jsgs-mock",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "jsgsMock - 高校教资智能刷题与名师视频系统",
   "main": "electron-main.js",
   "author": "Simple53",
@@ -19,12 +19,20 @@
     "appId": "com.jsgsmock.app",
     "productName": "jsgsMock",
     "copyright": "Copyright © 2026 Simple53",
+    "compression": "maximum",
+    "electronLanguages": ["zh-CN", "zh", "en-US", "en"],
+    "asar": true,
     "directories": {
       "output": "dist"
     },
     "files": [
       "electron-main.js",
       "web/**/*",
+      "!web/**/*.md",
+      "!web/**/*.docx",
+      "!web/**/*.json",
+      "web/version.json",
+      "web/manifest.json",
       "!web/videos/**/*"
     ],
     "win": {
@@ -43,7 +51,8 @@
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "jsgsMock"
+      "shortcutName": "jsgsMock",
+      "differentialPackage": false
     },
     "mac": {
       "target": [
