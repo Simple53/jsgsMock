@@ -1,6 +1,6 @@
 {
   "name": "jsgs-mock",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "jsgsMock - 高校教资智能刷题与名师视频系统",
   "main": "electron-main.js",
   "author": "Simple53",

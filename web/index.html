@@ -481,6 +481,9 @@
     .tool-icon-btn.active {
       color: var(--star-active);
     }
+    .tool-icon-btn#doubtQuestionBtn.active {
+      color: #ea580c !important;
+    }
 
     .quiz-scroll-body {
       flex: 1;
@@ -2416,6 +2419,12 @@
       <g id="icon-sheet"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="16" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="16" cy="16" r="1.5" fill="currentColor"/></g>
       <!-- 星星 -->
       <g id="icon-star"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" /></g>
+      <!-- 疑问题目/问号 -->
+      <g id="icon-doubt">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="17" r="1.2" fill="currentColor"/>
+      </g>
       <!-- 对勾 -->
       <g id="icon-check"><polyline points="20 6 9 17 4 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
       <!-- 复选框方形对勾 -->
@@ -2960,6 +2969,7 @@
           <button class="inner-tab-btn active" id="btnTabAllWrong" onclick="switchWrongTab('all')">全部错题</button>
           <button class="inner-tab-btn" id="btnTabEbbinghaus" onclick="switchWrongTab('ebbinghaus')">艾宾浩斯复习</button>
           <button class="inner-tab-btn" id="btnTabFavorites" onclick="switchWrongTab('fav')">我的收藏</button>
+          <button class="inner-tab-btn" id="btnTabDoubts" onclick="switchWrongTab('doubts')">疑难题库 <span id="doubtTabBadge" style="font-size:11px;opacity:0.85;"></span></button>
         </div>
 
         <div id="allWrongBannerArea" style="margin-bottom:14px;">
@@ -2987,6 +2997,24 @@
               <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">艾宾浩斯记忆周期 · 记得/模糊/忘记反馈</div>
             </div>
             <button class="bottom-btn primary" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;" onclick="startFavEbbinghausQuizDirect()">开始做题</button>
+          </div>
+        </div>
+
+        <div id="doubtBannerArea" style="display:none;margin-bottom:14px;">
+          <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:6px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:#ea580c;"><use href="#icon-doubt"/></svg>
+                <span>疑难题库攻坚研学</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">集中复习被标记为疑问的题目 · 支持标记已解决与辨析思考</div>
+            </div>
+            <button class="bottom-btn primary" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;" onclick="startDoubtsQuizDirect()">开始做题</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <button type="button" class="count-pill active" id="btnFilterDoubtAll" onclick="filterDoubtsView('all', this)">全部</button>
+            <button type="button" class="count-pill" id="btnFilterDoubtPending" onclick="filterDoubtsView('pending', this)">待核实</button>
+            <button type="button" class="count-pill" id="btnFilterDoubtResolved" onclick="filterDoubtsView('resolved', this)">已解决</button>
           </div>
         </div>
 
@@ -3188,6 +3216,44 @@
           <button class="bottom-btn" style="width:100%;padding:10px;font-size:13px;margin-top:12px;" onclick="saveSettingsProviderConfig()">保存并激活该供应商配置</button>
         </div>
 
+        <!-- 需求1：设置板块专属 AI 助教自由问答会话面板 (保留历史对话) -->
+        <div class="settings-ai-chat-panel" data-settings-section="ai" style="border:1.5px solid var(--border);border-radius:12px;padding:16px;background:var(--card-bg);margin-top:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:6px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chat"/></svg>
+                <span>AI 助教自由问答会话</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">教资考点随时咨询 · 自动保留全部历史对话</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px;font-weight:700;" id="settingsChatModelTag">deepseek-chat</span>
+              <button class="tool-icon-btn" onclick="clearSettingsAiChatHistory()" title="清空会话历史" style="width:28px;height:28px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-refresh"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 快捷考点咨询标签 -->
+          <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;white-space:nowrap;-webkit-overflow-scrolling:touch;">
+            <button type="button" class="count-pill" onclick="quickFillSettingsChat('请归纳高校教师职业道德规范的核心内涵与采分点')">师德规范核心点</button>
+            <button type="button" class="count-pill" onclick="quickFillSettingsChat('高等教育学中，常模参照评价与标准参照评价的区别是什么？')">常模与标准参照</button>
+            <button type="button" class="count-pill" onclick="quickFillSettingsChat('高校教师教资考试中，教育心理学的核心高频考点有哪些？')">高频心理学考点</button>
+            <button type="button" class="count-pill" onclick="quickFillSettingsChat('请分析大学教学过程的特点及启发性教学原则的应用')">启发性原则应用</button>
+          </div>
+
+          <!-- 会话历史滚动展示区 -->
+          <div class="chat-messages-scroll" id="settingsAiChatMessages" style="height:360px;max-height:420px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;"></div>
+
+          <!-- 底部输入框与发送按钮 -->
+          <div class="chat-input-bar" style="margin-top:10px;padding:0;background:transparent;">
+            <input class="chat-input-text" id="settingsAiChatInput" placeholder="输入你想咨询的教资问题或考点疑问..." onkeydown="if(event.key==='Enter') sendSettingsAiChatMessage()">
+            <button class="chat-send-btn" id="btnSettingsAiSend" onclick="sendSettingsAiChatMessage()" title="发送咨询">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:#ffffff;"><use href="#icon-send"/></svg>
+            </button>
+          </div>
+        </div>
+
         <!-- 主题是否跟随系统 -->
         <div data-settings-section="theme" style="border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
           <div>
@@ -3295,7 +3361,7 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
               <span>版本与客户端下载（Android / iOS）</span>
             </div>
-            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.6</span>
+            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.7</span>
           </div>
           <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;" id="appRuntimeEnvText">
             当前环境：检测中...
@@ -3457,6 +3523,9 @@
           <button class="tool-icon-btn" id="favStarBtn" onclick="toggleFavoriteCurrent()" title="收藏本题">
             <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
           </button>
+          <button class="tool-icon-btn" id="doubtQuestionBtn" onclick="openDoubtReportModal()" title="报告疑问题目 / 疑难题库">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-doubt"/></svg>
+          </button>
           <button class="tool-icon-btn" id="themeCycleBtn" onclick="cycleThemeMode()" title="切换主题(太阳/月亮/护眼)">
             <svg class="svg-icon" id="themeCurrentIcon" viewBox="0 0 24 24"><use href="#icon-sun"/></svg>
           </button>
@@ -3501,7 +3570,10 @@
             <span style="font-size:14px;font-weight:800;">AI 名师助教</span>
             <span style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:1px 6px;border-radius:4px;font-weight:700;" id="floatingDrawerModelTag">deepseek-chat</span>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="tool-icon-btn" onclick="toggleFloatingAiHistoryView()" id="btnFloatingHistoryToggle" title="查看做题提问历史" style="width:28px;height:28px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><use href="#icon-clock"/></svg>
+            </button>
             <button class="tool-icon-btn" onclick="clearFloatingChatHistory()" title="清空对话" style="width:28px;height:28px;">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-refresh"/></svg>
             </button>
@@ -3509,6 +3581,15 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><use href="#icon-minus"/></svg>
             </button>
           </div>
+        </div>
+
+        <!-- 历史提问列表视图（默认隐藏，点击历史按钮切换） -->
+        <div id="floatingAiHistoryView" style="display:none;flex:1;overflow-y:auto;padding:12px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:13px;font-weight:700;color:var(--text-sub);">做题提问历史记录</span>
+            <button class="text-name-btn" style="padding:2px 8px;font-size:11px;" onclick="toggleFloatingAiHistoryView(false)">返回当前问答 ›</button>
+          </div>
+          <div id="floatingAiHistoryList" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
 
         <div class="chat-messages-scroll" id="floatingChatMessages">
@@ -3748,6 +3829,54 @@
       <div class="sheet-num-grid" id="sheetNumGrid"></div>
       <button class="modal-submit-btn" id="submitPracticeBtn" style="display:none;margin-top:10px;" onclick="submitPracticeQuiz()">完成并提交练习</button>
       <button class="modal-submit-btn" id="submitExamBtn" style="display:none;margin-top:10px;" onclick="submitExamPaper()">交卷并查看解析</button>
+    </div>
+  </div>
+
+  <!-- =======================================
+       报告疑问题目与反馈弹窗
+       ======================================= -->
+  <div class="modal-mask" id="doubtReportModal" onclick="closeDoubtReportModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()" style="max-width:440px;">
+      <div class="modal-top-row">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:#ea580c;"><use href="#icon-doubt"/></svg>
+          <span class="modal-main-title" id="doubtModalTitle">报告疑问题目</span>
+        </div>
+        <button class="modal-close-icon" onclick="closeDoubtReportModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.5;" id="doubtModalQMeta"></div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-main);margin-top:6px;max-height:64px;overflow-y:auto;line-height:1.5;padding:6px 8px;background:var(--bg);border-radius:6px;border:1px solid var(--border);" id="doubtModalQText"></div>
+        
+        <div style="margin-top:12px;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-sub);display:block;margin-bottom:6px;">疑问类型标记：</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;" id="doubtTagGroup">
+            <button type="button" class="count-pill active" onclick="selectDoubtTag('答案存疑', this)">答案存疑</button>
+            <button type="button" class="count-pill" onclick="selectDoubtTag('题干有歧义', this)">题干有歧义</button>
+            <button type="button" class="count-pill" onclick="selectDoubtTag('考点解析不详', this)">考点解析不详</button>
+            <button type="button" class="count-pill" onclick="selectDoubtTag('知识点超纲', this)">知识点超纲</button>
+            <button type="button" class="count-pill" onclick="selectDoubtTag('其它疑问', this)">其它疑问</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label for="doubtNotesInput" style="font-size:12px;font-weight:700;color:var(--text-sub);display:block;margin-bottom:6px;">个人疑问思考与备忘（可选）：</label>
+          <textarea id="doubtNotesInput" rows="3" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text-main);resize:vertical;outline:none;" placeholder="如：查阅教材第4章，此处似乎有争议，待查证..."></textarea>
+        </div>
+
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+          <span style="font-size:12.5px;font-weight:700;color:var(--text-sub);">处理状态：</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="count-pill active" id="btnDoubtStatusPending" onclick="setDoubtStatusModal('pending')">待核实</button>
+            <button type="button" class="count-pill" id="btnDoubtStatusResolved" onclick="setDoubtStatusModal('resolved')">已解决</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="bottom-btn" id="btnRemoveDoubt" style="display:none;color:var(--wrong);border-color:var(--wrong);padding:10px;" onclick="removeDoubtCurrentQuestion()">移除疑问</button>
+        <button class="modal-submit-btn" style="flex:1;padding:10px;" onclick="saveDoubtCurrentQuestion()">保存疑问记录</button>
+      </div>
     </div>
   </div>
 
@@ -4110,7 +4239,11 @@
       customSubjects: {},
       // 存储各供应商的具体配置
       activeProvider: "deepseek",
-      providersConfig: {}
+      providersConfig: {},
+      // 疑难题库、做题AI历史、设置页AI自由问答会话
+      doubtQuestions: {},
+      quizAiHistory: {},
+      settingsAiChatHistory: []
     };
 
     // 月历热力图状态
@@ -4311,6 +4444,9 @@
       if (!userStore.openedSubjects) userStore.openedSubjects = {};
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
       if (!userStore.customTextbooks) userStore.customTextbooks = [];
+      if (!userStore.doubtQuestions) userStore.doubtQuestions = {};
+      if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
+      if (!Array.isArray(userStore.settingsAiChatHistory)) userStore.settingsAiChatHistory = [];
       if (!userStore.syncConfig) {
         userStore.syncConfig = {
           githubToken: "",
@@ -4473,6 +4609,36 @@
         if (!userStore.customSubjects) userStore.customSubjects = {};
         Object.assign(userStore.customSubjects, remote.customSubjects);
         Object.assign(allSubjectsData, remote.customSubjects);
+      }
+
+      // 9. doubtQuestions: 疑难题库合并
+      if (remote.doubtQuestions && typeof remote.doubtQuestions === 'object') {
+        if (!userStore.doubtQuestions) userStore.doubtQuestions = {};
+        for (const [k, d] of Object.entries(remote.doubtQuestions)) {
+          const lDoubt = userStore.doubtQuestions[k];
+          if (!lDoubt || (d.time && (!lDoubt.time || d.time > lDoubt.time))) {
+            userStore.doubtQuestions[k] = d;
+          }
+        }
+      }
+
+      // 10. quizAiHistory: 做题界面AI追问历史合并
+      if (remote.quizAiHistory && typeof remote.quizAiHistory === 'object') {
+        if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
+        for (const [k, list] of Object.entries(remote.quizAiHistory)) {
+          if (Array.isArray(list) && list.length > 0) {
+            if (!userStore.quizAiHistory[k] || userStore.quizAiHistory[k].length < list.length) {
+              userStore.quizAiHistory[k] = list;
+            }
+          }
+        }
+      }
+
+      // 11. settingsAiChatHistory: 设置界面AI问答历史合并
+      if (Array.isArray(remote.settingsAiChatHistory) && remote.settingsAiChatHistory.length > 0) {
+        if (!Array.isArray(userStore.settingsAiChatHistory) || userStore.settingsAiChatHistory.length < remote.settingsAiChatHistory.length) {
+          userStore.settingsAiChatHistory = remote.settingsAiChatHistory;
+        }
       }
 
       saveUserStore(true);
@@ -4754,7 +4920,7 @@
 
     // 跨站点备份仅包含学习进度，不导出同步令牌或 AI 密钥；支持 json / csv / md / txt 多种格式导出。
     function exportLearningBackup(format = 'json') {
-      const fields = ['answers', 'favorites', 'wrongBook', 'ebbinghausWrong', 'checkin', 'dailyActivity', 'unfinishedSessions'];
+      const fields = ['answers', 'favorites', 'wrongBook', 'ebbinghausWrong', 'checkin', 'dailyActivity', 'unfinishedSessions', 'doubtQuestions', 'quizAiHistory', 'settingsAiChatHistory'];
       const store = Object.fromEntries(fields.map(key => [key, userStore[key] ?? (key === 'favorites' ? [] : {})]));
       const dateStr = new Date().toISOString().slice(0, 10);
       const answersEntries = Object.entries(store.answers || {});
@@ -4763,6 +4929,7 @@
       const accuracy = totalAnswered > 0 ? ((correctCount / totalAnswered) * 100).toFixed(1) : '0.0';
       const wrongCount = Object.keys(store.wrongBook || {}).length;
       const favCount = Array.isArray(store.favorites) ? store.favorites.length : 0;
+      const doubtCount = Object.keys(store.doubtQuestions || {}).length;
       const checkinDays = store.checkin?.days || 0;
 
       let blob = null;
@@ -4788,6 +4955,7 @@
           `- **累计答对题目**：${correctCount} 题（正确率 ${accuracy}%）`,
           `- **当前错题本数**：${wrongCount} 题`,
           `- **收藏夹题目数**：${favCount} 题`,
+          `- **疑难题库题目**：${doubtCount} 题`,
           `- **连续打卡天数**：${checkinDays} 天`,
           ``,
           `## 二、作答明细记录`,
@@ -4870,6 +5038,7 @@
         checkin: userStore.checkin || {},
         dailyActivity: userStore.dailyActivity || {},
         unfinishedSessions: userStore.unfinishedSessions || {},
+        doubtQuestions: userStore.doubtQuestions || {},
         timestamp: Date.now()
       };
       try {
@@ -5167,7 +5336,7 @@
     // ==========================================
     // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.6";
+    const CURRENT_APP_VERSION = "1.4.7";
     let latestReleaseInfo = null;
 
     function detectRuntimeEnv() {
@@ -5763,6 +5932,9 @@
 
       if (section === 'update') {
         detectRuntimeEnv();
+      }
+      if (section === 'ai' || activeTargets.includes('ai')) {
+        renderSettingsAiChatHistory();
       }
       if (section === 'data' || section === 'sync') {
         const syncCard = host.querySelector('[data-settings-section="sync"]');
@@ -7969,6 +8141,9 @@
       if (!userStore.openedSubjects) userStore.openedSubjects = {};
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
       if (!userStore.customTextbooks) userStore.customTextbooks = [];
+      if (!userStore.doubtQuestions) userStore.doubtQuestions = {};
+      if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
+      if (!Array.isArray(userStore.settingsAiChatHistory)) userStore.settingsAiChatHistory = [];
       userStore.openedSubjects[sub] = true;
       currentExamId = null;
       isWrongPracticeActive = false;
@@ -8124,6 +8299,9 @@
       if (!userStore.openedSubjects) userStore.openedSubjects = {};
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
       if (!userStore.customTextbooks) userStore.customTextbooks = [];
+      if (!userStore.doubtQuestions) userStore.doubtQuestions = {};
+      if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
+      if (!Array.isArray(userStore.settingsAiChatHistory)) userStore.settingsAiChatHistory = [];
       userStore.openedSubjects[targetSub] = true;
       currentExamId = null;
 
@@ -8484,6 +8662,13 @@
 
       const isFav = userStore.favorites.includes(qKey);
       document.getElementById("favStarBtn").classList.toggle("active", isFav);
+
+      const hasDoubt = !!(userStore.doubtQuestions && userStore.doubtQuestions[qKey]);
+      const doubtBtn = document.getElementById("doubtQuestionBtn");
+      if (doubtBtn) {
+        doubtBtn.classList.toggle("active", hasDoubt);
+        doubtBtn.title = hasDoubt ? `已标记疑问 [${userStore.doubtQuestions[qKey].tag || '已记录'}]，点击查看或编辑` : '报告疑问题目 / 疑难题库';
+      }
 
       const nextBtn = document.getElementById("nextActionBtn");
       if (currentQuizIndex === total - 1) {
@@ -8937,6 +9122,24 @@
       updateDrawerModelTag();
       const drawer = document.getElementById("floatingAiDrawer");
       if (drawer) drawer.classList.add("open");
+
+      toggleFloatingAiHistoryView(false);
+
+      const q = activeQuestions[currentQuizIndex];
+      const qKey = q ? getQKey(q) : null;
+      if (qKey && userStore.quizAiHistory && userStore.quizAiHistory[qKey] && userStore.quizAiHistory[qKey].length > 0) {
+        floatingChatHistory = JSON.parse(JSON.stringify(userStore.quizAiHistory[qKey]));
+        const container = document.getElementById("floatingChatMessages");
+        if (container) {
+          container.innerHTML = "";
+          floatingChatHistory.forEach(m => {
+            if (m.role === 'system') return;
+            appendChatMessageUI(m.role, m.content);
+          });
+        }
+        return;
+      }
+
       if (floatingChatHistory.length === 0) {
         initFloatingChatGreeting();
       }
@@ -8947,11 +9150,29 @@
       if (drawer) drawer.classList.remove("open");
     }
 
+    function saveCurrentQuizAiHistory() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
+      userStore.quizAiHistory[qKey] = JSON.parse(JSON.stringify(floatingChatHistory));
+      saveUserStore();
+    }
+
     function clearFloatingChatHistory() {
       floatingChatHistory = [];
+      const q = activeQuestions[currentQuizIndex];
+      if (q) {
+        const qKey = getQKey(q);
+        if (userStore.quizAiHistory && userStore.quizAiHistory[qKey]) {
+          delete userStore.quizAiHistory[qKey];
+          saveUserStore();
+        }
+      }
       const container = document.getElementById("floatingChatMessages");
       if (container) container.innerHTML = "";
       initFloatingChatGreeting();
+      showToast("已清空本题对话历史");
     }
 
     function initFloatingChatGreeting() {
@@ -8969,6 +9190,92 @@
       `;
     }
 
+    // 做题界面查看历史对话视图切换
+    function toggleFloatingAiHistoryView(force) {
+      const historyView = document.getElementById("floatingAiHistoryView");
+      const chatMsgs = document.getElementById("floatingChatMessages");
+      const inputBar = document.querySelector(".floating-ai-drawer .chat-input-bar");
+      const btn = document.getElementById("btnFloatingHistoryToggle");
+      if (!historyView) return;
+
+      const isShowing = (force !== undefined) ? !force : (historyView.style.display !== "none");
+      if (isShowing) {
+        historyView.style.display = "none";
+        if (chatMsgs) chatMsgs.style.display = "flex";
+        if (inputBar) inputBar.style.display = "flex";
+        if (btn) btn.classList.remove("active");
+      } else {
+        renderFloatingAiHistoryList();
+        historyView.style.display = "block";
+        if (chatMsgs) chatMsgs.style.display = "none";
+        if (inputBar) inputBar.style.display = "none";
+        if (btn) btn.classList.add("active");
+      }
+    }
+
+    function renderFloatingAiHistoryList() {
+      const container = document.getElementById("floatingAiHistoryList");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const quizHistory = userStore.quizAiHistory || {};
+      const entries = Object.entries(quizHistory).filter(([, msgs]) => Array.isArray(msgs) && msgs.length > 0);
+
+      if (entries.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:36px 12px;color:var(--text-muted);font-size:12.5px;line-height:1.6;">暂无做题历史提问记录。<br>在做题界面追问助教，每次对话都将自动完整保存在这里！</div>`;
+        return;
+      }
+
+      entries.sort((a, b) => {
+        const tA = a[1][a[1].length - 1]?.time || 0;
+        const tB = b[1][b[1].length - 1]?.time || 0;
+        return tB - tA;
+      });
+
+      entries.forEach(([qKey, msgs]) => {
+        const lastUserMsg = [...msgs].reverse().find(m => m.role === 'user');
+        const lastAssistantMsg = [...msgs].reverse().find(m => m.role === 'assistant');
+        const timeStr = lastUserMsg?.time ? new Date(lastUserMsg.time).toLocaleDateString() : '';
+
+        const item = document.createElement("div");
+        item.style.cssText = "background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;cursor:pointer;";
+        item.onclick = () => loadHistoryIntoFloatingAi(qKey);
+
+        item.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;font-weight:700;color:var(--primary);">${escapeHtml(qKey.replace(/^off26_/, ''))}</span>
+            <span style="font-size:11px;color:var(--text-muted);">${timeStr} · ${msgs.filter(m => m.role === 'user').length}条对话</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--text-main);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            问：${escapeHtml(lastUserMsg?.content || '考点追问')}
+          </div>
+          <div style="font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            答：${escapeHtml(lastAssistantMsg?.content || '')}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function loadHistoryIntoFloatingAi(qKey) {
+      const msgs = userStore.quizAiHistory && userStore.quizAiHistory[qKey];
+      if (!Array.isArray(msgs)) return;
+
+      toggleFloatingAiHistoryView(false);
+
+      floatingChatHistory = JSON.parse(JSON.stringify(msgs));
+      const container = document.getElementById("floatingChatMessages");
+      if (!container) return;
+      container.innerHTML = "";
+
+      floatingChatHistory.forEach(msg => {
+        if (msg.role === 'system') return;
+        appendChatMessageUI(msg.role, msg.content);
+      });
+
+      showToast(`已载入题目 [${qKey.replace(/^off26_/, '')}] 的历史对话记录`);
+    }
+
     function appendChatMessageUI(role, text) {
       const container = document.getElementById("floatingChatMessages");
       if (!container) return null;
@@ -8979,10 +9286,10 @@
       if (role === "user") {
         actionsHtml = `
           <div class="chat-msg-actions">
-            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制内容">
+            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制提问">
               <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
             </button>
-            <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="修改此条内容并重新生成">
+            <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="撤回编辑此条提问">
               <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-edit-retry"/></svg>
             </button>
           </div>
@@ -8992,6 +9299,9 @@
           <div class="chat-msg-actions">
             <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制助教回答">
               <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+            </button>
+            <button class="chat-action-btn" onclick="regenerateAssistantResponse(this)" title="重新生成此条回答">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
             </button>
           </div>
         `;
@@ -9058,7 +9368,37 @@
         }
       }
 
-      showToast("已回填至输入框，修改后发送即可重新生成");
+      saveCurrentQuizAiHistory();
+      showToast("已撤回至输入框，修改后发送即可重新生成");
+    }
+
+    // 重新生成助教回答
+    async function regenerateAssistantResponse(btn) {
+      if (isAiResponding) {
+        showToast("助教正在思考生成中，请稍候...");
+        return;
+      }
+      const msgEl = btn.closest(".chat-msg");
+      if (!msgEl) return;
+
+      let cur = msgEl;
+      const toRemove = [];
+      while (cur) {
+        toRemove.push(cur);
+        cur = cur.nextElementSibling;
+      }
+      toRemove.forEach(el => el.remove());
+
+      while (floatingChatHistory.length > 0) {
+        const last = floatingChatHistory[floatingChatHistory.length - 1];
+        if (last.role === 'assistant') {
+          floatingChatHistory.pop();
+          break;
+        }
+        floatingChatHistory.pop();
+      }
+
+      await executeStreamChatToAssistant();
     }
 
     // 严格清洗发送给 AI 模型的上下文消息序列，杜绝连续 user、空内容等导致 HTTP 400 报错
@@ -9320,7 +9660,8 @@
       }
 
       appendChatMessageUI("user", text);
-      floatingChatHistory.push({ role: "user", content: text });
+      floatingChatHistory.push({ role: "user", content: text, time: Date.now() });
+      saveCurrentQuizAiHistory();
 
       await executeStreamChatToAssistant();
     }
@@ -9397,11 +9738,271 @@
           }
         }
 
-        floatingChatHistory.push({ role: "assistant", content: fullResponse });
+        floatingChatHistory.push({ role: "assistant", content: fullResponse, time: Date.now() });
+        saveCurrentQuizAiHistory();
       } catch (err) {
         bodyEl.textContent = `回答生成失败: ${err.message}，请在设置中检查该供应商的端点与 Key 配置。`;
       } finally {
         isAiResponding = false;
+      }
+    }
+
+    // ==========================================
+    // 需求1：设置页面专属 AI 助教自由问答会话 (保留历史对话，支持回撤编辑与重新生成)
+    // ==========================================
+    let isSettingsAiResponding = false;
+
+    function updateSettingsChatModelTag() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+      const tag = document.getElementById("settingsChatModelTag");
+      if (tag) tag.textContent = cfg.model || PROVIDERS[activeProv]?.defaultModel || "AI助教";
+    }
+
+    function renderSettingsAiChatHistory() {
+      updateSettingsChatModelTag();
+      const container = document.getElementById("settingsAiChatMessages");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const history = userStore.settingsAiChatHistory || [];
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="chat-msg assistant">
+            <div class="chat-bubble-body">你好！我是高校教资专属 AI 名师助教。无论是高等教育理论、高校教师职业道德规范、高等教育心理学还是备考疑惑，随时可以向我提问！历史对话将自动保存在此处。</div>
+          </div>
+        `;
+        return;
+      }
+
+      history.forEach(msg => {
+        if (msg.role === 'system') return;
+        appendSettingsChatMessageUI(msg.role, msg.content, false);
+      });
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendSettingsChatMessageUI(role, text, shouldScroll = true) {
+      const container = document.getElementById("settingsAiChatMessages");
+      if (!container) return null;
+      const msgEl = document.createElement("div");
+      msgEl.className = `chat-msg ${role}`;
+
+      let actionsHtml = "";
+      if (role === "user") {
+        actionsHtml = `
+          <div class="chat-msg-actions">
+            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制内容">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+            </button>
+            <button class="chat-action-btn" onclick="editAndRegenerateSettingsChat(this)" title="撤回编辑此条提问">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-edit-retry"/></svg>
+            </button>
+          </div>
+        `;
+      } else if (role === "assistant") {
+        actionsHtml = `
+          <div class="chat-msg-actions">
+            <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制助教回答">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
+            </button>
+            <button class="chat-action-btn" onclick="regenerateSettingsAssistantResponse(this)" title="重新生成此条回答">
+              <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-refresh"/></svg>
+            </button>
+          </div>
+        `;
+      }
+
+      msgEl.innerHTML = `
+        <div class="chat-bubble-body">${escapeHtml(text)}</div>
+        ${actionsHtml}
+      `;
+      container.appendChild(msgEl);
+      if (shouldScroll) container.scrollTop = container.scrollHeight;
+      return msgEl.querySelector(".chat-bubble-body");
+    }
+
+    function quickFillSettingsChat(text) {
+      const input = document.getElementById("settingsAiChatInput");
+      if (input) {
+        input.value = text;
+        input.focus();
+      }
+    }
+
+    function clearSettingsAiChatHistory() {
+      if (!confirm("确定清空设置中的 AI 助教历史会话吗？")) return;
+      userStore.settingsAiChatHistory = [];
+      saveUserStore();
+      renderSettingsAiChatHistory();
+      showToast("已清空设置中的会话历史");
+    }
+
+    function editAndRegenerateSettingsChat(btn) {
+      if (isSettingsAiResponding) {
+        showToast("助教正在生成回答中，请稍候...");
+        return;
+      }
+      const msgEl = btn.closest(".chat-msg");
+      if (!msgEl) return;
+      const bodyEl = msgEl.querySelector(".chat-bubble-body");
+      if (!bodyEl) return;
+      const originalText = bodyEl.innerText.trim();
+
+      const input = document.getElementById("settingsAiChatInput");
+      if (input) {
+        input.value = originalText;
+        input.focus();
+      }
+
+      let cur = msgEl;
+      const toRemove = [];
+      while (cur) {
+        toRemove.push(cur);
+        cur = cur.nextElementSibling;
+      }
+      toRemove.forEach(el => el.remove());
+
+      const idx = (userStore.settingsAiChatHistory || []).map(m => m.role === 'user' ? m.content : null).lastIndexOf(originalText);
+      if (idx !== -1) {
+        userStore.settingsAiChatHistory = userStore.settingsAiChatHistory.slice(0, idx);
+      } else {
+        while ((userStore.settingsAiChatHistory || []).length > 0) {
+          const last = userStore.settingsAiChatHistory.pop();
+          if (last.role === 'user') break;
+        }
+      }
+      saveUserStore();
+      showToast("已撤回至输入框，修改后发送即可重新生成");
+    }
+
+    async function regenerateSettingsAssistantResponse(btn) {
+      if (isSettingsAiResponding) {
+        showToast("助教正在思考生成中，请稍候...");
+        return;
+      }
+      const msgEl = btn.closest(".chat-msg");
+      if (!msgEl) return;
+
+      let cur = msgEl;
+      const toRemove = [];
+      while (cur) {
+        toRemove.push(cur);
+        cur = cur.nextElementSibling;
+      }
+      toRemove.forEach(el => el.remove());
+
+      while ((userStore.settingsAiChatHistory || []).length > 0) {
+        const last = userStore.settingsAiChatHistory[userStore.settingsAiChatHistory.length - 1];
+        if (last.role === 'assistant') {
+          userStore.settingsAiChatHistory.pop();
+          break;
+        }
+        userStore.settingsAiChatHistory.pop();
+      }
+      saveUserStore();
+
+      await executeStreamChatToSettingsAssistant();
+    }
+
+    async function sendSettingsAiChatMessage() {
+      if (isSettingsAiResponding) return;
+      const input = document.getElementById("settingsAiChatInput");
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+
+      if (!cfg.apiKey) {
+        appendSettingsChatMessageUI("user", text);
+        appendSettingsChatMessageUI("assistant", `请在上方【API 密钥】中配置【${PROVIDERS[activeProv].name}】的 Key 并点击保存激活！`);
+        return;
+      }
+
+      if (!Array.isArray(userStore.settingsAiChatHistory)) {
+        userStore.settingsAiChatHistory = [];
+      }
+
+      appendSettingsChatMessageUI("user", text);
+      userStore.settingsAiChatHistory.push({ role: "user", content: text, time: Date.now() });
+      saveUserStore();
+
+      await executeStreamChatToSettingsAssistant();
+    }
+
+    async function executeStreamChatToSettingsAssistant() {
+      const activeProv = userStore.activeProvider || "deepseek";
+      const cfg = userStore.providersConfig[activeProv] || {};
+      const bodyEl = appendSettingsChatMessageUI("assistant", "思考中...");
+
+      isSettingsAiResponding = true;
+      try {
+        const rawMessages = [
+          {
+            role: "system",
+            content: "你是一位专业的高校教师资格证考试与高等教育学专家名师。解答准确权威，紧扣考纲要点，杜绝任何 Emoji。"
+          },
+          ...(userStore.settingsAiChatHistory || []).map(m => ({ role: m.role, content: m.content }))
+        ];
+        const cleanedMessages = sanitizeChatMessages(rawMessages);
+
+        const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
+        const resp = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${cfg.apiKey}`
+          },
+          body: JSON.stringify({
+            model: cfg.model || PROVIDERS[activeProv].defaultModel,
+            messages: cleanedMessages,
+            stream: true
+          })
+        });
+
+        if (!resp.ok) {
+          let detail = `HTTP ${resp.status}`;
+          try {
+            const raw = await resp.text();
+            const errObj = JSON.parse(raw);
+            if (errObj.error?.message) detail = `HTTP ${resp.status}: ${errObj.error.message}`;
+          } catch (e) {}
+          throw new Error(detail);
+        }
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let fullResponse = "";
+        bodyEl.textContent = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            const tr = line.trim();
+            if (tr.startsWith("data: ") && tr !== "data: [DONE]") {
+              try {
+                const parsed = JSON.parse(tr.slice(6));
+                const delta = parsed.choices?.[0]?.delta?.content || "";
+                fullResponse += delta;
+                bodyEl.textContent = fullResponse;
+                const container = document.getElementById("settingsAiChatMessages");
+                if (container) container.scrollTop = container.scrollHeight;
+              } catch (e) {}
+            }
+          }
+        }
+
+        userStore.settingsAiChatHistory.push({ role: "assistant", content: fullResponse, time: Date.now() });
+        saveUserStore();
+      } catch (err) {
+        bodyEl.textContent = `回答生成失败: ${err.message}，请检查 API Key 与网络连接。`;
+      } finally {
+        isSettingsAiResponding = false;
       }
     }
 
@@ -10260,27 +10861,50 @@
       renderCalendarHeatmap();
     }
 
-    // 错题本与模拟考试
+    // 错题本、抗遗忘与疑难题库
     function switchWrongTab(tab) {
       document.getElementById('btnTabAllWrong').classList.toggle('active', tab === 'all');
       document.getElementById('btnTabEbbinghaus').classList.toggle('active', tab === 'ebbinghaus');
       const favBtn = document.getElementById('btnTabFavorites');
       if (favBtn) favBtn.classList.toggle('active', tab === 'fav');
+      const doubtsBtn = document.getElementById('btnTabDoubts');
+      if (doubtsBtn) doubtsBtn.classList.toggle('active', tab === 'doubts');
+
+      const doubtCount = Object.keys(userStore.doubtQuestions || {}).length;
+      const doubtBadge = document.getElementById('doubtTabBadge');
+      if (doubtBadge) doubtBadge.textContent = doubtCount > 0 ? `(${doubtCount})` : '';
 
       const ebBanner = document.getElementById('ebbinghausBannerArea');
       const allBanner = document.getElementById('allWrongBannerArea');
       const favBanner = document.getElementById('favBannerArea');
+      const doubtBanner = document.getElementById('doubtBannerArea');
 
       if (ebBanner) ebBanner.style.display = (tab === 'ebbinghaus') ? 'block' : 'none';
       if (allBanner) allBanner.style.display = (tab === 'all') ? 'block' : 'none';
       if (favBanner) favBanner.style.display = (tab === 'fav') ? 'block' : 'none';
+      if (doubtBanner) doubtBanner.style.display = (tab === 'doubts') ? 'block' : 'none';
 
       renderWrongPane(tab);
+    }
+
+    let currentDoubtFilter = 'all'; // 'all' | 'pending' | 'resolved'
+
+    function filterDoubtsView(filter, btn) {
+      currentDoubtFilter = filter;
+      document.querySelectorAll('#doubtBannerArea .count-pill').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderWrongPane('doubts');
     }
 
     function renderWrongPane(tab) {
       const container = document.getElementById("wrongListContent");
       container.innerHTML = "";
+
+      // 需求3: 错题板块整合疑难题库
+      if (tab === 'doubts') {
+        renderDoubtsPane(container);
+        return;
+      }
 
       // 需求2: 错题本新增【我的收藏】一栏，支持艾宾浩斯抗遗忘记忆与做题
       if (tab === 'fav') {
@@ -10335,6 +10959,296 @@
         const revCnt = eb.reviewCount || 0;
         appendCompactQuestion(container, q, idx, revCnt, () => startSingleWrongQuiz(qKey));
       });
+    }
+
+    // 渲染疑难题库列表
+    function renderDoubtsPane(container) {
+      const doubts = Object.values(userStore.doubtQuestions || {});
+      const badge = document.getElementById('doubtTabBadge');
+      if (badge) badge.textContent = doubts.length > 0 ? `(${doubts.length})` : '';
+
+      if (doubts.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:40px 16px;color:var(--text-muted);line-height:1.6;">暂无疑难题记录。<br><span style="font-size:12px;">在做题界面点击顶栏【？】问号按钮即可报告和标记疑问题目！</span></div>`;
+        return;
+      }
+
+      let filtered = doubts;
+      if (currentDoubtFilter === 'pending') {
+        filtered = doubts.filter(d => (d.status || 'pending') === 'pending');
+      } else if (currentDoubtFilter === 'resolved') {
+        filtered = doubts.filter(d => d.status === 'resolved');
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:32px 16px;color:var(--text-muted);font-size:13px;">当前分类下暂无疑难题记录</div>`;
+        return;
+      }
+
+      filtered.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+      filtered.forEach((doubt, idx) => {
+        const isResolved = doubt.status === 'resolved';
+        const card = document.createElement('div');
+        card.className = 'wrong-compact-row';
+        card.style.cssText = 'flex-direction:column;align-items:stretch;padding:12px 14px;cursor:default;';
+
+        const timeStr = doubt.time ? new Date(doubt.time).toLocaleDateString() : '';
+        const tagText = doubt.tag || '答案存疑';
+
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span class="row-index" style="width:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;">#${idx + 1}</span>
+              <span style="font-size:12px;font-weight:700;color:var(--text-main);">${escapeHtml(doubt.subject || '科目')} · ${escapeHtml(doubt.typeName || '选择题')}</span>
+              <span style="font-size:11px;background:rgba(234,88,12,0.12);color:#ea580c;padding:1px 6px;border-radius:4px;font-weight:600;">${escapeHtml(tagText)}</span>
+            </div>
+            <button type="button" class="count-pill ${isResolved ? 'active' : ''}" style="padding:2px 8px;font-size:11px;white-space:nowrap;${isResolved ? 'background:var(--correct-bg);color:var(--correct);border-color:var(--correct);' : 'background:rgba(234,88,12,0.1);color:#ea580c;border-color:rgba(234,88,12,0.3);'}" onclick="toggleDoubtResolvedState('${doubt.qKey}', event)">
+              ${isResolved ? '已解决 ✓' : '待核实 ⏳'}
+            </button>
+          </div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--text-main);margin:8px 0 4px;line-height:1.5;">${renderQuestionText(doubt.question)}</div>
+          ${doubt.notes ? `<div style="font-size:12px;color:var(--text-sub);background:var(--bg);padding:6px 10px;border-radius:6px;border:1px solid var(--border);margin:4px 0 8px;line-height:1.5;"><strong style="color:var(--primary);">疑问思考：</strong>${escapeHtml(doubt.notes)}</div>` : ''}
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;padding-top:6px;border-top:1px dashed var(--border);">
+            <span style="font-size:11px;color:var(--text-muted);">${timeStr ? '报告于 ' + timeStr : ''}</span>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="text-name-btn" style="padding:2px 8px;font-size:11px;" onclick="openDoubtReportModalForEdit('${doubt.qKey}', event)">编辑疑问</button>
+              <button type="button" class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--wrong);border-color:var(--wrong);" onclick="removeSingleDoubtQuestion('${doubt.qKey}', event)">移除</button>
+              <button type="button" class="text-name-btn" style="padding:2px 10px;font-size:11px;color:var(--primary);border-color:var(--primary);font-weight:700;" onclick="startSingleDoubtQuiz('${doubt.qKey}', event)">攻坚做题 ›</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleDoubtResolvedState(qKey, evt) {
+      if (evt) evt.stopPropagation();
+      if (!userStore.doubtQuestions || !userStore.doubtQuestions[qKey]) return;
+      const cur = userStore.doubtQuestions[qKey].status || 'pending';
+      userStore.doubtQuestions[qKey].status = (cur === 'pending') ? 'resolved' : 'pending';
+      userStore.doubtQuestions[qKey].updatedAt = Date.now();
+      saveUserStore();
+      showToast(userStore.doubtQuestions[qKey].status === 'resolved' ? '已标记为【已解决】' : '已重置为【待核实】');
+      renderWrongPane('doubts');
+    }
+
+    function removeSingleDoubtQuestion(qKey, evt) {
+      if (evt) evt.stopPropagation();
+      if (!confirm("确定将该题从疑难题库中移除吗？")) return;
+      delete userStore.doubtQuestions[qKey];
+      saveUserStore();
+      showToast("已从疑难题库移除！");
+      renderWrongPane('doubts');
+    }
+
+    // 疑难题库开始做题
+    function startDoubtsQuizDirect() {
+      const doubts = Object.values(userStore.doubtQuestions || {});
+      if (doubts.length === 0) {
+        showToast("疑难题库暂无题目！");
+        return;
+      }
+      const doubtKeys = doubts.map(d => d.qKey);
+      const doubtQs = [];
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => {
+          if (doubtKeys.some(dk => isKeyMatched(dk, q))) {
+            doubtQs.push(q);
+          }
+        });
+      });
+      if (doubtQs.length === 0) {
+        showToast("暂无可练疑难题！");
+        return;
+      }
+      isWrongPracticeActive = true;
+      wrongSessionRevealed = {};
+      wrongSessionAnswers = {};
+      currentSubject = "疑难题库研学";
+      activeQuestions = doubtQs;
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      isExamSubmitted = false;
+      openQuizView();
+    }
+
+    // 单题进入疑难题练习
+    function startSingleDoubtQuiz(qKey, evt) {
+      if (evt) evt.stopPropagation();
+      let targetQ = null;
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { if (isKeyMatched(qKey, q)) targetQ = q; });
+      });
+      if (!targetQ) {
+        showToast("未在题库中检索到该题目");
+        return;
+      }
+      isWrongPracticeActive = true;
+      wrongSessionRevealed = {};
+      wrongSessionAnswers = {};
+      currentSubject = "疑难题库研学";
+      activeQuestions = [targetQ];
+      currentQuizIndex = 0;
+      appConfig.quizMode = 'study';
+      isExamSubmitted = false;
+      openQuizView();
+    }
+
+    // 疑难题弹窗控制函数
+    let currentEditingDoubtQKey = null;
+    let selectedDoubtTag = "答案存疑";
+    let selectedDoubtStatus = "pending";
+
+    function selectDoubtTag(tag, btn) {
+      selectedDoubtTag = tag;
+      document.querySelectorAll('#doubtTagGroup .count-pill').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function setDoubtStatusModal(status) {
+      selectedDoubtStatus = status;
+      document.getElementById('btnDoubtStatusPending')?.classList.toggle('active', status === 'pending');
+      document.getElementById('btnDoubtStatusResolved')?.classList.toggle('active', status === 'resolved');
+    }
+
+    function openDoubtReportModal() {
+      const q = activeQuestions[currentQuizIndex];
+      if (!q) return;
+      const qKey = getQKey(q);
+      openDoubtReportModalForEdit(qKey, null, q);
+    }
+
+    function openDoubtReportModalForEdit(qKey, evt, existingQ) {
+      if (evt) evt.stopPropagation();
+      currentEditingDoubtQKey = qKey;
+
+      let q = existingQ;
+      if (!q) {
+        for (const qs of Object.values(allSubjectsData)) {
+          for (const item of qs) {
+            if (isKeyMatched(qKey, item)) { q = item; break; }
+          }
+          if (q) break;
+        }
+      }
+
+      const modal = document.getElementById('doubtReportModal');
+      if (!modal) return;
+
+      const record = userStore.doubtQuestions && userStore.doubtQuestions[qKey];
+      const titleEl = document.getElementById('doubtModalTitle');
+      if (titleEl) titleEl.textContent = record ? '编辑疑难题记录' : '报告疑问题目';
+
+      const metaEl = document.getElementById('doubtModalQMeta');
+      if (metaEl) metaEl.textContent = q ? `${q.subject} · ${q.typeName} · 第 ${q.num} 题` : `题目ID: ${qKey}`;
+
+      const textEl = document.getElementById('doubtModalQText');
+      if (textEl) textEl.textContent = q ? q.question : '题目详情';
+
+      selectedDoubtTag = record?.tag || '答案存疑';
+      document.querySelectorAll('#doubtTagGroup .count-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === selectedDoubtTag);
+      });
+
+      const notesInput = document.getElementById('doubtNotesInput');
+      if (notesInput) notesInput.value = record?.notes || '';
+
+      selectedDoubtStatus = record?.status || 'pending';
+      setDoubtStatusModal(selectedDoubtStatus);
+
+      const removeBtn = document.getElementById('btnRemoveDoubt');
+      if (removeBtn) removeBtn.style.display = record ? 'block' : 'none';
+
+      modal.classList.add('open');
+      modal.style.display = 'flex';
+    }
+
+    function closeDoubtReportModal(evt) {
+      if (evt && evt.target !== evt.currentTarget) return;
+      const modal = document.getElementById('doubtReportModal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.style.display = 'none';
+      }
+      currentEditingDoubtQKey = null;
+    }
+
+    function saveDoubtCurrentQuestion() {
+      if (!currentEditingDoubtQKey) return;
+      const qKey = currentEditingDoubtQKey;
+
+      let q = activeQuestions[currentQuizIndex];
+      if (!q || getQKey(q) !== qKey) {
+        for (const qs of Object.values(allSubjectsData)) {
+          for (const item of qs) {
+            if (isKeyMatched(qKey, item)) { q = item; break; }
+          }
+          if (q) break;
+        }
+      }
+
+      if (!userStore.doubtQuestions) userStore.doubtQuestions = {};
+      const notes = document.getElementById('doubtNotesInput')?.value.trim() || '';
+
+      userStore.doubtQuestions[qKey] = {
+        qKey: qKey,
+        subject: q ? q.subject : '',
+        typeName: q ? q.typeName : '',
+        num: q ? q.num : 0,
+        question: q ? q.question : '',
+        options: q ? q.options : {},
+        answer: q ? q.answer : '',
+        analysis: q ? q.analysis : '',
+        tag: selectedDoubtTag || '答案存疑',
+        notes: notes,
+        status: selectedDoubtStatus || 'pending',
+        time: Date.now()
+      };
+
+      saveUserStore();
+      showToast('已保存疑难题记录，已整合至【错题本 - 疑难题库】！');
+      closeDoubtReportModal();
+
+      const curQ = activeQuestions[currentQuizIndex];
+      if (curQ && getQKey(curQ) === qKey) {
+        const btn = document.getElementById('doubtQuestionBtn');
+        if (btn) {
+          btn.classList.add('active');
+          btn.title = `已标记疑问 [${selectedDoubtTag}]，点击查看或编辑`;
+        }
+      }
+
+      const badge = document.getElementById('doubtTabBadge');
+      const cnt = Object.keys(userStore.doubtQuestions).length;
+      if (badge) badge.textContent = cnt > 0 ? `(${cnt})` : '';
+      if (document.getElementById('btnTabDoubts')?.classList.contains('active')) {
+        renderWrongPane('doubts');
+      }
+    }
+
+    function removeDoubtCurrentQuestion() {
+      if (!currentEditingDoubtQKey) return;
+      const qKey = currentEditingDoubtQKey;
+      delete userStore.doubtQuestions[qKey];
+      saveUserStore();
+      showToast('已从疑难题库移除该题目记录！');
+      closeDoubtReportModal();
+
+      const curQ = activeQuestions[currentQuizIndex];
+      if (curQ && getQKey(curQ) === qKey) {
+        const btn = document.getElementById('doubtQuestionBtn');
+        if (btn) {
+          btn.classList.remove('active');
+          btn.title = '报告疑问题目 / 疑难题库';
+        }
+      }
+
+      const badge = document.getElementById('doubtTabBadge');
+      const cnt = Object.keys(userStore.doubtQuestions || {}).length;
+      if (badge) badge.textContent = cnt > 0 ? `(${cnt})` : '';
+      if (document.getElementById('btnTabDoubts')?.classList.contains('active')) {
+        renderWrongPane('doubts');
+      }
     }
 
     function appendCompactQuestion(container, q, index, reviews, open) {
@@ -10758,7 +11672,7 @@
       <div class="modal-top-row">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="modal-main-title">发现新版本</span>
-          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.6</span>
+          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.7</span>
         </div>
         <button class="modal-close-icon" onclick="closeUpdateModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>

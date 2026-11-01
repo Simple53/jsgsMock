@@ -1,14 +1,13 @@
 {
-  "version": "1.4.6",
-  "versionCode": 22,
-  "title": "jsgsMock v1.4.6 - 滚轮误触修复、体积瘦身与横竖屏画中画增强",
-  "releaseDate": "2026-10-30",
+  "version": "1.4.7",
+  "versionCode": 23,
+  "title": "jsgsMock v1.4.7 - AI会话面板、消息回撤与疑难题库整合",
+  "releaseDate": "2026-11-01",
   "changelog": [
-    "修复电脑端/网页端滑动滚轮直接显示“继续下一组”的误触问题，增加蓄力防抖且最后一题严禁自动交卷",
-    "全平台安装包极致压缩瘦身：启用 7z/LZMA 最高压缩比，过滤冗余构建文件，显著减小安装包体积",
-    "手机端视频播放全屏横竖切换支持解除系统旋转锁定限制，彻底修复 Android 与 Web 画中画小窗功能",
-    "首页 Excel 下载迁移整合至“设置 - 数据管理”板块，页面结构更加简洁纯粹"
+    "设置界面新增独立 AI 助教自由问答会话面板，支持教资考点随时咨询并自动保留全部历史对话",
+    "做题界面 AI 助教支持随时查看历史对话列表，支持用户提问回撤编辑、助教回答重新生成",
+    "做题界面新增疑问题目反馈入口，并在错题板块整合【疑难题库】，支持后续标记处理与集中攻坚做题"
   ],
-  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.6/jsgsMock-v1.4.6.apk",
-  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.6/jsgsMock-v1.4.6.apk"
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.7/jsgsMock-v1.4.7.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.7/jsgsMock-v1.4.7.apk"
 }
