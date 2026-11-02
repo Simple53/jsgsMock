@@ -12,8 +12,6 @@ wheels/
 web/videos/
 sample_*.mp4
 video-compress*.log
-demo/*.mp4
-*.mp4
 
 # User sync state
 user_sync_store.json
