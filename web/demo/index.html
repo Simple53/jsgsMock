@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用演示与教程</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: #111827;
+      background: #ffffff;
+      padding: 32px 16px 64px;
+    }
+    .wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 36px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    p.intro {
+      font-size: 14px;
+      color: #4b5563;
+    }
+    section {
+      margin-bottom: 48px;
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+    .info-list {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: #374151;
+    }
+    .info-list div {
+      margin-bottom: 6px;
+    }
+    .info-list span.label {
+      color: #6b7280;
+      display: inline-block;
+      width: 76px;
+    }
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .desc {
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 14px;
+    }
+    .video-block {
+      margin-top: 14px;
+      background: #000000;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      max-height: 480px;
+      display: block;
+      background: #000000;
+    }
+    footer {
+      margin-top: 64px;
+      padding-top: 20px;
+      border-top: 1px solid #f3f4f6;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>使用演示与教程</h1>
+      <p class="intro">包含课程观看辅助脚本与跨平台刷题工具的项目地址、功能简介及实操演示视频。</p>
+    </header>
+
+    <main>
+      <!-- 项目 1 -->
+      <section>
+        <h2>1. jsgsHelper</h2>
+        <div class="info-list">
+          <div><span class="label">项目地址：</span><a href="https://github.com/Simple53/jsgsHelpler" target="_blank" rel="noopener noreferrer">https://github.com/Simple53/jsgsHelpler</a></div>
+        </div>
+        <p class="desc">功能简介：浏览器插件脚本，辅助完成课程观看，支持后台播放、跨课联播、倍速播放、进度拖拽等。具体安装视频教程如下：</p>
+        <div class="video-block">
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="./jsgsHelper教程.mp4" type="video/mp4">
+            您的浏览器不支持视频标签。
+          </video>
+        </div>
+      </section>
+
+      <!-- 项目 2 -->
+      <section>
+        <h2>2. jsgsMock</h2>
+        <div class="info-list">
+          <div><span class="label">项目地址：</span><a href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer">https://github.com/Simple53/jsgsMock</a></div>
+          <div><span class="label">网址入口：</span><a href="https://simple53.github.io/jsgsMock" target="_blank" rel="noopener noreferrer">https://simple53.github.io/jsgsMock</a></div>
+          <div><span class="label">下载地址：</span><a href="https://github.com/Simple53/jsgsMock/releases/tag/v1.4.7" target="_blank" rel="noopener noreferrer">https://github.com/Simple53/jsgsMock/releases/tag/v1.4.7</a></div>
+        </div>
+        <p class="desc">功能简介：基于PWA网页的刷题工具，实现了网页端、Windows、安卓、iOS、Mac等多模式。所有用户的进度保存在本地设备中，电脑和手机可以通过导入导出备份实现同步。内容涵盖官网最新题库、视频播放、错题收藏、做题统计、AI助教等功能，界面简洁易上手。同步功能视频如下：</p>
+        <div class="video-block">
+          <video controls preload="metadata" playsinline webkit-playsinline>
+            <source src="./jsgsMock教资刷题助手教程.mp4" type="video/mp4">
+            您的浏览器不支持视频标签。
+          </video>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>jsgsHelper &amp; jsgsMock</span>
+    </footer>
+  </div>
+</body>
+</html>
