@@ -2690,6 +2690,10 @@
               <a class="header-icon-btn" href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" title="GitHub 仓库 (欢迎 Star)">
                 <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-github"/></svg>
               </a>
+              <!-- AI 助教历史对话 (点击全屏显示) -->
+              <button class="header-icon-btn" onclick="openAiHistoryFullScreen()" title="AI 助教历史对话">
+                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-chat"/></svg>
+              </button>
               <!-- 收藏题目入口 -->
               <button class="header-icon-btn" onclick="startFavoritesQuizDirect()" title="我的收藏题目">
                 <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-star"/></svg>
@@ -2781,22 +2785,6 @@
       </nav>
 
       <div class="subject-list" id="subjectListContainer"></div>
-
-      <!-- 需求2: 首页以列表形式展示 AI 助教历史对话 -->
-      <section class="home-ai-history-section" id="homeAiHistorySection">
-        <div class="home-ai-section-header">
-          <div class="home-ai-section-title-wrap">
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
-            <span class="home-ai-section-title">AI 助教历史对话</span>
-            <span class="count-pill" id="homeAiHistoryCountBadge" style="font-size:10.5px;padding:1px 6px;">0</span>
-          </div>
-          <button type="button" class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);display:inline-flex;align-items:center;gap:3px;" onclick="openSettingsWithAiChat()" title="打开 AI 助教提问面板">
-            <span>去提问</span>
-            <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;"><use href="#icon-right"/></svg>
-          </button>
-        </div>
-        <div class="home-ai-history-list" id="homeAiHistoryList"></div>
-      </section>
 
       <div class="custom-fab-wrap">
         <button class="custom-fab-btn" onclick="openStartQuizModal(null)">
@@ -3230,8 +3218,13 @@
          TAB 5: 个人设置板块 (需求1: 包含打卡统计数据)
          ======================================= -->
     <div class="view-content-pane" id="paneSettings" style="display:none;">
-      <header class="home-top-header" style="padding:14px 20px;">
+      <header class="home-top-header" style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
         <span style="font-size:18px;font-weight:800;">个人与系统设置</span>
+        <div class="header-icons-row">
+          <button class="header-icon-btn" onclick="openAiHistoryFullScreen()" title="AI 助教历史对话">
+            <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-chat"/></svg>
+          </button>
+        </div>
       </header>
       <div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
         <!-- 默认做题模式 -->
@@ -3328,6 +3321,9 @@
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px;font-weight:700;" id="settingsChatModelTag">deepseek-chat</span>
+              <button class="tool-icon-btn" onclick="openAiHistoryFullScreen()" title="全屏查看 AI 助教历史对话列表" style="width:28px;height:28px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-chat"/></svg>
+              </button>
               <button class="tool-icon-btn" onclick="clearSettingsAiChatHistory()" title="清空会话历史" style="width:28px;height:28px;">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><use href="#icon-refresh"/></svg>
               </button>
@@ -6022,12 +6018,12 @@
       }
       const heading = pane.querySelector('.home-top-header');
       const currentTitle = SETTINGS_SECTIONS.find(x => x[0] === section)?.[1] || '设置';
-      const ghIconLink = `<a class="header-icon-btn" href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" title="访问 GitHub 仓库并点亮 Star"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-github"/></svg></a>`;
-      // 设置二级菜单返回按钮放置在文字左侧，右侧放置 GitHub 仓库入口
+      const rightIconsHtml = `<div class="header-icons-row"><button class="header-icon-btn" onclick="openAiHistoryFullScreen()" title="AI 助教历史对话"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-chat"/></svg></button><a class="header-icon-btn" href="https://github.com/Simple53/jsgsMock" target="_blank" rel="noopener noreferrer" title="访问 GitHub 仓库并点亮 Star"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-github"/></svg></a></div>`;
+      // 设置二级菜单返回按钮放置在文字左侧，右侧放置 AI 助教历史对话与 GitHub 仓库入口
       heading.style.cssText = 'padding:14px 20px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;';
       heading.innerHTML = section === 'menu'
-        ? `<span style="font-size:18px;font-weight:800">设置</span>${ghIconLink}`
-        : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>${ghIconLink}`;
+        ? `<span style="font-size:18px;font-weight:800">设置</span>${rightIconsHtml}`
+        : `<div style="display:flex;align-items:center;gap:8px;"><button class="settings-back" onclick="openSettingsSection('menu')" aria-label="返回" title="返回" style="border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:4px;color:var(--text-main);margin:0;"><svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><span style="font-size:18px;font-weight:800;">${currentTitle}</span></div>${rightIconsHtml}`;
       menu.style.display = section === 'menu' ? 'block' : 'none';
 
       // 映射到目标卡片子集合
@@ -9436,14 +9432,28 @@
 
     // 打开设置并直达 AI 助教会话面板
     function openSettingsWithAiChat() {
+      closeAiHistoryFullScreen();
       switchBottomTab('settings');
       openSettingsSection('ai');
     }
 
-    // 需求2: 渲染首页【AI助教历史对话】列表
+    // 全屏打开 AI 助教历史对话列表
+    function openAiHistoryFullScreen() {
+      const modal = document.getElementById("aiHistoryFullScreen");
+      if (!modal) return;
+      renderHomeAiHistoryList();
+      modal.style.display = "flex";
+    }
+
+    function closeAiHistoryFullScreen() {
+      const modal = document.getElementById("aiHistoryFullScreen");
+      if (modal) modal.style.display = "none";
+    }
+
+    // 渲染全屏【AI助教历史对话】列表
     function renderHomeAiHistoryList() {
-      const container = document.getElementById("homeAiHistoryList");
-      const countBadge = document.getElementById("homeAiHistoryCountBadge");
+      const container = document.getElementById("aiHistoryFullScreenList") || document.getElementById("homeAiHistoryList");
+      const countBadge = document.getElementById("aiHistoryFsCountBadge") || document.getElementById("homeAiHistoryCountBadge");
       if (!container) return;
 
       const items = [];
@@ -9462,7 +9472,10 @@
             question: msg.content,
             answer: asstContent,
             time: msg.time || 0,
-            handler: () => openSettingsWithAiChat()
+            handler: () => {
+              closeAiHistoryFullScreen();
+              openSettingsWithAiChat();
+            }
           });
         }
       }
@@ -9478,11 +9491,12 @@
           items.push({
             id: `quiz_${qKey}`,
             type: 'quiz',
-            sourceLabel: `题目追问 · ${cleanKey.slice(0, 10)}`,
+            sourceLabel: `题目追问 · ${cleanKey.slice(0, 12)}`,
             question: lastUser.content,
             answer: lastAsst ? lastAsst.content : '',
             time: lastUser.time || 0,
             handler: () => {
+              closeAiHistoryFullScreen();
               openFloatingAiDrawer();
               loadHistoryIntoFloatingAi(qKey);
             }
@@ -9494,41 +9508,30 @@
 
       if (items.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center;padding:20px 12px;color:var(--text-muted);font-size:12.5px;line-height:1.6;">
+          <div style="text-align:center;padding:48px 16px;color:var(--text-muted);font-size:13px;line-height:1.8;">
             暂无 AI 助教历史对话。<br>
-            <span style="font-size:11.5px;">在做题解析中追问助教，或点击右上角【去提问】咨询考点，对话将自动保存在这里！</span>
+            <span style="font-size:12px;">在做题解析中追问助教，或点击右上角【去提问】咨询考点，对话将自动完整保存在这里！</span>
           </div>
         `;
         return;
       }
 
-      // 按时间最新倒序排列
+      // 按时间最新倒序排列（展示全部对话列表）
       items.sort((a, b) => (b.time || 0) - (a.time || 0));
 
-      const displayList = items.slice(0, 5);
-
-      container.innerHTML = displayList.map(item => {
+      container.innerHTML = items.map(item => {
         const timeStr = item.time ? new Date(item.time).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
         return `
-          <div class="home-ai-history-item" onclick="handleHomeAiItemClick('${item.id}')" title="点击查看并继续对话">
+          <div class="home-ai-history-item" onclick="handleHomeAiItemClick('${item.id}')" title="点击查看并继续对话" style="padding:12px 14px;">
             <div class="home-ai-item-top">
               <span class="home-ai-item-tag">${escapeHtml(item.sourceLabel)}</span>
               <span class="home-ai-item-time">${timeStr}</span>
             </div>
-            <div class="home-ai-item-q">问：${escapeHtml(item.question)}</div>
-            ${item.answer ? `<div class="home-ai-item-a">答：${escapeHtml(item.answer)}</div>` : ''}
+            <div class="home-ai-item-q" style="font-size:13.5px;">问：${escapeHtml(item.question)}</div>
+            ${item.answer ? `<div class="home-ai-item-a" style="font-size:12px;-webkit-line-clamp:3;">答：${escapeHtml(item.answer)}</div>` : ''}
           </div>
         `;
       }).join('');
-
-      if (items.length > 5) {
-        const moreBtn = document.createElement('button');
-        moreBtn.className = 'bottom-btn';
-        moreBtn.style.cssText = 'width:100%;margin-top:6px;padding:8px;font-size:12px;background:var(--bg);color:var(--primary);border:1px solid var(--primary-border);';
-        moreBtn.textContent = `查看全部对话 (${items.length} 条) ›`;
-        moreBtn.onclick = () => openSettingsWithAiChat();
-        container.appendChild(moreBtn);
-      }
 
       window._homeAiItemHandlers = window._homeAiItemHandlers || {};
       items.forEach(it => {
@@ -11990,6 +11993,31 @@
 
 
   
+  <!-- AI 助教历史对话全屏页面 -->
+  <div id="aiHistoryFullScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--bg);z-index:99998;flex-direction:column;box-sizing:border-box;">
+    <header style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card-bg);border-bottom:1px solid var(--border);height:52px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button onclick="closeAiHistoryFullScreen()" aria-label="返回" style="border:none;background:transparent;cursor:pointer;padding:4px;display:flex;align-items:center;color:var(--text-main);">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:22px;height:22px;"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:18px;height:18px;color:var(--primary);"><use href="#icon-chat"/></svg>
+          <span style="font-size:17px;font-weight:800;color:var(--text-main);">AI 助教历史对话</span>
+          <span class="count-pill" id="aiHistoryFsCountBadge" style="font-size:11px;padding:1px 7px;">0</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button type="button" class="text-name-btn" style="padding:4px 10px;font-size:12px;color:var(--primary);border-color:var(--primary-border);display:inline-flex;align-items:center;gap:4px;" onclick="openSettingsWithAiChat()" title="打开 AI 助教提问面板">
+          <span>去提问</span>
+          <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
+        </button>
+      </div>
+    </header>
+    <div style="flex:1;overflow-y:auto;padding:16px 18px 40px;max-width:760px;width:100%;margin:0 auto;box-sizing:border-box;">
+      <div class="home-ai-history-list" id="aiHistoryFullScreenList"></div>
+    </div>
+  </div>
+
   <!-- 每日一句全屏沉浸阅读页面 (严格执行用户要求: 直接全屏显示, 删掉小弹窗) -->
   <div id="dailyPointFullScreen" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--bg);z-index:99999;flex-direction:column;box-sizing:border-box;">
     <!-- 顶部导航栏 -->
