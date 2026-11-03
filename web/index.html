@@ -1879,6 +1879,90 @@
       border-radius: 4px;
       margin-bottom: 4px;
     }
+    /* 首页 AI 助教历史对话板块样式 */
+    .home-ai-history-section {
+      margin: 16px 20px 20px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+    .home-ai-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-ai-section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .home-ai-section-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .home-ai-history-item {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .home-ai-history-item:hover, .home-ai-history-item:active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .home-ai-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .home-ai-item-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+    .home-ai-item-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .home-ai-item-q {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .home-ai-item-a {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .clickable-kp-banner:hover {
+      background: var(--primary-border) !important;
+    }
+    .clickable-kp-banner:active {
+      transform: scale(0.99);
+    }
     .textbook-title {
       font-size: 15px;
       font-weight: 800;
@@ -2697,6 +2781,22 @@
       </nav>
 
       <div class="subject-list" id="subjectListContainer"></div>
+
+      <!-- 需求2: 首页以列表形式展示 AI 助教历史对话 -->
+      <section class="home-ai-history-section" id="homeAiHistorySection">
+        <div class="home-ai-section-header">
+          <div class="home-ai-section-title-wrap">
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-chip"/></svg>
+            <span class="home-ai-section-title">AI 助教历史对话</span>
+            <span class="count-pill" id="homeAiHistoryCountBadge" style="font-size:10.5px;padding:1px 6px;">0</span>
+          </div>
+          <button type="button" class="text-name-btn" style="padding:2px 8px;font-size:11px;color:var(--primary);border-color:var(--primary-border);display:inline-flex;align-items:center;gap:3px;" onclick="openSettingsWithAiChat()" title="打开 AI 助教提问面板">
+            <span>去提问</span>
+            <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;"><use href="#icon-right"/></svg>
+          </button>
+        </div>
+        <div class="home-ai-history-list" id="homeAiHistoryList"></div>
+      </section>
 
       <div class="custom-fab-wrap">
         <button class="custom-fab-btn" onclick="openStartQuizModal(null)">
@@ -5130,6 +5230,7 @@
       _currentDailyPoint = null;
       renderDailyPoint();
       renderSubjectList();
+      renderHomeAiHistoryList();
       showToast(bankId === 'official_2026' ? "已切换至【2026官网最新真题】" : "已切换至【历年题库】");
     }
 
@@ -5309,6 +5410,7 @@
 
       renderDailyPoint();
       renderSubjectList();
+      renderHomeAiHistoryList();
       updateCheckinUI();
       initDraftCanvasWithUndo();
       initTouchSwipe();
@@ -5783,7 +5885,10 @@
         <div class="exam-paper-card" style="padding:10px 12px;margin-bottom:0;" onclick="jumpFromSearchToQuiz('${getQKey(q)}')">
           <div style="flex:1;overflow:hidden;">
             <div style="font-size:13px;font-weight:700;color:var(--text-main);line-height:1.4;">[${q.subject}] ${q.question.slice(0, 40)}...</div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">题型: ${q.typeName} | 正确答案: ${q.answer}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <span>题型: ${q.typeName} | 正确答案: ${q.answer}</span>
+              ${q.knowledgePoint ? `<span class="sub-kp-btn" style="padding:1px 6px;font-size:10px;cursor:pointer;" onclick="event.stopPropagation();jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint)}', event)" title="点击跳转考点详解">考点: ${escapeHtml(getQuestionKpDisplay(q))} ›</span>` : ''}
+            </div>
           </div>
           <span style="font-size:12px;color:var(--primary);font-weight:700;white-space:nowrap;margin-left:8px;">做此题 ›</span>
         </div>
@@ -5854,6 +5959,7 @@
         document.getElementById('panePractice').style.display = 'flex';
         document.getElementById('tabBtnPractice')?.classList.add('active');
         renderSubjectList();
+        renderHomeAiHistoryList();
       } else if (tab === 'video') {
         const pVideo = document.getElementById('paneVideo') || document.getElementById('paneTextbook');
         if (pVideo) pVideo.style.display = 'flex';
@@ -7628,25 +7734,49 @@
       }
       currentChapterIndex = 0;
 
+      let matchedKw = '';
       if (searchKeyword) {
-        const kw = searchKeyword.trim();
-        const matchIdx = currentReadingBook.chapters.findIndex(c =>
-          c.shortTitle.includes(kw) || (c.plainText && c.plainText.includes(kw))
-        );
-        if (matchIdx !== -1) currentChapterIndex = matchIdx;
+        const raw = String(searchKeyword).trim();
+        // 智能提取考点核心短语候选列表
+        const cleanKw = raw.replace(/^第\s*\d+\s*[章节讲篇部分](?:(?:\s*第\s*\d+\s*节)?\s*[:：·\s]*)?/i, '')
+                           .replace(/[（(]\d+[)）]$/, '')
+                           .trim();
+        const candidates = [cleanKw, raw];
+        if (cleanKw.length > 4) {
+          candidates.push(cleanKw.slice(0, 8));
+          candidates.push(cleanKw.slice(0, 5));
+          candidates.push(cleanKw.slice(0, 3));
+        }
+        const chapMatch = raw.match(/第\s*\d+\s*[章节讲篇部分]/);
+        if (chapMatch) candidates.push(chapMatch[0]);
+
+        for (const kw of candidates) {
+          if (!kw || kw.length < 2) continue;
+          // 优先标题匹配
+          let idx = currentReadingBook.chapters.findIndex(c => c.shortTitle && c.shortTitle.includes(kw));
+          if (idx === -1) {
+            // 尝试正文匹配
+            idx = currentReadingBook.chapters.findIndex(c => c.plainText && c.plainText.includes(kw));
+          }
+          if (idx !== -1) {
+            currentChapterIndex = idx;
+            matchedKw = kw;
+            break;
+          }
+        }
       }
       renderCurrentChapter();
 
-      if (searchKeyword) {
+      const highlightTarget = matchedKw || (searchKeyword ? String(searchKeyword).trim().slice(0, 10) : '');
+      if (highlightTarget && highlightTarget.length >= 2) {
         const body = document.getElementById('readerContentBody');
         if (body) {
-          const safeKw = searchKeyword.trim().slice(0, 14);
-          if (safeKw.length >= 2) {
-            const regex = new RegExp(safeKw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+          try {
+            const regex = new RegExp(highlightTarget.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
             body.innerHTML = body.innerHTML.replace(regex, m => `<mark class="highlight-search">${m}</mark>`);
             const mark = body.querySelector('mark');
-            if (mark) setTimeout(() => mark.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
-          }
+            if (mark) setTimeout(() => mark.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+          } catch (_) {}
         }
       }
     }
@@ -7665,6 +7795,24 @@
       openSubjectKnowledgeEpub(sub);
     }
 
+    // 全局通用考点跳转统一入口：支持所有题目点击考点跳转对应考点精要章节
+    function jumpToKnowledgePoint(subject, rawKp, evt) {
+      if (evt) {
+        if (typeof evt.stopPropagation === 'function') evt.stopPropagation();
+        if (typeof evt.preventDefault === 'function') evt.preventDefault();
+      }
+      const sub = subject || currentSubject || 'all';
+      const bookKey = activeBankId === 'word_legacy' ? 'word_legacy' : 'official_2026';
+      openKnowledgeReaderModal(bookKey, sub, rawKp || '');
+    }
+
+    // 格式化考点展示名称（简写）
+    function getQuestionKpDisplay(q) {
+      if (!q || !q.knowledgePoint) return '';
+      let kp = String(q.knowledgePoint).trim();
+      return kp.replace(/[（(]\d+[)）]$/, '');
+    }
+
     // 从做题页面（#quizView）一键打开当前题目所属科目与考点的 EPUB 预览
     function openQuizCurrentKnowledgeEpub() {
       const q = activeQuestions[currentQuizIndex];
@@ -7672,10 +7820,7 @@
         openKnowledgeReaderModal();
         return;
       }
-      const sub = q.subject || currentSubject || 'all';
-      const kw = (q.knowledgePoint || '').replace(/^第\d+章\s*/, '').split(/[：:·\s]/)[0] || '';
-      const bookKey = activeBankId === 'word_legacy' ? 'word_legacy' : 'official_2026';
-      openKnowledgeReaderModal(bookKey, sub, kw);
+      jumpToKnowledgePoint(q.subject, q.knowledgePoint);
     }
 
     // 从 EPUB 阅读器一键进入当前章节所属科目的真题刷题
@@ -8601,7 +8746,17 @@
               </span>
             </div>
             <div class="analysis-detail-body" id="analysisDetail_${qKey}">
-              ${q.knowledgePoint ? `<div style="margin-bottom:8px;padding:6px 10px;background:var(--primary-light);border-left:3px solid var(--primary);border-radius:4px;font-size:12px;color:var(--text-main);"><strong style="color:var(--primary);">官方考点</strong>：${escapeHtml(q.knowledgePoint)}</div>` : ''}
+              ${q.knowledgePoint ? `
+                <div class="clickable-kp-banner" onclick="jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint)}', event)" title="点击跳转至考点精要查看该考点详解" style="cursor:pointer;margin-bottom:8px;padding:8px 12px;background:var(--primary-light);border-left:3.5px solid var(--primary);border-radius:6px;font-size:12px;color:var(--text-main);display:flex;align-items:center;justify-content:space-between;transition:all 0.15s ease;">
+                  <div style="display:flex;align-items:center;gap:6px;min-width:0;flex:1;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--primary);flex-shrink:0;"><use href="#icon-textbook"/></svg>
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><strong style="color:var(--primary);">官方考点</strong>：${escapeHtml(q.knowledgePoint)}</span>
+                  </div>
+                  <span style="font-size:11px;color:var(--primary);font-weight:700;display:flex;align-items:center;gap:2px;flex-shrink:0;margin-left:8px;">
+                    <span>查看考点</span>
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;"><use href="#icon-right"/></svg>
+                  </span>
+                </div>` : ''}
               ${q.analysis || '本题暂无详细官方考点解析'}
             </div>
           </div>
@@ -8646,9 +8801,10 @@
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
             ${badgeHtml}
-            <button type="button" class="sub-kp-btn" style="padding:2px 8px;font-size:11px;" onclick="openQuizCurrentKnowledgeEpub()" title="在 EPUB 阅读器中对照查看本题关联考点">
+            <button type="button" class="sub-kp-btn" style="padding:2px 8px;font-size:11px;" onclick="jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint || '')}', event)" title="在考点精要中对照查看本题关联考点">
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-textbook"/></svg>
-              <span>看考点</span>
+              <span>${q.knowledgePoint ? '考点: ' + escapeHtml(getQuestionKpDisplay(q)) : '看考点'}</span>
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:10px;height:10px;margin-left:1px;"><use href="#icon-right"/></svg>
             </button>
           </div>
           <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
@@ -9157,6 +9313,7 @@
       if (!userStore.quizAiHistory) userStore.quizAiHistory = {};
       userStore.quizAiHistory[qKey] = JSON.parse(JSON.stringify(floatingChatHistory));
       saveUserStore();
+      renderHomeAiHistoryList();
     }
 
     function clearFloatingChatHistory() {
@@ -9167,6 +9324,7 @@
         if (userStore.quizAiHistory && userStore.quizAiHistory[qKey]) {
           delete userStore.quizAiHistory[qKey];
           saveUserStore();
+          renderHomeAiHistoryList();
         }
       }
       const container = document.getElementById("floatingChatMessages");
@@ -9274,6 +9432,116 @@
       });
 
       showToast(`已载入题目 [${qKey.replace(/^off26_/, '')}] 的历史对话记录`);
+    }
+
+    // 打开设置并直达 AI 助教会话面板
+    function openSettingsWithAiChat() {
+      switchBottomTab('settings');
+      openSettingsSection('ai');
+    }
+
+    // 需求2: 渲染首页【AI助教历史对话】列表
+    function renderHomeAiHistoryList() {
+      const container = document.getElementById("homeAiHistoryList");
+      const countBadge = document.getElementById("homeAiHistoryCountBadge");
+      if (!container) return;
+
+      const items = [];
+
+      // 1. 设置界面的 AI 助教独立会话记录
+      const settingsHistory = userStore.settingsAiChatHistory || [];
+      for (let i = 0; i < settingsHistory.length; i++) {
+        const msg = settingsHistory[i];
+        if (msg.role === 'user') {
+          const nextMsg = settingsHistory[i + 1];
+          const asstContent = (nextMsg && nextMsg.role === 'assistant') ? nextMsg.content : '';
+          items.push({
+            id: `settings_${i}`,
+            type: 'settings',
+            sourceLabel: '名师助教',
+            question: msg.content,
+            answer: asstContent,
+            time: msg.time || 0,
+            handler: () => openSettingsWithAiChat()
+          });
+        }
+      }
+
+      // 2. 做题界面的题目追问会话记录
+      const quizHistory = userStore.quizAiHistory || {};
+      Object.entries(quizHistory).forEach(([qKey, msgs]) => {
+        if (!Array.isArray(msgs) || msgs.length === 0) return;
+        const lastUser = [...msgs].reverse().find(m => m.role === 'user');
+        const lastAsst = [...msgs].reverse().find(m => m.role === 'assistant');
+        if (lastUser) {
+          const cleanKey = qKey.replace(/^off26_/, '');
+          items.push({
+            id: `quiz_${qKey}`,
+            type: 'quiz',
+            sourceLabel: `题目追问 · ${cleanKey.slice(0, 10)}`,
+            question: lastUser.content,
+            answer: lastAsst ? lastAsst.content : '',
+            time: lastUser.time || 0,
+            handler: () => {
+              openFloatingAiDrawer();
+              loadHistoryIntoFloatingAi(qKey);
+            }
+          });
+        }
+      });
+
+      if (countBadge) countBadge.textContent = String(items.length);
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:20px 12px;color:var(--text-muted);font-size:12.5px;line-height:1.6;">
+            暂无 AI 助教历史对话。<br>
+            <span style="font-size:11.5px;">在做题解析中追问助教，或点击右上角【去提问】咨询考点，对话将自动保存在这里！</span>
+          </div>
+        `;
+        return;
+      }
+
+      // 按时间最新倒序排列
+      items.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+      const displayList = items.slice(0, 5);
+
+      container.innerHTML = displayList.map(item => {
+        const timeStr = item.time ? new Date(item.time).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        return `
+          <div class="home-ai-history-item" onclick="handleHomeAiItemClick('${item.id}')" title="点击查看并继续对话">
+            <div class="home-ai-item-top">
+              <span class="home-ai-item-tag">${escapeHtml(item.sourceLabel)}</span>
+              <span class="home-ai-item-time">${timeStr}</span>
+            </div>
+            <div class="home-ai-item-q">问：${escapeHtml(item.question)}</div>
+            ${item.answer ? `<div class="home-ai-item-a">答：${escapeHtml(item.answer)}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      if (items.length > 5) {
+        const moreBtn = document.createElement('button');
+        moreBtn.className = 'bottom-btn';
+        moreBtn.style.cssText = 'width:100%;margin-top:6px;padding:8px;font-size:12px;background:var(--bg);color:var(--primary);border:1px solid var(--primary-border);';
+        moreBtn.textContent = `查看全部对话 (${items.length} 条) ›`;
+        moreBtn.onclick = () => openSettingsWithAiChat();
+        container.appendChild(moreBtn);
+      }
+
+      window._homeAiItemHandlers = window._homeAiItemHandlers || {};
+      items.forEach(it => {
+        window._homeAiItemHandlers[it.id] = it.handler;
+      });
+    }
+
+    function handleHomeAiItemClick(id) {
+      if (window._homeAiItemHandlers && window._homeAiItemHandlers[id]) {
+        window._homeAiItemHandlers[id]();
+      } else {
+        openSettingsWithAiChat();
+      }
     }
 
     function appendChatMessageUI(role, text) {
@@ -9835,6 +10103,7 @@
       userStore.settingsAiChatHistory = [];
       saveUserStore();
       renderSettingsAiChatHistory();
+      renderHomeAiHistoryList();
       showToast("已清空设置中的会话历史");
     }
 
@@ -9928,6 +10197,7 @@
       appendSettingsChatMessageUI("user", text);
       userStore.settingsAiChatHistory.push({ role: "user", content: text, time: Date.now() });
       saveUserStore();
+      renderHomeAiHistoryList();
 
       await executeStreamChatToSettingsAssistant();
     }
@@ -9999,6 +10269,7 @@
 
         userStore.settingsAiChatHistory.push({ role: "assistant", content: fullResponse, time: Date.now() });
         saveUserStore();
+        renderHomeAiHistoryList();
       } catch (err) {
         bodyEl.textContent = `回答生成失败: ${err.message}，请检查 API Key 与网络连接。`;
       } finally {
@@ -10995,12 +11266,23 @@
         const timeStr = doubt.time ? new Date(doubt.time).toLocaleDateString() : '';
         const tagText = doubt.tag || '答案存疑';
 
+        let targetQ = null;
+        for (const qs of Object.values(allSubjectsData)) {
+          for (const item of qs) {
+            if (isKeyMatched(doubt.qKey, item)) { targetQ = item; break; }
+          }
+          if (targetQ) break;
+        }
+        const kp = (targetQ && targetQ.knowledgePoint) || doubt.knowledgePoint || '';
+        const kpDisplay = kp ? getQuestionKpDisplay({knowledgePoint: kp}) : '';
+
         card.innerHTML = `
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <span class="row-index" style="width:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;">#${idx + 1}</span>
               <span style="font-size:12px;font-weight:700;color:var(--text-main);">${escapeHtml(doubt.subject || '科目')} · ${escapeHtml(doubt.typeName || '选择题')}</span>
               <span style="font-size:11px;background:rgba(234,88,12,0.12);color:#ea580c;padding:1px 6px;border-radius:4px;font-weight:600;">${escapeHtml(tagText)}</span>
+              ${kp ? `<button type="button" class="sub-kp-btn" style="padding:1px 6px;font-size:10.5px;cursor:pointer;" onclick="jumpToKnowledgePoint('${escapeHtml(doubt.subject || '')}', '${escapeHtml(kp)}', event)" title="点击跳转至考点精要详解"><span>考点: ${escapeHtml(kpDisplay)}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;"><use href="#icon-right"/></svg></button>` : ''}
             </div>
             <button type="button" class="count-pill ${isResolved ? 'active' : ''}" style="padding:2px 8px;font-size:11px;white-space:nowrap;${isResolved ? 'background:var(--correct-bg);color:var(--correct);border-color:var(--correct);' : 'background:rgba(234,88,12,0.1);color:#ea580c;border-color:rgba(234,88,12,0.3);'}" onclick="toggleDoubtResolvedState('${doubt.qKey}', event)">
               ${isResolved ? '已解决 ✓' : '待核实 ⏳'}
@@ -11258,7 +11540,21 @@
       const number = document.createElement('span'); number.className = 'row-index'; number.textContent = index + 1;
       const main = document.createElement('span'); main.className = 'row-main';
       const title = document.createElement('span'); title.className = 'row-title'; title.textContent = q.question;
-      const meta = document.createElement('span'); meta.className = 'row-meta'; meta.textContent = `${q.subject} · ${q.typeName} · 复习 ${reviews} 轮`;
+      const meta = document.createElement('span'); meta.className = 'row-meta';
+      meta.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+      meta.innerHTML = `<span>${escapeHtml(q.subject)} · ${escapeHtml(q.typeName)} · 复习 ${reviews} 轮</span>`;
+      if (q.knowledgePoint) {
+        const kpBtn = document.createElement('span');
+        kpBtn.className = 'sub-kp-btn';
+        kpBtn.style.cssText = 'padding:1px 6px;font-size:10.5px;cursor:pointer;';
+        kpBtn.title = '点击跳转对应考点精要详解';
+        kpBtn.innerHTML = `<span>考点: ${escapeHtml(getQuestionKpDisplay(q))}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;"><use href="#icon-right"/></svg>`;
+        kpBtn.onclick = (e) => {
+          e.stopPropagation();
+          jumpToKnowledgePoint(q.subject, q.knowledgePoint, e);
+        };
+        meta.appendChild(kpBtn);
+      }
       main.append(title, meta); row.append(number, main);
       row.onclick = open; container.appendChild(row);
     }
