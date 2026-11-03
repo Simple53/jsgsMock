@@ -67,23 +67,64 @@
       color: #374151;
       margin-bottom: 12px;
     }
+    .tutorial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
     .tutorial-title {
       font-size: 14px;
       font-weight: 600;
       color: #374151;
-      margin-bottom: 8px;
+    }
+    .line-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      background: #f3f4f6;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .line-btn {
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #4b5563;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11.5px;
+      transition: all 0.2s;
+    }
+    .line-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+      font-weight: 600;
     }
     .video-block {
-      margin-top: 8px;
+      margin-top: 4px;
       background: #000000;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
+      position: relative;
     }
     video {
       width: 100%;
       max-height: 480px;
       display: block;
       background: #000000;
+    }
+    .video-subbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #6b7280;
     }
     footer {
       margin-top: 64px;
@@ -108,14 +149,24 @@
           <div><span class="label">项目地址：</span><a href="https://github.com/Simple53/jsgsHelpler" target="_blank" rel="noopener noreferrer">https://github.com/Simple53/jsgsHelpler</a></div>
         </div>
         <p class="desc">功能简介：浏览器脚本插件。辅助完成课程观看，后台播放、跨课联播、倍速播放、进度拖拽等。</p>
-        <div class="tutorial-title">安装教程：</div>
+        
+        <div class="tutorial-header">
+          <div class="tutorial-title">安装教程：</div>
+          <div class="line-switch-wrap">
+            <span>播放线路：</span>
+            <button class="line-btn active" onclick="switchVideoLine('v1', 'cdn', this)">国内 CDN 极速</button>
+            <button class="line-btn" onclick="switchVideoLine('v1', 'raw', this)">备用线路</button>
+          </div>
+        </div>
+        
         <div class="video-block">
-          <video controls preload="metadata" playsinline webkit-playsinline x5-video-player-type="h5-page" x5-playsinline>
-            <source src="./helper_demo.mp4" type="video/mp4">
-            <source src="./jsgsHelper教资播放助手教程.mp4" type="video/mp4">
-            <source src="./jsgsHelper%E6%95%99%E8%B5%84%E6%92%AD%E6%94%BE%E5%8A%A9%E6%89%8B%E6%95%99%E7%A8%8B.mp4" type="video/mp4">
+          <video id="v1" controls preload="metadata" playsinline webkit-playsinline src="./helper_demo.mp4">
             您的浏览器暂不支持直接播放此视频。
           </video>
+        </div>
+        <div class="video-subbar">
+          <span id="v1_tip">已开启国内极速 CDN 加速，秒开不卡顿</span>
+          <a href="./helper_demo.mp4" download="jsgsHelper教资播放助手教程.mp4">下载视频到本地</a>
         </div>
       </section>
 
@@ -128,14 +179,24 @@
           <div><span class="label">下载地址：</span><a href="https://github.com/Simple53/jsgsMock/releases/tag/v1.4.7" target="_blank" rel="noopener noreferrer">https://github.com/Simple53/jsgsMock/releases/tag/v1.4.7</a></div>
         </div>
         <p class="desc">功能简介：基于PWA网页刷题工具，实现了网页端、WIN、安卓、IOS、MAC等多模式，所有用户的进度都会保存在设备中，电脑和手机可以通过导入导出备份实现同步，用户端尚未完成测试，内容涵盖了官网最新题库、视频播放、错题收藏、做题统计、ai助教等等功能，界面简洁容易上手。</p>
-        <div class="tutorial-title">使用教程：</div>
+        
+        <div class="tutorial-header">
+          <div class="tutorial-title">使用教程：</div>
+          <div class="line-switch-wrap">
+            <span>播放线路：</span>
+            <button class="line-btn active" onclick="switchVideoLine('v2', 'cdn', this)">国内 CDN 极速</button>
+            <button class="line-btn" onclick="switchVideoLine('v2', 'raw', this)">备用线路</button>
+          </div>
+        </div>
+        
         <div class="video-block">
-          <video controls preload="metadata" playsinline webkit-playsinline x5-video-player-type="h5-page" x5-playsinline>
-            <source src="./mock_demo.mp4" type="video/mp4">
-            <source src="./jsgsMock教资刷题助手教程.mp4" type="video/mp4">
-            <source src="./jsgsMock%E6%95%99%E8%B5%84%E5%88%B7%E9%A2%98%E5%8A%A9%E6%89%8B%E6%95%99%E7%A8%8B.mp4" type="video/mp4">
+          <video id="v2" controls preload="metadata" playsinline webkit-playsinline src="./mock_demo.mp4">
             您的浏览器暂不支持直接播放此视频。
           </video>
+        </div>
+        <div class="video-subbar">
+          <span id="v2_tip">已开启国内极速 CDN 加速，秒开不卡顿</span>
+          <a href="./mock_demo.mp4" download="jsgsMock教资刷题助手教程.mp4">下载视频到本地</a>
         </div>
       </section>
     </main>
@@ -144,5 +205,73 @@
       <span>jsgsHelper &amp; jsgsMock</span>
     </footer>
   </div>
+
+  <script>
+    // 线路源配置 (CDN 源直连 jsDelivr / GitHub Raw 极速加速)
+    const VIDEO_SOURCES = {
+      v1: {
+        cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/helper_demo.mp4',
+        raw: './helper_demo.mp4'
+      },
+      v2: {
+        cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/mock_demo.mp4',
+        raw: './mock_demo.mp4'
+      }
+    };
+
+    function switchVideoLine(videoId, type, btn) {
+      const v = document.getElementById(videoId);
+      if (!v) return;
+      const wrap = btn.closest('.line-switch-wrap');
+      if (wrap) {
+        wrap.querySelectorAll('.line-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      const curTime = v.currentTime || 0;
+      const isPaused = v.paused;
+      const newSrc = VIDEO_SOURCES[videoId][type];
+      v.src = newSrc;
+      v.load();
+      v.addEventListener('loadedmetadata', function onMeta() {
+        v.removeEventListener('loadedmetadata', onMeta);
+        if (curTime > 0 && curTime < (v.duration - 1)) {
+          v.currentTime = curTime;
+        }
+        if (!isPaused) v.play().catch(() => {});
+      });
+      const tip = document.getElementById(videoId + '_tip');
+      if (tip) {
+        tip.textContent = type === 'cdn' ? '已开启国内极速 CDN 加速，秒开不卡顿' : '已切换为 GitHub 原生备用线路';
+      }
+    }
+
+    // 严防移动端 X5 / WebKit 探测异常导致“直接跳到末尾”
+    document.querySelectorAll('video').forEach(v => {
+      // 1. 元数据加载完成后，确保时间点处于第 0 秒
+      v.addEventListener('loadedmetadata', () => {
+        if (v.currentTime > 0 && v.currentTime >= (v.duration - 1)) {
+          v.currentTime = 0;
+        }
+      });
+
+      // 2. 播放开始时，若发现处于末尾异常状态，强制重置并起播
+      v.addEventListener('play', () => {
+        if (v.duration && v.currentTime >= (v.duration - 0.5)) {
+          v.currentTime = 0;
+          v.play().catch(() => {});
+        }
+      });
+
+      // 3. 错误自动容错切换
+      v.addEventListener('error', () => {
+        console.warn('当前视频源加载异常，尝试自动切换备用线路...');
+        if (!v.dataset.retried) {
+          v.dataset.retried = '1';
+          v.src = (v.id === 'v1') ? './helper_demo.mp4' : './mock_demo.mp4';
+          v.load();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
