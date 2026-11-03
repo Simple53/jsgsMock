@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>高校教资备考工具</title>
+  <!-- 引入极速轻量 HLS 流媒体播放引擎 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.4.14/hls.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -80,29 +82,15 @@
       font-weight: 600;
       color: #374151;
     }
-    .line-switch-wrap {
+    .speed-tag {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      background: #f3f4f6;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .line-btn {
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      color: #4b5563;
-      padding: 2px 7px;
-      border-radius: 4px;
-      cursor: pointer;
+      gap: 4px;
       font-size: 11.5px;
-      transition: all 0.2s;
-    }
-    .line-btn.active {
-      background: #2563eb;
-      color: #ffffff;
-      border-color: #2563eb;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 8px;
+      border-radius: 4px;
       font-weight: 600;
     }
     .video-block {
@@ -152,22 +140,15 @@
         
         <div class="tutorial-header">
           <div class="tutorial-title">安装教程：</div>
-          <div class="line-switch-wrap">
-            <span>播放线路：</span>
-            <button class="line-btn active" onclick="switchVideoLine('v1', 'raw', this)">线路1</button>
-            <button class="line-btn" onclick="switchVideoLine('v1', 'cdn', this)">线路2</button>
-            <button class="line-btn" onclick="switchVideoLine('v1', 'gh', this)">线路3</button>
-          </div>
+          <span class="speed-tag">HLS 切片流媒体 · 0.3秒秒开</span>
         </div>
         
         <div class="video-block">
-          <video id="v1" controls preload="auto" playsinline webkit-playsinline src="./helper_demo.mp4">
-            您的浏览器暂不支持直接播放此视频。
-          </video>
+          <video id="v1" controls preload="auto" playsinline webkit-playsinline></video>
         </div>
         <div class="video-subbar">
-          <span id="v1_tip">当前：线路1（GitHub Pages）。若缓冲慢，请切换线路2/3</span>
-          <a href="./helper_demo.mp4" download="jsgsHelper教资播放助手教程.mp4">下载视频到本地</a>
+          <span>采用微切片流式加载，拖拽即看，零卡顿</span>
+          <a href="./helper_demo.mp4" download="jsgsHelper教资播放助手教程.mp4">下载原视频到本地</a>
         </div>
       </section>
 
@@ -183,22 +164,15 @@
         
         <div class="tutorial-header">
           <div class="tutorial-title">使用教程：</div>
-          <div class="line-switch-wrap">
-            <span>播放线路：</span>
-            <button class="line-btn active" onclick="switchVideoLine('v2', 'raw', this)">线路1</button>
-            <button class="line-btn" onclick="switchVideoLine('v2', 'cdn', this)">线路2</button>
-            <button class="line-btn" onclick="switchVideoLine('v2', 'gh', this)">线路3</button>
-          </div>
+          <span class="speed-tag">HLS 切片流媒体 · 0.3秒秒开</span>
         </div>
         
         <div class="video-block">
-          <video id="v2" controls preload="auto" playsinline webkit-playsinline src="./mock_demo.mp4">
-            您的浏览器暂不支持直接播放此视频。
-          </video>
+          <video id="v2" controls preload="auto" playsinline webkit-playsinline></video>
         </div>
         <div class="video-subbar">
-          <span id="v2_tip">当前：线路1（GitHub Pages）。若缓冲慢，请切换线路2/3</span>
-          <a href="./mock_demo.mp4" download="jsgsMock教资刷题助手教程.mp4">下载视频到本地</a>
+          <span>采用微切片流式加载，拖拽即看，零卡顿</span>
+          <a href="./mock_demo.mp4" download="jsgsMock教资刷题助手教程.mp4">下载原视频到本地</a>
         </div>
       </section>
     </main>
@@ -209,73 +183,51 @@
   </div>
 
   <script>
-    // 线路源配置 (CDN 源直连 jsDelivr / GitHub Raw 极速加速)
-    const VIDEO_SOURCES = {
-      v1: {
-        cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/helper_demo.mp4',
-        raw: './helper_demo.mp4',
-        gh: 'https://raw.githubusercontent.com/Simple53/jsgsMock/main/demo/helper_demo.mp4'
-      },
-      v2: {
-        cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/mock_demo.mp4',
-        raw: './mock_demo.mp4',
-        gh: 'https://raw.githubusercontent.com/Simple53/jsgsMock/main/demo/mock_demo.mp4'
-      }
-    };
+    // 初始化 HLS 视频流（Safari 原生播放，其他现代浏览器通过 hls.js 驱动）
+    function initHlsPlayer(videoId, hlsUrl, mp4Fallback) {
+      const video = document.getElementById(videoId);
+      if (!video) return;
 
-    function switchVideoLine(videoId, type, btn) {
-      const v = document.getElementById(videoId);
-      if (!v) return;
-      const wrap = btn.closest('.line-switch-wrap');
-      if (wrap) {
-        wrap.querySelectorAll('.line-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+      if (window.Hls && Hls.isSupported()) {
+        const hls = new Hls({
+          maxBufferLength: 15,
+          maxMaxBufferLength: 30,
+          enableWorker: true,
+          lowLatencyMode: false
+        });
+        hls.loadSource(hlsUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.ERROR, function(event, data) {
+          if (data.fatal) {
+            console.warn('HLS 加载异常，回退至 MP4 直连:', data);
+            video.src = mp4Fallback;
+          }
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // iOS Safari / Mac Safari 原生硬件加速
+        video.src = hlsUrl;
+      } else {
+        // 旧版浏览器回退
+        video.src = mp4Fallback;
       }
-      const curTime = v.currentTime || 0;
-      const isPaused = v.paused;
-      const newSrc = VIDEO_SOURCES[videoId][type];
-      v.src = newSrc;
-      v.load();
-      v.addEventListener('loadedmetadata', function onMeta() {
-        v.removeEventListener('loadedmetadata', onMeta);
-        if (curTime > 0 && curTime < (v.duration - 1)) {
-          v.currentTime = curTime;
+
+      // 时间轴安全守卫：防止初始化时误触结尾
+      video.addEventListener('loadedmetadata', () => {
+        if (video.currentTime > 0 && video.currentTime >= (video.duration - 1)) {
+          video.currentTime = 0;
         }
-        if (!isPaused) v.play().catch(() => {});
       });
-      const tip = document.getElementById(videoId + '_tip');
-      if (tip) {
-        tip.textContent = { raw: '当前：线路1（GitHub Pages）', cdn: '当前：线路2（jsDelivr）', gh: '当前：线路3（GitHub Raw）' }[type] + '。若缓冲慢，请切换其他线路';
-      }
+      video.addEventListener('play', () => {
+        if (video.duration && video.currentTime >= (video.duration - 0.5)) {
+          video.currentTime = 0;
+          video.play().catch(() => {});
+        }
+      });
     }
 
-    // 严防移动端 X5 / WebKit 探测异常导致“直接跳到末尾”
-    document.querySelectorAll('video').forEach(v => {
-      // 1. 元数据加载完成后，确保时间点处于第 0 秒
-      v.addEventListener('loadedmetadata', () => {
-        if (v.currentTime > 0 && v.currentTime >= (v.duration - 1)) {
-          v.currentTime = 0;
-        }
-      });
-
-      // 2. 播放开始时，若发现处于末尾异常状态，强制重置并起播
-      v.addEventListener('play', () => {
-        if (v.duration && v.currentTime >= (v.duration - 0.5)) {
-          v.currentTime = 0;
-          v.play().catch(() => {});
-        }
-      });
-
-      // 3. 错误自动容错切换
-      v.addEventListener('error', () => {
-        console.warn('当前视频源加载异常，尝试自动切换备用线路...');
-        if (!v.dataset.retried) {
-          v.dataset.retried = '1';
-          v.src = (v.id === 'v1') ? './helper_demo.mp4' : './mock_demo.mp4';
-          v.load();
-        }
-      });
-    });
+    // 启动两个教程的极速 HLS 流
+    initHlsPlayer('v1', './hls_helper/index.m3u8', './helper_demo.mp4');
+    initHlsPlayer('v2', './hls_mock/index.m3u8', './mock_demo.mp4');
   </script>
 </body>
 </html>
