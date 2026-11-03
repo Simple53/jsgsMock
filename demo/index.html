@@ -154,18 +154,19 @@
           <div class="tutorial-title">安装教程：</div>
           <div class="line-switch-wrap">
             <span>播放线路：</span>
-            <button class="line-btn active" onclick="switchVideoLine('v1', 'cdn', this)">国内 CDN 极速</button>
-            <button class="line-btn" onclick="switchVideoLine('v1', 'raw', this)">备用线路</button>
+            <button class="line-btn active" onclick="switchVideoLine('v1', 'raw', this)">线路1</button>
+            <button class="line-btn" onclick="switchVideoLine('v1', 'cdn', this)">线路2</button>
+            <button class="line-btn" onclick="switchVideoLine('v1', 'gh', this)">线路3</button>
           </div>
         </div>
         
         <div class="video-block">
-          <video id="v1" controls preload="metadata" playsinline webkit-playsinline src="./helper_demo.mp4">
+          <video id="v1" controls preload="auto" playsinline webkit-playsinline src="./helper_demo.mp4">
             您的浏览器暂不支持直接播放此视频。
           </video>
         </div>
         <div class="video-subbar">
-          <span id="v1_tip">已开启国内极速 CDN 加速，秒开不卡顿</span>
+          <span id="v1_tip">当前：线路1（GitHub Pages）。若缓冲慢，请切换线路2/3</span>
           <a href="./helper_demo.mp4" download="jsgsHelper教资播放助手教程.mp4">下载视频到本地</a>
         </div>
       </section>
@@ -184,18 +185,19 @@
           <div class="tutorial-title">使用教程：</div>
           <div class="line-switch-wrap">
             <span>播放线路：</span>
-            <button class="line-btn active" onclick="switchVideoLine('v2', 'cdn', this)">国内 CDN 极速</button>
-            <button class="line-btn" onclick="switchVideoLine('v2', 'raw', this)">备用线路</button>
+            <button class="line-btn active" onclick="switchVideoLine('v2', 'raw', this)">线路1</button>
+            <button class="line-btn" onclick="switchVideoLine('v2', 'cdn', this)">线路2</button>
+            <button class="line-btn" onclick="switchVideoLine('v2', 'gh', this)">线路3</button>
           </div>
         </div>
         
         <div class="video-block">
-          <video id="v2" controls preload="metadata" playsinline webkit-playsinline src="./mock_demo.mp4">
+          <video id="v2" controls preload="auto" playsinline webkit-playsinline src="./mock_demo.mp4">
             您的浏览器暂不支持直接播放此视频。
           </video>
         </div>
         <div class="video-subbar">
-          <span id="v2_tip">已开启国内极速 CDN 加速，秒开不卡顿</span>
+          <span id="v2_tip">当前：线路1（GitHub Pages）。若缓冲慢，请切换线路2/3</span>
           <a href="./mock_demo.mp4" download="jsgsMock教资刷题助手教程.mp4">下载视频到本地</a>
         </div>
       </section>
@@ -211,11 +213,13 @@
     const VIDEO_SOURCES = {
       v1: {
         cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/helper_demo.mp4',
-        raw: './helper_demo.mp4'
+        raw: './helper_demo.mp4',
+        gh: 'https://raw.githubusercontent.com/Simple53/jsgsMock/main/demo/helper_demo.mp4'
       },
       v2: {
         cdn: 'https://cdn.jsdelivr.net/gh/Simple53/jsgsMock@main/demo/mock_demo.mp4',
-        raw: './mock_demo.mp4'
+        raw: './mock_demo.mp4',
+        gh: 'https://raw.githubusercontent.com/Simple53/jsgsMock/main/demo/mock_demo.mp4'
       }
     };
 
@@ -241,7 +245,7 @@
       });
       const tip = document.getElementById(videoId + '_tip');
       if (tip) {
-        tip.textContent = type === 'cdn' ? '已开启国内极速 CDN 加速，秒开不卡顿' : '已切换为 GitHub 原生备用线路';
+        tip.textContent = { raw: '当前：线路1（GitHub Pages）', cdn: '当前：线路2（jsDelivr）', gh: '当前：线路3（GitHub Raw）' }[type] + '。若缓冲慢，请切换其他线路';
       }
     }
 
