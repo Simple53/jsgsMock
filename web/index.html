@@ -5413,7 +5413,7 @@
       initPcNavigation();
       initDraggableAiBubble();
       renderSavedExams();
-      renderTutorialVideos();
+      renderTutorialVideos(false);
       updateSettingsUI();
 
       // 启动时后台静默同步一次局域网历史记录
@@ -5960,7 +5960,7 @@
         const pVideo = document.getElementById('paneVideo') || document.getElementById('paneTextbook');
         if (pVideo) pVideo.style.display = 'flex';
         document.getElementById('tabBtnVideo')?.classList.add('active');
-        renderTutorialVideos();
+        renderTutorialVideos(false);
       } else if (tab === 'wrong') {
         document.getElementById('paneWrong').style.display = 'flex';
         document.getElementById('tabBtnWrong')?.classList.add('active');
@@ -6198,7 +6198,7 @@
       return { cIdx: 0, lIdx: 0 };
     }
 
-    function renderTutorialVideos() {
+    function renderTutorialVideos(autoPlay = false) {
       const catalog = document.getElementById('videoEpisodeTrack');
       if (!catalog) return;
       const courses = window.COURSE_VIDEOS || [];
@@ -6273,15 +6273,18 @@
         }, 1000);
       }
 
-      // 自动恢复并开始播放原来播放进度的视频
+      // 准备好原来播放进度的选集信息，默认不自动播放（根据需要由用户主动点击播放）
       if (currentLessonIndex < 0 || !currentPlayingLessonUrl) {
         const last = getLastVideoSession();
         updateCourseView(last.cIdx);
-        playLesson(last.cIdx, last.lIdx);
+        playLesson(last.cIdx, last.lIdx, autoPlay);
       } else {
         updateCourseView(currentCourseIndex);
-        if (player && player.paused) {
+        if (autoPlay && player && player.paused) {
           player.play().catch(() => {});
+        } else if (!autoPlay && player) {
+          updatePlayPauseIcon(false);
+          showVideoControls(true);
         }
       }
     }
@@ -6403,7 +6406,7 @@
       updateCinemaEpisodeDrawerList();
     }
 
-    function playLesson(cIdx, lIdx) {
+    function playLesson(cIdx, lIdx, autoPlay = true) {
       const courses = window.COURSE_VIDEOS || [];
       if (!courses[cIdx] || !courses[cIdx].lessons[lIdx]) return;
       currentCourseIndex = cIdx;
@@ -6431,18 +6434,25 @@
         player.onloadedmetadata = () => {
           if (savedSec > 5 && player.duration && savedSec < (player.duration - 8)) {
             player.currentTime = savedSec;
-            showToast(`已恢复至上次进度 ${formatTimeStr(savedSec)}`);
+            if (autoPlay) {
+              showToast(`已恢复至上次进度 ${formatTimeStr(savedSec)}`);
+            }
           }
         };
 
         player.load();
-        player.play().catch(() => {});
+        if (autoPlay) {
+          player.play().catch(() => {});
+        } else {
+          updatePlayPauseIcon(false);
+          showVideoControls(true);
+        }
       }
 
       // 更新界面标题
       const subTitleEl = document.getElementById('videoCurrentPlayingSubTitle');
       if (subTitleEl) {
-        subTitleEl.textContent = `正在播放：${lesson.title}`;
+        subTitleEl.textContent = autoPlay ? `正在播放：${lesson.title}` : `当前选集：${lesson.title}`;
       }
       const cinemaTitle = document.getElementById('cinemaVideoTitle');
       if (cinemaTitle) {
