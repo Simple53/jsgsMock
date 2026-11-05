@@ -932,6 +932,16 @@
     }
     .floating-ai-bubble:active { cursor: grabbing; transform: scale(0.94); }
     .floating-ai-bubble.hide { display: none !important; }
+    .floating-ai-bubble-text {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      line-height: 1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      pointer-events: none;
+      user-select: none;
+    }
 
     .floating-ai-drawer {
       position: fixed;
@@ -994,6 +1004,67 @@
       border: 1px solid var(--primary-border);
       color: var(--text-main);
       border-top-left-radius: 2px;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-h {
+      margin: 10px 0 6px 0;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+    .chat-msg.assistant .chat-bubble-body h2.md-h { font-size: 15px; }
+    .chat-msg.assistant .chat-bubble-body h3.md-h { font-size: 14.5px; }
+    .chat-msg.assistant .chat-bubble-body h4.md-h { font-size: 14px; color: var(--primary); }
+    .chat-msg.assistant .chat-bubble-body h5.md-h { font-size: 13.5px; }
+    .chat-msg.assistant .chat-bubble-body .md-ul, .chat-msg.assistant .chat-bubble-body .md-ol {
+      margin: 6px 0 8px 0;
+      padding-left: 20px;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-ol { list-style-type: decimal; }
+    .chat-msg.assistant .chat-bubble-body .md-ul { list-style-type: disc; }
+    .chat-msg.assistant .chat-bubble-body .md-li-ul, .chat-msg.assistant .chat-bubble-body .md-li-ol {
+      margin: 3px 0;
+      line-height: 1.55;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-quote {
+      margin: 8px 0;
+      padding: 6px 12px;
+      border-left: 3.5px solid var(--primary);
+      background: rgba(37, 99, 235, 0.08);
+      border-radius: 0 6px 6px 0;
+      color: var(--text-main);
+      font-size: 13px;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-hr {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 10px 0;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-inline-code {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 12px;
+      background: rgba(0,0,0,0.06);
+      color: var(--primary);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    .chat-msg.assistant .chat-bubble-body .md-pre {
+      background: #1e1e1e;
+      color: #f8f8f2;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .chat-msg.assistant .chat-bubble-body strong {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .chat-msg.assistant .chat-bubble-body .md-gap {
+      height: 8px;
     }
     .chat-msg.user .chat-bubble-body {
       background: var(--primary);
@@ -3655,7 +3726,7 @@
 
       <!-- 需求3：悬浮 AI 助教球 (可开启/关闭) -->
       <div class="floating-ai-bubble" id="floatingAiBubble" title="唤起 AI 名师助教 (可随意拖拽位置)">
-        <svg class="svg-icon" viewBox="0 0 24 24" style="width:20px;height:20px;color:#ffffff;"><use href="#icon-chat"/></svg>
+        <span class="floating-ai-bubble-text">AI</span>
       </div>
 
       <!-- 需求3：悬浮 AI 助教多轮对话抽屉 -->
@@ -8782,7 +8853,7 @@
               <span id="inlineAiBtnText">${userStore.aiCache[qKey] ? '重新生成 AI 解析' : '一键 AI 深度解析'}</span>
             </button>
 
-            <div id="inlineAiExplanationBox" style="font-size:13px;line-height:1.65;margin-top:10px;padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);color:var(--text-main);white-space:pre-wrap;${userStore.aiCache[qKey] ? '' : 'display:none;'}">${escapeHtml(userStore.aiCache[qKey] || '')}</div>
+            <div id="inlineAiExplanationBox" style="font-size:13px;line-height:1.65;margin-top:10px;padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);color:var(--text-main);word-break:break-word;${userStore.aiCache[qKey] ? '' : 'display:none;'}">${renderMarkdown(userStore.aiCache[qKey] || '')}</div>
 
             <!-- 需求1：助教对话深入追问 -->
             <div id="askAssistantActionRow" style="margin-top:10px;display:${userStore.aiCache[qKey] ? 'flex' : 'none'};justify-content:flex-end;">
@@ -9588,8 +9659,9 @@
         `;
       }
 
+      const bodyContent = role === "assistant" ? renderMarkdown(text) : escapeHtml(text).replace(/\n/g, '<br>');
       msgEl.innerHTML = `
-        <div class="chat-bubble-body">${escapeHtml(text)}</div>
+        <div class="chat-bubble-body">${bodyContent}</div>
         ${actionsHtml}
       `;
       container.appendChild(msgEl);
@@ -9718,6 +9790,105 @@
       return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
+    // 考题选项结构化格式化，保证 AI 解析与追问获得完整题干与全部真实选项（杜绝猜测选项）
+    function formatQuestionOptionsForAi(q) {
+      if (!q) return "（无题目数据）";
+      let lines = [];
+      if (q.options && typeof q.options === 'object') {
+        if (Array.isArray(q.options)) {
+          lines = q.options.map(opt => String(opt).trim()).filter(Boolean);
+        } else {
+          const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+          letters.forEach(letter => {
+            if (q.options[letter] !== undefined && q.options[letter] !== null && String(q.options[letter]).trim() !== "") {
+              lines.push(`${letter}. ${String(q.options[letter]).trim()}`);
+            }
+          });
+          if (lines.length === 0) {
+            Object.entries(q.options).forEach(([k, v]) => {
+              if (v !== undefined && v !== null && String(v).trim() !== "") {
+                lines.push(`${k}. ${String(v).trim()}`);
+              }
+            });
+          }
+        }
+      }
+      return lines.length > 0 ? lines.join("\n") : "（本题为判断题或无单独选项）";
+    }
+
+    // 轻量高效安全的 Markdown 渲染器，杜绝 AI 助教显示源码
+    function renderMarkdown(md) {
+      if (!md) return "";
+      let text = String(md);
+
+      // 1. 保护多行代码块
+      const codeBlocks = [];
+      text = text.replace(/```([a-zA-Z0-9_-]*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const idx = codeBlocks.length;
+        codeBlocks.push(`<pre class="md-pre"><code class="md-code-block">${escapeHtml(code.trim())}</code></pre>`);
+        return `__CODE_BLOCK_${idx}__`;
+      });
+
+      // 2. 保护行内代码
+      const inlineCodes = [];
+      text = text.replace(/`([^`\n]+)`/g, (match, code) => {
+        const idx = inlineCodes.length;
+        inlineCodes.push(`<code class="md-inline-code">${escapeHtml(code)}</code>`);
+        return `__INLINE_CODE_${idx}__`;
+      });
+
+      // 3. 转义普通文本以防 XSS
+      text = escapeHtml(text);
+
+      // 4. 标题 (####, ###, ##, #)
+      text = text.replace(/^#### (.*?)$/gm, '<h5 class="md-h">$1</h5>');
+      text = text.replace(/^### (.*?)$/gm, '<h4 class="md-h">$1</h4>');
+      text = text.replace(/^## (.*?)$/gm, '<h3 class="md-h">$1</h3>');
+      text = text.replace(/^# (.*?)$/gm, '<h2 class="md-h">$1</h2>');
+
+      // 5. 分割线
+      text = text.replace(/^---$/gm, '<hr class="md-hr">');
+
+      // 6. 引用块
+      text = text.replace(/^> (.*?)$/gm, '<blockquote class="md-quote">$1</blockquote>');
+
+      // 7. 粗体与斜体
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+      text = text.replace(/\*([^\*\n]+)\*/g, '<em>$1</em>');
+
+      // 8. 列表渲染 (有序 & 无序)
+      text = text.replace(/^[-*+] (.*?)$/gm, '<li class="md-li-ul">$1</li>');
+      text = text.replace(/^(\d+)\. (.*?)$/gm, '<li class="md-li-ol">$2</li>');
+
+      text = text.replace(/(<li class="md-li-ul">[\s\S]*?<\/li>)+/g, '<ul class="md-ul">$&</ul>');
+      text = text.replace(/(<li class="md-li-ol">[\s\S]*?<\/li>)+/g, '<ol class="md-ol">$&</ol>');
+
+      // 9. 换行与段落
+      const lines = text.split('\n');
+      const result = [];
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        if (l.startsWith('<h') || l.startsWith('<hr') || l.startsWith('<blockquote') || l.startsWith('<ul') || l.startsWith('<ol') || l.startsWith('</ul') || l.startsWith('</ol') || l.startsWith('<li') || l.startsWith('__CODE_BLOCK_')) {
+          result.push(l);
+        } else if (l.trim() === '') {
+          result.push('<div class="md-gap"></div>');
+        } else {
+          result.push(l + '<br>');
+        }
+      }
+      text = result.join('');
+
+      // 10. 还原代码块与行内代码
+      text = text.replace(/__INLINE_CODE_(\d+)__/g, (match, idx) => inlineCodes[idx] || "");
+      text = text.replace(/__CODE_BLOCK_(\d+)__/g, (match, idx) => codeBlocks[idx] || "");
+
+      // 清除末尾连续无用换行
+      text = text.replace(/(<br>)+$/, '');
+
+      return text;
+    }
+
 
 
     function renderQuestionText(str) {
@@ -9766,7 +9937,7 @@
       openQuizView();
     }
 
-    // 需求1: 在题目下方直接执行一键 AI 深度解析
+    // 需求1、2、4: 一键 AI 深度解析 (完整获取题目和选项，直接在 AI 助教抽屉中展示并可直接接续对话)
     async function executeInlineAiExplanation() {
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
@@ -9781,26 +9952,60 @@
         return;
       }
 
+      // 1. 确保悬浮球展示并直接唤起 AI 助教抽屉
+      const bubble = document.getElementById("floatingAiBubble");
+      if (bubble) bubble.classList.remove("hide");
+      openFloatingAiDrawer();
+
+      // 2. 联动更新题目下方解析卡片状态提示
       const box = document.getElementById("inlineAiExplanationBox");
       const btnTxt = document.getElementById("inlineAiBtnText");
       const askRow = document.getElementById("askAssistantActionRow");
 
-      box.style.display = "block";
-      box.textContent = `连线 ${PROVIDERS[activeProv].name} (${cfg.model || PROVIDERS[activeProv].defaultModel}) 深度思考中...`;
-      if (btnTxt) btnTxt.textContent = "解析生成中...";
+      if (box) {
+        box.style.display = "block";
+        box.innerHTML = `<span style="color:var(--primary);font-weight:700;">AI 名师助教正在深度解析本题...（已在右侧/浮动助教窗口展开）</span>`;
+      }
+      if (btnTxt) btnTxt.textContent = "助教解析生成中...";
 
+      // 3. 完整获取题干和全部选项，杜绝猜测选项
+      const optionsText = formatQuestionOptionsForAi(q);
       const prompt = `请对本题进行精准考点深度剖析：
 【科目】：${q.subject}
 【题型】：${q.typeName}
 【题干】：${q.question}
+【题目选项】：
+${optionsText}
 【官方答案】：${q.answer}
-【官方解析】：${q.analysis || '无'}
+【官方解析】：${q.analysis || '无'}${q.knowledgePoint ? `\n【关联考点】：${q.knowledgePoint}` : ''}
 
 请按以下三部分精炼输出：
 1. 【考点本质】：一句话点破核心考点或法理依据。
-2. 【正解与混淆拆解】：讲透为什么选 ${q.answer}，指出干扰选项的陷阱。
+2. 【正解与混淆拆解】：讲透为什么选 ${q.answer}，逐一拆解干扰选项的误导陷阱。
 3. 【秒记口诀】：给出一句好记的背诵口诀或记忆联想法。`;
 
+      // 4. 重置本题在 AI 助教中的上下文历史
+      floatingChatHistory = [
+        {
+          role: "system",
+          content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【官方解析】：${q.analysis || '无'}`
+        },
+        {
+          role: "user",
+          content: `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`,
+          time: Date.now()
+        }
+      ];
+
+      const container = document.getElementById("floatingChatMessages");
+      if (container) {
+        container.innerHTML = "";
+        appendChatMessageUI("user", `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`);
+      }
+
+      const bodyEl = appendChatMessageUI("assistant", `正在连接 ${PROVIDERS[activeProv].name} (${cfg.model || PROVIDERS[activeProv].defaultModel}) 深度研判考点中...`);
+
+      isAiResponding = true;
       try {
         const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
         const resp = await fetch(endpoint, {
@@ -9812,19 +10017,27 @@
           body: JSON.stringify({
             model: cfg.model || PROVIDERS[activeProv].defaultModel,
             messages: [
-              { role: "system", content: "你是一位高校教师资格证与教育学权威名师。输出直击考点核心，拒绝废话，杜绝任何 Emoji。" },
+              { role: "system", content: "你是一位高校教师资格证与教育学权威名师。输出直击考点核心，拒绝废话，排版层次分明，杜绝任何 Emoji。" },
               { role: "user", content: prompt }
             ],
             stream: true
           })
         });
 
-        if (!resp.ok) throw new Error(`HTTP 状态异常: ${resp.status}`);
+        if (!resp.ok) {
+          let detail = `HTTP ${resp.status}`;
+          try {
+            const raw = await resp.text();
+            const errObj = JSON.parse(raw);
+            if (errObj.error?.message) detail = `HTTP ${resp.status}: ${errObj.error.message}`;
+          } catch (e) {}
+          throw new Error(detail);
+        }
 
         const reader = resp.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let fullResponse = "";
-        box.textContent = "";
+        if (bodyEl) bodyEl.innerHTML = "";
 
         while (true) {
           const { done, value } = await reader.read();
@@ -9838,23 +10051,42 @@
                 const parsed = JSON.parse(tr.slice(6));
                 const delta = parsed.choices?.[0]?.delta?.content || "";
                 fullResponse += delta;
-                box.textContent = fullResponse;
+                if (bodyEl) bodyEl.innerHTML = renderMarkdown(fullResponse);
+                if (container) container.scrollTop = container.scrollHeight;
               } catch (e) {}
             }
           }
         }
 
+        // 保存解析历史与题库缓存
         userStore.aiCache[qKey] = fullResponse;
+        floatingChatHistory.push({ role: "assistant", content: fullResponse, time: Date.now() });
+        saveCurrentQuizAiHistory();
         saveUserStore();
+
+        // 联动更新题卡下方的精简解析预览
+        if (box) {
+          box.innerHTML = renderMarkdown(fullResponse);
+        }
         if (btnTxt) btnTxt.textContent = "重新生成 AI 解析";
         if (askRow) askRow.style.display = "flex";
+
+        // 聚焦追问输入框并更新占位提示，方便用户直接接续对话
+        const input = document.getElementById("floatingChatInput");
+        if (input) {
+          input.placeholder = "针对此题向助教继续追问（如选项C错在哪、口诀怎么记）...";
+          input.focus();
+        }
       } catch (err) {
-        box.textContent = `解析生成失败: ${err.message}，请检查 API Key 或网络连通性。`;
+        if (bodyEl) bodyEl.innerHTML = `<span style="color:#dc2626;">解析生成失败: ${escapeHtml(err.message)}，请检查 API Key 或网络连通性。</span>`;
+        if (box) box.textContent = `解析生成失败: ${err.message}`;
         if (btnTxt) btnTxt.textContent = "一键 AI 深度解析";
+      } finally {
+        isAiResponding = false;
       }
     }
 
-    // 需求1: 弹出对话框，并完整保留刚才的一键解析内容历史
+    // 打开 AI 助教抽屉并展示当前题目的解析或历史，直接可以进行接续对话
     function openDrawerWithCurrentExplanation() {
       const q = activeQuestions[currentQuizIndex];
       if (!q) return;
@@ -9869,52 +10101,61 @@
       const container = document.getElementById("floatingChatMessages");
       if (!container) return;
 
+      const optionsText = formatQuestionOptionsForAi(q);
+
+      // 若已有该题的多轮对话记录，完整载入
+      const existingHistory = userStore.quizAiHistory && userStore.quizAiHistory[qKey];
+      if (Array.isArray(existingHistory) && existingHistory.length > 0) {
+        floatingChatHistory = JSON.parse(JSON.stringify(existingHistory));
+        container.innerHTML = "";
+        floatingChatHistory.forEach(msg => {
+          if (msg.role === 'system') return;
+          appendChatMessageUI(msg.role, msg.content);
+        });
+        const input = document.getElementById("floatingChatInput");
+        if (input) {
+          input.placeholder = "针对此题向助教继续追问（如为什么不选B）...";
+          input.focus();
+        }
+        return;
+      }
+
       if (explanation) {
         floatingChatHistory = [
           {
             role: "system",
-            content: `你是一位专业教育辅导名师。当前正在解析：[${q.subject}] ${q.typeName}。题干：“${q.question}”，正确答案：“${q.answer}”，官方解析：“${q.analysis || ''}”。输出简洁严谨，杜绝任何 Emoji。`
+            content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【官方解析】：${q.analysis || '无'}`
           },
           {
             role: "user",
-            content: `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`
+            content: `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`,
+            time: Date.now()
           },
           {
             role: "assistant",
-            content: explanation
+            content: explanation,
+            time: Date.now()
           }
         ];
 
-        container.innerHTML = `
-          <div class="chat-msg user">
-            <div class="chat-bubble-body">请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】</div>
-            <div class="chat-msg-actions">
-              <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制内容">
-                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
-              </button>
-              <button class="chat-action-btn" onclick="editAndRegenerateChat(this)" title="修改此条内容并重新生成">
-                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-edit-retry"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="chat-msg assistant">
-            <div class="chat-bubble-body"><div style="font-weight:700;margin-bottom:4px;color:var(--primary);">【本题一键 AI 考点精解回顾】：</div>${escapeHtml(explanation)}</div>
-            <div class="chat-msg-actions">
-              <button class="chat-action-btn" onclick="copyChatMessageText(this)" title="复制解析内容">
-                <svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-copy"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="chat-msg assistant">
-            <div class="chat-bubble-body" style="font-size:12px;color:var(--text-muted);background:var(--card-bg);">已为您保留上述一键解析内容历史。您可以在下方输入框继续自由追问（如为什么不选B、相关真题辨析等）！</div>
-          </div>
-        `;
+        container.innerHTML = "";
+        appendChatMessageUI("user", `请帮我深度解析当前题目：第 ${currentQuizIndex + 1} 题【${q.subject}】`);
+        appendChatMessageUI("assistant", explanation);
+
+        saveCurrentQuizAiHistory();
+
+        const input = document.getElementById("floatingChatInput");
+        if (input) {
+          input.placeholder = "针对此题向助教继续追问（如为什么不选B）...";
+          input.focus();
+        }
       } else {
-        initFloatingChatGreeting();
+        // 若当前题目尚未生成过解析，直接调用 executeInlineAiExplanation 立即在助教抽屉中生成
+        executeInlineAiExplanation();
       }
     }
 
-    // 助教输入框追问多轮对话
+    // 助教输入框追问多轮对话 (注入完整题干与选项)
     async function sendFloatingChatMessage() {
       if (isAiResponding) return;
       const input = document.getElementById("floatingChatInput");
@@ -9933,10 +10174,11 @@
 
       if (floatingChatHistory.length === 0) {
         const q = activeQuestions[currentQuizIndex];
-        const ctx = q ? `当前正在练习的题目：[${q.subject}] ${q.typeName}。题干：“${q.question}”，正确答案：“${q.answer}”，官方解析：“${q.analysis || ''}”。` : "";
+        const optText = formatQuestionOptionsForAi(q);
+        const ctx = q ? `当前正在练习的题目：[${q.subject}] ${q.typeName}。\n【题干】：“${q.question}”\n【选项】：\n${optText}\n【正确答案】：“${q.answer}”\n【官方解析】：“${q.analysis || '无'}”。` : "";
         floatingChatHistory.push({
           role: "system",
-          content: `你是一位专业教育辅导专家。输出直击考点核心，拒绝废话，杜绝任何 Emoji。${ctx}`
+          content: `你是一位专业教育辅导专家。输出直击考点核心，拒绝废话，排版层次清晰，杜绝任何 Emoji。${ctx}`
         });
       }
 
@@ -9997,7 +10239,7 @@
         const reader = resp.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let fullResponse = "";
-        bodyEl.textContent = "";
+        bodyEl.innerHTML = "";
 
         while (true) {
           const { done, value } = await reader.read();
@@ -10011,7 +10253,7 @@
                 const parsed = JSON.parse(tr.slice(6));
                 const delta = parsed.choices?.[0]?.delta?.content || "";
                 fullResponse += delta;
-                bodyEl.textContent = fullResponse;
+                bodyEl.innerHTML = renderMarkdown(fullResponse);
                 const container = document.getElementById("floatingChatMessages");
                 if (container) container.scrollTop = container.scrollHeight;
               } catch (e) {}
@@ -10022,7 +10264,7 @@
         floatingChatHistory.push({ role: "assistant", content: fullResponse, time: Date.now() });
         saveCurrentQuizAiHistory();
       } catch (err) {
-        bodyEl.textContent = `回答生成失败: ${err.message}，请在设置中检查该供应商的端点与 Key 配置。`;
+        bodyEl.innerHTML = `<span style="color:#dc2626;">回答生成失败: ${escapeHtml(err.message)}，请在设置中检查该供应商的端点与 Key 配置。</span>`;
       } finally {
         isAiResponding = false;
       }
@@ -10094,8 +10336,9 @@
         `;
       }
 
+      const bodyContent = role === "assistant" ? renderMarkdown(text) : escapeHtml(text).replace(/\n/g, '<br>');
       msgEl.innerHTML = `
-        <div class="chat-bubble-body">${escapeHtml(text)}</div>
+        <div class="chat-bubble-body">${bodyContent}</div>
         ${actionsHtml}
       `;
       container.appendChild(msgEl);
@@ -10258,7 +10501,7 @@
         const reader = resp.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let fullResponse = "";
-        bodyEl.textContent = "";
+        bodyEl.innerHTML = "";
 
         while (true) {
           const { done, value } = await reader.read();
@@ -10272,7 +10515,7 @@
                 const parsed = JSON.parse(tr.slice(6));
                 const delta = parsed.choices?.[0]?.delta?.content || "";
                 fullResponse += delta;
-                bodyEl.textContent = fullResponse;
+                bodyEl.innerHTML = renderMarkdown(fullResponse);
                 const container = document.getElementById("settingsAiChatMessages");
                 if (container) container.scrollTop = container.scrollHeight;
               } catch (e) {}
@@ -10284,7 +10527,7 @@
         saveUserStore();
         renderHomeAiHistoryList();
       } catch (err) {
-        bodyEl.textContent = `回答生成失败: ${err.message}，请检查 API Key 与网络连接。`;
+        bodyEl.innerHTML = `<span style="color:#dc2626;">回答生成失败: ${escapeHtml(err.message)}，请检查 API Key 与网络连接。</span>`;
       } finally {
         isSettingsAiResponding = false;
       }
