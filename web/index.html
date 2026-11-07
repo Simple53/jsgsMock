@@ -1903,8 +1903,19 @@
     .video-ep-row-btn .ep-row-tag{flex-shrink:0;font-size:11px;color:var(--text-muted);font-weight:600}
     .video-ep-row-btn.active .ep-row-tag{color:var(--primary);font-weight:700}
     .sub-actions-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
-    .sub-kp-btn{padding:6px 10px;border-radius:8px;border:1.5px solid var(--primary-border);background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+    .sub-kp-btn{padding:4px 8px;border-radius:8px;border:1.5px solid var(--primary-border);background:var(--primary-light);color:var(--primary);font-size:11.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;max-width:min(200px, 56vw);box-sizing:border-box;overflow:hidden}
     .sub-kp-btn:active{opacity:0.8}
+    .sub-kp-btn .sub-kp-text,
+    .sub-kp-btn > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+      flex: 1;
+    }
+    .sub-kp-btn .svg-icon {
+      flex-shrink: 0;
+    }
     .reader-subbar{padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg);display:flex;flex-direction:column;gap:6px}
     .reader-pill-row{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
     .reader-pill-row::-webkit-scrollbar{display:none}
@@ -5954,7 +5965,7 @@
             <div style="font-size:13px;font-weight:700;color:var(--text-main);line-height:1.4;">[${q.subject}] ${q.question.slice(0, 40)}...</div>
             <div style="font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <span>题型: ${q.typeName} | 正确答案: ${q.answer}</span>
-              ${q.knowledgePoint ? `<span class="sub-kp-btn" style="padding:1px 6px;font-size:10px;cursor:pointer;" onclick="event.stopPropagation();jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint)}', event)" title="点击跳转考点详解">考点: ${escapeHtml(getQuestionKpDisplay(q))} ›</span>` : ''}
+              ${q.knowledgePoint ? `<span class="sub-kp-btn" style="padding:1px 6px;font-size:10px;cursor:pointer;max-width:160px;" onclick="event.stopPropagation();jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint)}', event)" title="考点: ${escapeHtml(q.knowledgePoint)} (点击跳转考点精要)"><span class="sub-kp-text">考点: ${escapeHtml(getQuestionKpDisplay(q))}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;flex-shrink:0;"><use href="#icon-right"/></svg></span>` : ''}
             </div>
           </div>
           <span style="font-size:12px;color:var(--primary);font-weight:700;white-space:nowrap;margin-left:8px;">做此题 ›</span>
@@ -8875,16 +8886,16 @@
 
       container.innerHTML = `
         <div class="quiz-header-meta">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;flex:1;margin-right:8px;">
             <span class="meta-subject-tag">${q.typeName} · ${q.subject}</span>
             ${badgeHtml}
-            <button type="button" class="sub-kp-btn" style="padding:2px 8px;font-size:11px;" onclick="jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint || '')}', event)" title="在考点精要中对照查看本题关联考点">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-textbook"/></svg>
-              <span>${q.knowledgePoint ? '考点: ' + escapeHtml(getQuestionKpDisplay(q)) : '看考点'}</span>
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:10px;height:10px;margin-left:1px;"><use href="#icon-right"/></svg>
+            <button type="button" class="sub-kp-btn quiz-kp-btn" style="padding:2px 8px;font-size:11px;max-width:min(180px,50vw);" onclick="jumpToKnowledgePoint('${escapeHtml(q.subject)}', '${escapeHtml(q.knowledgePoint || '')}', event)" title="考点: ${escapeHtml(q.knowledgePoint || '')} (点击在考点精要中对照查看)">
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0;"><use href="#icon-textbook"/></svg>
+              <span class="sub-kp-text">${q.knowledgePoint ? '考点: ' + escapeHtml(getQuestionKpDisplay(q)) : '看考点'}</span>
+              <svg class="svg-icon" viewBox="0 0 24 24" style="width:10px;height:10px;margin-left:1px;flex-shrink:0;"><use href="#icon-right"/></svg>
             </button>
           </div>
-          <span class="meta-index-counter">${currentQuizIndex + 1} / ${total}</span>
+          <span class="meta-index-counter" style="flex-shrink:0;">${currentQuizIndex + 1} / ${total}</span>
         </div>
         <div class="q-text-body">${renderQuestionText(q.question)}</div>
         ${optionsHtml}
@@ -11538,7 +11549,7 @@ ${optionsText}
               <span class="row-index" style="width:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;font-size:11px;">#${idx + 1}</span>
               <span style="font-size:12px;font-weight:700;color:var(--text-main);">${escapeHtml(doubt.subject || '科目')} · ${escapeHtml(doubt.typeName || '选择题')}</span>
               <span style="font-size:11px;background:rgba(234,88,12,0.12);color:#ea580c;padding:1px 6px;border-radius:4px;font-weight:600;">${escapeHtml(tagText)}</span>
-              ${kp ? `<button type="button" class="sub-kp-btn" style="padding:1px 6px;font-size:10.5px;cursor:pointer;" onclick="jumpToKnowledgePoint('${escapeHtml(doubt.subject || '')}', '${escapeHtml(kp)}', event)" title="点击跳转至考点精要详解"><span>考点: ${escapeHtml(kpDisplay)}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;"><use href="#icon-right"/></svg></button>` : ''}
+              ${kp ? `<button type="button" class="sub-kp-btn" style="padding:1px 6px;font-size:10.5px;cursor:pointer;max-width:160px;" onclick="jumpToKnowledgePoint('${escapeHtml(doubt.subject || '')}', '${escapeHtml(kp)}', event)" title="考点: ${escapeHtml(kp)} (点击跳转至考点精要)"><span class="sub-kp-text">考点: ${escapeHtml(kpDisplay)}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;flex-shrink:0;"><use href="#icon-right"/></svg></button>` : ''}
             </div>
             <button type="button" class="count-pill ${isResolved ? 'active' : ''}" style="padding:2px 8px;font-size:11px;white-space:nowrap;${isResolved ? 'background:var(--correct-bg);color:var(--correct);border-color:var(--correct);' : 'background:rgba(234,88,12,0.1);color:#ea580c;border-color:rgba(234,88,12,0.3);'}" onclick="toggleDoubtResolvedState('${doubt.qKey}', event)">
               ${isResolved ? '已解决 ✓' : '待核实 ⏳'}
@@ -11802,9 +11813,9 @@ ${optionsText}
       if (q.knowledgePoint) {
         const kpBtn = document.createElement('span');
         kpBtn.className = 'sub-kp-btn';
-        kpBtn.style.cssText = 'padding:1px 6px;font-size:10.5px;cursor:pointer;';
-        kpBtn.title = '点击跳转对应考点精要详解';
-        kpBtn.innerHTML = `<span>考点: ${escapeHtml(getQuestionKpDisplay(q))}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;"><use href="#icon-right"/></svg>`;
+        kpBtn.style.cssText = 'padding:1px 6px;font-size:10.5px;cursor:pointer;max-width:160px;';
+        kpBtn.title = `考点: ${q.knowledgePoint} (点击跳转对应考点精要)`;
+        kpBtn.innerHTML = `<span class="sub-kp-text">考点: ${escapeHtml(getQuestionKpDisplay(q))}</span><svg class="svg-icon" viewBox="0 0 24 24" style="width:9px;height:9px;flex-shrink:0;"><use href="#icon-right"/></svg>`;
         kpBtn.onclick = (e) => {
           e.stopPropagation();
           jumpToKnowledgePoint(q.subject, q.knowledgePoint, e);
