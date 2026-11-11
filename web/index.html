@@ -5026,18 +5026,6 @@
         isGistSyncing = false;
       }
     }
-        if (badge) {
-          badge.textContent = "Gist 同步失败";
-          badge.style.color = "var(--wrong)";
-          badge.style.background = "var(--wrong-bg)";
-        }
-        if (isManual) {
-          alert(`Gist 同步失败: ${err.message}\n\n请检查：\n1. Token 是否已填入且有效；\n2. Token 是否勾选了 [gist] 权限；\n3. 手机当前是否能够正常联网访问 github.com。`);
-        }
-      } finally {
-        isGistSyncing = false;
-      }
-    }
 
     // 局域网 / 自定义服务端同步
     let isSyncing = false;
