@@ -3471,17 +3471,23 @@
               2. 点击 Generate new token，名称填 jsgsMock，<strong>仅勾选 [x] gist 权限</strong>并生成；<br>
               3. 将生成的 ghp_xxxx 密钥填入下方，手机电脑填相同 Token 即可随时云同步！
             </div>
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <div style="display:flex;gap:6px;margin-bottom:6px;">
               <input id="githubTokenInput" type="password" style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="输入 GitHub Token (ghp_xxxx)" onchange="saveSyncSettings()">
               <button class="bottom-btn" style="padding:7px 14px;font-size:12px;white-space:nowrap;" onclick="syncWithGitHubGist(true)">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-cloud-sync"/></svg> 立即 Gist 同步
               </button>
             </div>
+            <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+              <input id="githubGistIdInput" type="text" style="flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:11.5px;outline:none;background:var(--bg);" placeholder="云端 Gist ID (自动生成，手机可直接粘贴协同)" onchange="saveSyncSettings()">
+              <button class="text-name-btn" style="padding:5px 10px;font-size:11px;white-space:nowrap;" onclick="copyGistIdText()">复制 Gist ID</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.5;">手机端提示：在手机填入相同的 GitHub Token 或电脑的 Gist ID，点击同步即可双向合并。</div>
           </div>
 
           <!-- 方式二：局域网 / 自定义同步服务器 -->
           <div style="border-top:1px dashed var(--border);padding-top:12px;margin-bottom:14px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:6px;">方式二：局域网 / 自定义同步服务</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:4px;">方式二：局域网 / 自定义同步服务</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;line-height:1.4;">校园网 WiFi 普遍开启【AP隔离】导致搜不到设备？建议电脑开启【移动热点】让手机连接。</div>
             <div style="display:flex;gap:6px;margin-bottom:8px;">
               <input id="customServerUrlInput" style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;" placeholder="默认自动连接本网或填 http://电脑IP:8080" onchange="saveSyncSettings()">
               <button class="bottom-btn" style="padding:7px 10px;font-size:12px;white-space:nowrap;" onclick="testServerConnection()">测试</button>
@@ -3490,17 +3496,29 @@
               <button class="bottom-btn" id="manualSyncBtn" style="flex:1.2;padding:8px 12px;font-size:12px;" onclick="syncWithServer(true)">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-refresh"/></svg> 局域网立即合并
               </button>
-              <button class="bottom-btn" style="flex:1;padding:8px 10px;font-size:12px;" onclick="openNetworkConnectModal()">网络排查指引</button>
+              <button class="bottom-btn" style="flex:1;padding:8px 10px;font-size:12px;" onclick="openNetworkConnectModal()">查看电脑IP / 校园网指引</button>
             </div>
           </div>
 
-          <!-- 方式三：同步口令快照 (离线一键互导) -->
+          <!-- 方式三：数据快照互传 (免网络 / 文件发微信 100% 成功) -->
           <div style="border-top:1px dashed var(--border);padding-top:12px;">
-            <div style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:4px;">方式三：数据快照口令 (无网络也能互传)</div>
-            <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;">电脑一键复制口令，手机微信/剪贴板粘贴即可瞬间合并进度。</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <div style="font-size:13px;font-weight:700;color:var(--text-main);">方式三：数据快照互传 (离线文件 / 免网络限制)</div>
+              <span style="font-size:10.5px;color:var(--primary);background:var(--primary-light);padding:1px 5px;border-radius:4px;font-weight:700;">最推荐·零门槛</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:8px;line-height:1.5;">口令太长发不进聊天软件？电脑点击【导出快照文件】，微信发给手机，手机点击【导入快照文件】直接合并，绝不受字数限制！</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+              <button class="bottom-btn" style="padding:7px 10px;font-size:12px;font-weight:700;color:var(--primary);border-color:var(--primary-border);" onclick="exportSnapshotFile()">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="width:13px;height:13px;vertical-align:-2px;"><use href="#icon-share"/></svg> 导出快照文件 (.json)
+              </button>
+              <label class="bottom-btn" style="padding:7px 10px;font-size:12px;text-align:center;cursor:pointer;font-weight:700;">
+                <span>选择快照文件导入</span>
+                <input type="file" accept=".json,application/json" style="display:none;" onchange="importSnapshotFile(event)">
+              </label>
+            </div>
             <div style="display:flex;gap:8px;">
-              <button class="bottom-btn" style="flex:1;padding:7px 10px;font-size:12px;" onclick="exportSyncToken()">复制同步口令</button>
-              <button class="bottom-btn" style="flex:1;padding:7px 10px;font-size:12px;" onclick="importSyncToken()">粘贴口令合并</button>
+              <button class="text-name-btn" style="flex:1;padding:6px 8px;font-size:11.5px;" onclick="exportSyncToken()">复制压缩短口令</button>
+              <button class="text-name-btn" style="flex:1;padding:6px 8px;font-size:11.5px;" onclick="importSyncToken()">粘贴口令合并</button>
             </div>
           </div>
 
@@ -3520,15 +3538,6 @@
             <label class="bottom-btn" style="flex:1;padding:9px;font-size:13px;text-align:center;cursor:pointer;">导入备份文件恢复进度 (.json)
               <input type="file" accept=".json,application/json" style="display:none;" onchange="importLearningBackup(event)">
             </label>
-          </div>
-          <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);">
-            <div style="font-size:12px;font-weight:700;color:var(--text-main);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-              <svg class="svg-icon" viewBox="0 0 24 24" style="width:14px;height:14px;color:var(--primary);"><use href="#icon-share"/></svg>
-              <span>全套题库 Excel 对照表（支持电脑本地离线查阅）</span>
-            </div>
-            <a href="./高校教资题库全套_新旧两版对照带答案.xlsx" download="高校教资题库全套_新旧两版对照带答案.xlsx" class="bottom-btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:12.5px;padding:9px;color:var(--primary);font-weight:600;">
-              <span>下载全套题库Excel对照表 (含新旧2164题+官方答案+题型分布)</span>
-            </a>
           </div>
         </div>
 
@@ -4828,10 +4837,26 @@
     function saveSyncSettings() {
       if (!userStore.syncConfig) userStore.syncConfig = {};
       const tokenInput = document.getElementById("githubTokenInput");
+      const gistInput = document.getElementById("githubGistIdInput");
       const srvInput = document.getElementById("customServerUrlInput");
-      if (tokenInput) userStore.syncConfig.githubToken = tokenInput.value.trim();
+      if (tokenInput) userStore.syncConfig.githubToken = tokenInput.value.trim().replace(/\s+/g, '');
+      if (gistInput) userStore.syncConfig.gistId = gistInput.value.trim().replace(/\s+/g, '');
       if (srvInput) userStore.syncConfig.customServerUrl = srvInput.value.trim();
       saveUserStore(true);
+    }
+
+    function copyGistIdText() {
+      const gistId = (userStore.syncConfig && userStore.syncConfig.gistId) || document.getElementById("githubGistIdInput")?.value?.trim();
+      if (!gistId) {
+        showToast("暂未生成 Gist ID，请先输入 Token 并点击【立即 Gist 同步】");
+        return;
+      }
+      navigator.clipboard.writeText(gistId).then(() => {
+        showToast("已成功复制 Gist ID 到剪贴板！");
+        alert(`已复制云端 Gist ID:\n${gistId}\n\n【手机同步使用方法】：\n在手机打开本设置页，在【云端 Gist ID】中粘贴此 ID，并填入相同的 GitHub Token，点击【立即 Gist 同步】即可双向合并！`);
+      }).catch(() => {
+        prompt("请手动长按复制下方 Gist ID：", gistId);
+      });
     }
 
     function toggleGistHelp() {
@@ -4845,9 +4870,10 @@
       if (isGistSyncing) return;
       saveSyncSettings();
       const cfg = userStore.syncConfig || {};
-      const token = (cfg.githubToken || "").trim();
+      const token = (cfg.githubToken || "").trim().replace(/\s+/g, '');
+      const manualGistId = (cfg.gistId || "").trim().replace(/\s+/g, '');
 
-      if (!token) {
+      if (!token && !manualGistId) {
         if (isManual) {
           alert("请先在上方输入 GitHub Token (ghp_xxxx) 并勾选 gist 权限。\n\n配置后手机和电脑在任意网络下都能随时双向同步做题记录！");
           document.getElementById("githubTokenInput")?.focus();
@@ -4866,10 +4892,10 @@
       }
 
       try {
-        let gistId = cfg.gistId;
+        let gistId = manualGistId || cfg.gistId;
 
         // 如果没有记录过 gistId，先搜索用户的 gist 列表寻找名为 jsgsMock_sync_store 的已有备份
-        if (!gistId) {
+        if (!gistId && token) {
           const listResp = await fetch("https://api.github.com/gists?per_page=30", {
             headers: {
               "Authorization": `token ${token}`,
@@ -4878,11 +4904,13 @@
           });
           if (listResp.ok) {
             const listData = await listResp.json();
-            const found = listData.find(g => g.description && (g.description.includes("jsgsMock_sync_store") ));
+            const found = listData.find(g => g.description && (g.description.includes("jsgsMock_sync_store")));
             if (found) {
               gistId = found.id;
               cfg.gistId = gistId;
               userStore.syncConfig.gistId = gistId;
+              const gistInput = document.getElementById("githubGistIdInput");
+              if (gistInput) gistInput.value = gistId;
               saveUserStore(true);
             }
           }
@@ -4896,15 +4924,17 @@
 
         if (gistId) {
           // 1. 先拉取远端已有进度合并
+          const fetchHeaders = {
+            "Accept": "application/vnd.github.v3+json"
+          };
+          if (token) fetchHeaders["Authorization"] = `token ${token}`;
+
           const getResp = await fetch(`https://api.github.com/gists/${gistId}`, {
-            headers: {
-              "Authorization": `token ${token}`,
-              "Accept": "application/vnd.github.v3+json"
-            }
+            headers: fetchHeaders
           });
           if (getResp.ok) {
             const gistData = await getResp.json();
-            const f = gistData.files && (gistData.files["jsgsMock_store.json"] );
+            const f = gistData.files && (gistData.files["jsgsMock_store.json"]);
             if (f && f.content) {
               try {
                 const remoteStore = JSON.parse(f.content);
@@ -4913,24 +4943,31 @@
                 console.warn("解析远端 Gist 数据失败:", e);
               }
             }
+          } else if (getResp.status === 404) {
+            throw new Error(`未找到指定的 Gist (ID: ${gistId})，请确认 Gist ID 是否完整正确。`);
+          } else if (getResp.status === 401) {
+            throw new Error(`GitHub Token 认证失败或已过期 (HTTP 401)，请检查 Token 是否完整且包含 gist 权限。`);
           }
 
-          // 2. 将最新本地合并结果更新回 Gist
-          payloadFiles["jsgsMock_store.json"].content = JSON.stringify(userStore, null, 2);
-          const patchResp = await fetch(`https://api.github.com/gists/${gistId}`, {
-            method: "PATCH",
-            headers: {
-              "Authorization": `token ${token}`,
-              "Accept": "application/vnd.github.v3+json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              description: "jsgsMock_sync_store (多端同步数据云端备份)",
-              files: payloadFiles
-            })
-          });
-          if (!patchResp.ok) throw new Error(`Gist 更新失败: HTTP ${patchResp.status}`);
+          // 2. 将最新本地合并结果更新回 Gist (若有 token)
+          if (token) {
+            payloadFiles["jsgsMock_store.json"].content = JSON.stringify(userStore, null, 2);
+            const patchResp = await fetch(`https://api.github.com/gists/${gistId}`, {
+              method: "PATCH",
+              headers: {
+                "Authorization": `token ${token}`,
+                "Accept": "application/vnd.github.v3+json",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                description: "jsgsMock_sync_store (多端同步数据云端备份)",
+                files: payloadFiles
+              })
+            });
+            if (!patchResp.ok) throw new Error(`Gist 更新失败: HTTP ${patchResp.status}`);
+          }
         } else {
+          if (!token) throw new Error("首次创建云端同步需填写 GitHub Token");
           // 首次创建私密 Gist
           const createResp = await fetch("https://api.github.com/gists", {
             method: "POST",
@@ -4949,7 +4986,15 @@
           const createdData = await createResp.json();
           cfg.gistId = createdData.id;
           userStore.syncConfig.gistId = createdData.id;
+          const gistInput = document.getElementById("githubGistIdInput");
+          if (gistInput) gistInput.value = createdData.id;
           saveUserStore(true);
+        }
+
+        // 同步成功后更新界面显示
+        const gistInput = document.getElementById("githubGistIdInput");
+        if (gistInput && userStore.syncConfig?.gistId) {
+          gistInput.value = userStore.syncConfig.gistId;
         }
 
         const now = new Date();
@@ -4965,10 +5010,22 @@
         showToast("☁️ GitHub Gist 云端同步成功");
 
         if (isManual) {
-          alert(`🎉 GitHub Gist 云端双向同步成功！\n\n已成功连通云端专属备份。\n无论手机使用 4G/5G 流量还是任意网络，只需在其他设备输入相同 Token，即可随时随地双向同步做题历史与错题本！`);
+          alert(`🎉 GitHub Gist 云端双向同步成功！\n\n已成功连通云端专属备份 (Gist ID: ${userStore.syncConfig.gistId || '已绑定'})。\n在手机端填入相同的 GitHub Token 或 Gist ID，点击同步即可瞬间双向同步做题记录！`);
         }
       } catch (err) {
         console.error("Gist 同步失败:", err);
+        if (badge) {
+          badge.textContent = "Gist 同步失败";
+          badge.style.color = "var(--wrong)";
+          badge.style.background = "var(--wrong-bg)";
+        }
+        if (isManual) {
+          alert(`Gist 同步失败: ${err.message}\n\n排查建议：\n1. 手机端与电脑端请确保填入相同的 Token；\n2. 若手机复制 Gist ID，请点击【复制 Gist ID】确保未复制丢字符；\n3. 手机移动网络若被防火墙拦截，可使用下方【方式三：导出快照文件传微信】，微信发文件100%成功！`);
+        }
+      } finally {
+        isGistSyncing = false;
+      }
+    }
         if (badge) {
           badge.textContent = "Gist 同步失败";
           badge.style.color = "var(--wrong)";
@@ -5206,6 +5263,67 @@
       }
     }
 
+    // 导出快照文件 (.json)
+    function exportSnapshotFile() {
+      const snapshot = {
+        answers: userStore.answers || {},
+        favorites: userStore.favorites || [],
+        wrongBook: userStore.wrongBook || {},
+        ebbinghausWrong: userStore.ebbinghausWrong || {},
+        checkin: userStore.checkin || {},
+        dailyActivity: userStore.dailyActivity || {},
+        unfinishedSessions: userStore.unfinishedSessions || {},
+        doubtQuestions: userStore.doubtQuestions || {},
+        timestamp: Date.now(),
+        exportedBy: "jsgsMock Snapshot File"
+      };
+      try {
+        const jsonStr = JSON.stringify(snapshot, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const d = new Date();
+        const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}_${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
+        const filename = `jsgs_mock_snapshot_${dateStr}.json`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("快照文件已生成并下载！");
+        alert(`快照文件【${filename}】已下载！\n\n💡 推荐做法：通过微信/QQ等聊天软件将此 .json 文件发给手机（发文件不受任何字数限制），然后在手机端点击【选择快照文件导入】，即可100%无损导入全部学习进度！`);
+      } catch (e) {
+        alert("导出快照文件失败：" + e.message);
+      }
+    }
+
+    // 选择快照文件导入 (.json)
+    function importSnapshotFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const content = e.target.result;
+          const data = JSON.parse(content);
+          if (!data || typeof data !== 'object') {
+            throw new Error("文件格式错误，不是有效的快照文件");
+          }
+          mergeRemoteUserStore(data);
+          normalizeUserStoreKeys();
+          saveUserStore(true);
+          showToast("快照文件已成功合并！");
+          alert("🎉 快照数据导入并合并成功！\n\n做题记录、收藏与错题本已与本机无损融合。");
+        } catch (err) {
+          alert("快照文件导入失败：" + err.message);
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+
     // 复制同步口令 (离线快照)
     function exportSyncToken() {
       const snapshot = {
@@ -5222,11 +5340,17 @@
       try {
         const jsonStr = JSON.stringify(snapshot);
         const token = btoa(unescape(encodeURIComponent(jsonStr)));
-        navigator.clipboard.writeText("JSGSMOCK_SYNC:" + token).then(() => {
+        const fullToken = "JSGSMOCK_SYNC:" + token;
+        const isTooLong = fullToken.length > 1500;
+        navigator.clipboard.writeText(fullToken).then(() => {
           showToast("已成功复制同步口令到剪贴板！");
-          alert("同步口令已复制！\n\n请在另一台设备（如手机）的【粘贴口令合并】中粘贴，即可瞬间完成合并。");
+          if (isTooLong) {
+            alert(`已复制同步口令（长度为 ${fullToken.length} 字符）。\n\n⚠️ 温馨提示：微信/QQ 单条消息过长可能会被自动截断导致手机端无法识别！\n\n如果微信发送失败，强烈推荐点击上方的【导出快照文件 (.json)】，通过微信发文件给手机，更稳定便捷！`);
+          } else {
+            alert("同步口令已复制！\n\n请在另一台设备（如手机）的【粘贴口令合并】中粘贴，即可瞬间完成合并。");
+          }
         }).catch(() => {
-          prompt("请手动复制下方同步口令：", "JSGSMOCK_SYNC:" + token);
+          prompt("请手动复制下方同步口令：", fullToken);
         });
       } catch (e) {
         alert("生成同步口令失败: " + e.message);
@@ -5235,17 +5359,23 @@
 
     // 粘贴口令合并
     function importSyncToken() {
-      const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 JSGSMOCK_SYNC: 开头)：");
+      const input = prompt("请粘贴在另一台设备上复制的同步口令 (以 JSGSMOCK_SYNC: 开头，或直接粘贴口令文本)：");
       if (!input) return;
-      const clean = input.trim().replace(/^JSGSMOCK_SYNC:/, '');
+      let clean = input.trim();
+      if (clean.includes("JSGSMOCK_SYNC:")) {
+        clean = clean.split("JSGSMOCK_SYNC:")[1].trim();
+      }
+      clean = clean.replace(/\s+/g, '');
       try {
         const jsonStr = decodeURIComponent(escape(atob(clean)));
         const data = JSON.parse(jsonStr);
         mergeRemoteUserStore(data);
+        normalizeUserStoreKeys();
+        saveUserStore(true);
         showToast("同步口令数据已成功合并！");
         alert("🎉 数据合并完成！做题记录、收藏与错题本已成功双向合并！");
       } catch (e) {
-        alert("口令解析失败，请确认复制了完整的同步口令文本。");
+        alert("口令解析失败，请确认复制了完整的同步口令文本。\n\n💡 提示：如果微信长文本被截断，推荐使用【导出快照文件】直接用微信发文件，100% 成功。");
       }
     }
 
@@ -8384,13 +8514,22 @@
       // 核心需求3: 优先从上次做题中断处恢复原题目组与当前题序号，绝不重新生成新题目
       if (userStore.unfinishedSessions[sub] && userStore.unfinishedSessions[sub].activeQuestions?.length > 0) {
         const sess = userStore.unfinishedSessions[sub];
-        activeQuestions = sess.activeQuestions;
-        currentQuizIndex = Math.min(sess.currentQuizIndex || 0, activeQuestions.length - 1);
-        timerSeconds = sess.timerSeconds || 0;
-        appConfig.quizMode = sess.mode || appConfig.defaultMode || 'study';
-        isExamSubmitted = false;
-        openQuizView();
-        return;
+        const allDone = sess.activeQuestions.every(q => userStore.answers && userStore.answers[getQKey(q)]);
+        const atEnd = (sess.currentQuizIndex >= sess.activeQuestions.length - 1);
+        if (allDone || (atEnd && allDone)) {
+          // 该组题目已全部作答完成，清理旧会话，直接进入新一组并从第 1 题开始！
+          delete userStore.unfinishedSessions[sub];
+          saveUserStore();
+        } else {
+          activeQuestions = sess.activeQuestions;
+          currentQuizIndex = Math.min(sess.currentQuizIndex || 0, activeQuestions.length - 1);
+          timerSeconds = sess.timerSeconds || 0;
+          appConfig.quizMode = sess.mode || appConfig.defaultMode || 'study';
+          isExamSubmitted = false;
+          isPracticeBatchFinished = false;
+          openQuizView();
+          return;
+        }
       }
 
       const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
@@ -8404,6 +8543,7 @@
       appConfig.quizMode = appConfig.defaultMode || 'study';
       currentQuizIndex = 0;
       isExamSubmitted = false;
+      isPracticeBatchFinished = false;
 
       userStore.unfinishedSessions[sub] = {
         activeQuestions,
@@ -8587,10 +8727,20 @@
     let wrongSessionRevealed = {};
     let wrongSessionAnswers = {};
     let studySessionAnswered = {};
+    let isPracticeBatchFinished = false;
 
     function exitQuizToHome() {
       stopTimer();
-      if (currentSubject && activeQuestions && activeQuestions.length > 0 && currentSubject !== '我的收藏' && currentSubject !== '错题复习') {
+      const allDone = activeQuestions && activeQuestions.length > 0 &&
+        activeQuestions.every(q => userStore.answers && userStore.answers[getQKey(q)]);
+      const isFinished = isPracticeBatchFinished || allDone;
+
+      if (isFinished) {
+        // 若本组已全部做完或已完成结算，彻底清除未完成会话，防止下次重复从最后一题进入
+        if (currentSubject && userStore.unfinishedSessions) {
+          delete userStore.unfinishedSessions[currentSubject];
+        }
+      } else if (currentSubject && activeQuestions && activeQuestions.length > 0 && currentSubject !== '我的收藏' && currentSubject !== '错题复习') {
         if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
         userStore.unfinishedSessions[currentSubject] = {
           activeQuestions: activeQuestions,
@@ -8599,6 +8749,7 @@
           mode: appConfig.quizMode || 'study'
         };
       }
+      isPracticeBatchFinished = false;
       saveUserStore();
       closeFloatingAiDrawer();
       const dd = document.getElementById("topAiDropdown");
@@ -11054,6 +11205,7 @@ ${optionsText}
         }
       }
 
+      isPracticeBatchFinished = true;
       if (currentSubject && userStore.unfinishedSessions) {
         delete userStore.unfinishedSessions[currentSubject];
       }
@@ -11082,6 +11234,7 @@ ${optionsText}
       activeQuestions = nextQuestions;
       currentQuizIndex = 0;
       isExamSubmitted = false;
+      isPracticeBatchFinished = false;
       startTimer();
       if (!userStore.unfinishedSessions) userStore.unfinishedSessions = {};
       userStore.unfinishedSessions[currentSubject] = {
@@ -11101,6 +11254,10 @@ ${optionsText}
 
     function exitPracticeToHome() {
       closePracticeResultModal();
+      isPracticeBatchFinished = true;
+      if (currentSubject && userStore.unfinishedSessions) {
+        delete userStore.unfinishedSessions[currentSubject];
+      }
       exitQuizToHome();
     }
 
@@ -11215,6 +11372,8 @@ ${optionsText}
       const syncCfg = userStore.syncConfig || {};
       const tokenInput = document.getElementById("githubTokenInput");
       if (tokenInput && !tokenInput.value) tokenInput.value = syncCfg.githubToken || "";
+      const gistInput = document.getElementById("githubGistIdInput");
+      if (gistInput && !gistInput.value) gistInput.value = syncCfg.gistId || "";
       const srvInput = document.getElementById("customServerUrlInput");
       if (srvInput && !srvInput.value) srvInput.value = syncCfg.customServerUrl || "";
 
@@ -12201,25 +12360,36 @@ ${optionsText}
 
       <div style="font-size:13px;line-height:1.6;color:var(--text-main);display:flex;flex-direction:column;gap:12px;">
         <div style="padding:10px 12px;background:var(--primary-light);border-radius:8px;border:1px solid var(--primary-border);">
-          <div style="font-weight:800;color:var(--primary);margin-bottom:4px;">1. 同一 WiFi 局域网访问地址：</div>
-          <div style="font-size:15px;font-weight:900;word-break:break-all;color:var(--text-main);font-family:monospace;" id="currentNetworkAccessUrl">http://10.30.183.115:8080</div>
-          <div style="font-size:11px;color:var(--wrong);margin-top:4px;font-weight:700;">特别注意：请务必输入 http://，严禁输入 https:// (否则浏览器会因证书不匹配报错中断连接)</div>
+          <div style="font-weight:800;color:var(--primary);margin-bottom:4px;">1. 当前检测到的局域网访问地址：</div>
+          <div style="font-size:15px;font-weight:900;word-break:break-all;color:var(--text-main);font-family:monospace;" id="currentNetworkAccessUrl">http://电脑IP:8080</div>
+          <div style="font-size:11px;color:var(--wrong);margin-top:4px;font-weight:700;">特别注意：请务必输入 http://，严禁输入 https://</div>
         </div>
 
-        <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;">
-          <div style="font-weight:800;margin-bottom:4px;">2. 手机打不开？排查两步秒解决：</div>
-          <div style="font-size:12px;color:var(--text-sub);">
-            <strong>A. 电脑开启【移动热点】</strong>：Windows设置 ➔ 移动热点开启 ➔ 手机WiFi连接电脑热点 ➔ 访问 <code>http://192.168.137.1:8080</code> (纯私有网络，绝无AP隔离拦截)。<br>
-            <strong>B. 刷新/清除手机浏览器缓存</strong>：由于之前手机可能缓存了旧脚本，在手机浏览器中长按刷新按钮或清除该网址缓存即可。
+        <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);">
+          <div style="font-weight:800;color:var(--primary);margin-bottom:6px;">2. 怎么在电脑上查看真实本机 IP？</div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.65;">
+            ① 按键盘 <strong>Win + R</strong> 键打开运行窗口，输入 <strong>cmd</strong> 按回车；<br>
+            ② 在打开的黑色命令窗口中输入 <strong>ipconfig</strong> 按回车；<br>
+            ③ 找到【无线局域网适配器 WLAN】下方的 <strong>IPv4 地址</strong>（形如 <code>192.168.x.x</code> 或 <code>10.x.x.x</code>）；<br>
+            ④ 手机在同一 WiFi 下访问 <code>http://[该IPv4地址]:8080</code> 即可！
+          </div>
+        </div>
+
+        <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:rgba(234,88,12,0.06);border-color:rgba(234,88,12,0.3);">
+          <div style="font-weight:800;color:#ea580c;margin-bottom:4px;">3. 校园网 / 公共 WiFi 找不到设备？原因与破解：</div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.65;">
+            • <strong>根本原因</strong>：校园网 WiFi 默认开启了“AP 隔离”安全策略，物理切断了手机和电脑之间的局域网访问。<br>
+            • <strong>破解对策 A（最推荐·微信发快照文件）</strong>：电脑在设置中点击【导出快照文件】，微信直接发给手机，手机点击【选择快照文件导入】，1秒无损合并，完全免网络限制！<br>
+            • <strong>破解对策 B（电脑开移动热点）</strong>：电脑在 Windows 设置 ➔ 网络 ➔ 开启【移动热点】；手机连接电脑热点 WiFi ➔ 访问固定地址 <code>http://192.168.137.1:8080</code>，100% 成功直连！
           </div>
         </div>
 
         <div style="padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);">
-          <div style="font-weight:800;margin-bottom:4px;color:var(--primary);">3. 终极免电脑方案：GitHub Pages (随时随地秒开)</div>
+          <div style="font-weight:800;margin-bottom:4px;color:var(--primary);">4. 免电脑方案：GitHub Pages 公网随时秒开</div>
           <div style="font-size:12px;color:var(--text-sub);">
             在线公网访问地址：<br>
             <a href="https://simple53.github.io/jsgsMock/" target="_blank" style="color:var(--primary);font-weight:700;text-decoration:none;">https://simple53.github.io/jsgsMock/</a><br>
-            手机无需电脑开机、4G/5G 均能秒开，且支持离线添加到主屏幕！
+            手机使用 4G/5G 均能秒开，结合 Gist 或快照文件随时随地双向同步！
           </div>
         </div>
       </div>
