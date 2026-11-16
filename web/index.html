@@ -822,7 +822,7 @@
       color: #991b1b;
     }
 
-    /* 官方解析 */
+    /* AI解析 */
     .fenbi-analysis-box {
       border: 1.5px solid var(--border);
       border-radius: 12px;
@@ -8968,7 +8968,7 @@
             <div class="analysis-row-top" onclick="toggleAnalysisDetails('${qKey}')">
               <div><span>正确答案</span><span class="ans-badge-text">${q.answer}</span></div>
               <span style="font-size:12px;color:var(--primary);display:flex;align-items:center;gap:2px;">
-                官方考点精解
+                AI解析
                 <svg class="svg-icon" viewBox="0 0 24 24" style="width:12px;height:12px;"><use href="#icon-right"/></svg>
               </span>
             </div>
@@ -8984,7 +8984,7 @@
                     <svg class="svg-icon" viewBox="0 0 24 24" style="width:11px;height:11px;"><use href="#icon-right"/></svg>
                   </span>
                 </div>` : ''}
-              ${q.analysis || '本题暂无详细官方考点解析'}
+              ${q.analysis || '本题暂无详细 AI 解析'}
             </div>
           </div>
 
@@ -9189,7 +9189,7 @@
         saveUserStore();
         wrongSessionRevealed[qKey] = true;
         renderCurrentQuestion();
-        showToast("已展开正确答案与官方考点精解，研学后可点击【下一题】");
+        showToast("已展开正确答案与 AI 解析，研学后可点击【下一题】");
       } else if (type === 'forget') {
         eb.reviewCount = 0; // 重置周期
         eb.lastReviewAt = now;
@@ -10127,7 +10127,7 @@
 【题目选项】：
 ${optionsText}
 【官方答案】：${q.answer}
-【官方解析】：${q.analysis || '无'}${q.knowledgePoint ? `\n【关联考点】：${q.knowledgePoint}` : ''}
+【基础考点解析】：${q.analysis || '无'}${q.knowledgePoint ? `\n【关联考点】：${q.knowledgePoint}` : ''}
 
 请按以下三部分精炼输出：
 1. 【考点本质】：一句话点破核心考点或法理依据。
@@ -10138,7 +10138,7 @@ ${optionsText}
       floatingChatHistory = [
         {
           role: "system",
-          content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【官方解析】：${q.analysis || '无'}`
+          content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【基础考点解析】：${q.analysis || '无'}`
         },
         {
           role: "user",
@@ -10274,7 +10274,7 @@ ${optionsText}
         floatingChatHistory = [
           {
             role: "system",
-            content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【官方解析】：${q.analysis || '无'}`
+            content: `你是一位专业教育辅导名师。输出直击考点核心，权威严谨，排版清晰美观，杜绝任何 Emoji。\n【当前题目背景】\n【科目】：${q.subject}\n【题型】：${q.typeName}\n【题干】：${q.question}\n【选项】：\n${optionsText}\n【官方答案】：${q.answer}\n【基础考点解析】：${q.analysis || '无'}`
           },
           {
             role: "user",
@@ -10325,7 +10325,7 @@ ${optionsText}
       if (floatingChatHistory.length === 0) {
         const q = activeQuestions[currentQuizIndex];
         const optText = formatQuestionOptionsForAi(q);
-        const ctx = q ? `当前正在练习的题目：[${q.subject}] ${q.typeName}。\n【题干】：“${q.question}”\n【选项】：\n${optText}\n【正确答案】：“${q.answer}”\n【官方解析】：“${q.analysis || '无'}”。` : "";
+        const ctx = q ? `当前正在练习的题目：[${q.subject}] ${q.typeName}。\n【题干】：“${q.question}”\n【选项】：\n${optText}\n【正确答案】：“${q.answer}”\n【基础考点解析】：“${q.analysis || '无'}”。` : "";
         floatingChatHistory.push({
           role: "system",
           content: `你是一位专业教育辅导专家。输出直击考点核心，拒绝废话，排版层次清晰，杜绝任何 Emoji。${ctx}`
