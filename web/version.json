@@ -1,13 +1,14 @@
 {
-  "version": "1.4.7",
-  "versionCode": 23,
-  "title": "jsgsMock v1.4.7 - AI会话面板、消息回撤与疑难题库整合",
-  "releaseDate": "2026-11-01",
+  "version": "1.4.9",
+  "versionCode": 25,
+  "title": "jsgsMock v1.4.9 - 优先新题、静默更新与错题分科统计",
+  "releaseDate": "2026-11-17",
   "changelog": [
-    "设置界面新增独立 AI 助教自由问答会话面板，支持教资考点随时咨询并自动保留全部历史对话",
-    "做题界面 AI 助教支持随时查看历史对话列表，支持用户提问回撤编辑、助教回答重新生成",
-    "做题界面新增疑问题目反馈入口，并在错题板块整合【疑难题库】，支持后续标记处理与集中攻坚做题"
+    "自定义刷题设置新增【优先新题】开关，未做题优先练习，与随机乱序出题完全独立不冲突",
+    "错题本、艾宾浩斯复习和我的收藏全面支持按学科筛选与分类统计错题数量，点击即可按科专项攻坚",
+    "新增网页端/PWA版本内自动检查与一键拉取更新能力，更新缓存更加顺畅迅速",
+    "全量题库多轮语义核查，重点修复题目与AI官方解析答案不一致问题"
   ],
-  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.7/jsgsMock-v1.4.7.apk",
-  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.7/jsgsMock-v1.4.7.apk"
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.9/jsgsMock-v1.4.9.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.9/jsgsMock-v1.4.9.apk"
 }

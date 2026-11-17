@@ -3142,6 +3142,9 @@
           <button class="inner-tab-btn" id="btnTabDoubts" onclick="switchWrongTab('doubts')">疑难题库 <span id="doubtTabBadge" style="font-size:11px;opacity:0.85;"></span></button>
         </div>
 
+        <!-- 需求4: 错题本分科统计与筛选标签栏 -->
+        <div id="wrongSubjectFilterBar" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;"></div>
+
         <div id="allWrongBannerArea" style="margin-bottom:14px;">
           <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
             <div>
@@ -3548,7 +3551,7 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
               <span>版本与客户端下载（Android / iOS）</span>
             </div>
-            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.7</span>
+            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.9</span>
           </div>
           <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;" id="appRuntimeEnvText">
             当前环境：检测中...
@@ -3905,6 +3908,14 @@
           <div class="count-pill" onclick="setModalBatch(20, this)">20题</div>
           <div class="count-pill" onclick="setModalBatch(0, this)">不限</div>
         </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;">
+        <div>
+          <div style="font-size:14px;font-weight:700;">优先新题 (未做题优先)</div>
+          <div style="font-size:12px;color:var(--text-muted);">优先抽取未作答新题，做完后再练已答题与错题</div>
+        </div>
+        <input type="checkbox" id="modalPreferNew" style="width:20px;height:20px;" checked>
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;">
@@ -5619,22 +5630,16 @@
       // 启动时后台静默同步一次局域网历史记录
       syncWithServer(false);
 
-      // 启动后延迟检测新版本：仅线下原生安装包（Android APK / iOS 原生包）弹窗提示更新；纯网页版静默直接更新，不弹更新窗
+      // 启动后延迟检测新版本：原生客户端与网页端均探测远程更新
       setTimeout(() => {
-        const isOfflineNativeApp = !!window.AndroidApp ||
-          window.location.hostname === "appassets.androidplatform.net" ||
-          window.location.protocol === "app:" ||
-          window.location.protocol === "file:";
-        if (isOfflineNativeApp) {
-          checkAppUpdate(false);
-        }
+        checkAppUpdate(false);
       }, 2500);
     }
 
     // ==========================================
     // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.7";
+    const CURRENT_APP_VERSION = "1.4.9";
     let latestReleaseInfo = null;
 
     function detectRuntimeEnv() {
@@ -5746,12 +5751,12 @@
         latestReleaseInfo = {
           version: CURRENT_APP_VERSION,
           title: `jsgsMock v${CURRENT_APP_VERSION}`,
-          releaseDate: "2026-10-27",
+          releaseDate: "2026-11-17",
           changelog: [
-            "模拟考试支持分科目精准组卷与整体综合组卷，题目量55题",
-            "设置中心二级菜单顶部返回按钮左置对齐",
-            "设置中心恢复并强化清除数据功能",
-            "新增原生 APK 版本检测与推送一键更新功能"
+            "自定义刷题设置新增优先新题选项，与乱序出题完全独立不冲突",
+            "支持版本内自动拉取更新，网页版与离线端均可一键拉取最新数据",
+            "全量题库多轮语义核查，消解题目答案与AI解析偏差",
+            "错题本支持分科精准统计与按科筛选刷题"
           ],
           downloadUrl: `https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`,
           acceleratedDownloadUrl: `https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`
@@ -5769,7 +5774,51 @@
           logBox.textContent = latestReleaseInfo.changelog;
         }
       }
+
+      // 如果是纯网页端/PWA环境，将更新按钮文案与行为适配为“立即自动拉取更新并重载”
+      const isNative = !!window.AndroidApp ||
+        window.location.hostname === "appassets.androidplatform.net" ||
+        window.location.protocol === "app:" ||
+        window.location.protocol === "file:";
+      const btnDirect = document.getElementById("btnUpdateDirect");
+      const btnAcc = document.getElementById("btnUpdateAccelerated");
+      if (!isNative && btnDirect) {
+        btnDirect.textContent = "立即自动拉取更新并刷新 (Web/PWA)";
+        btnDirect.onclick = () => reloadWebForUpdate();
+        if (btnAcc) {
+          btnAcc.textContent = "下载最新安卓独立客户端 (APK)";
+          btnAcc.onclick = () => triggerApkUpdateDownload('direct');
+        }
+      } else if (btnDirect) {
+        btnDirect.textContent = "立即一键更新安装 (官方下载)";
+        btnDirect.onclick = () => triggerApkUpdateDownload('direct');
+        if (btnAcc) {
+          btnAcc.textContent = "国内高速加速更新通道";
+          btnAcc.onclick = () => triggerApkUpdateDownload('mirror');
+        }
+      }
+
       document.getElementById("appUpdateModal")?.classList.add("open");
+    }
+
+    function reloadWebForUpdate() {
+      showToast("正在拉取最新静态资源与题库...");
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (let reg of regs) {
+            reg.update();
+            reg.unregister();
+          }
+        }).catch(() => {});
+      }
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        }).catch(() => {});
+      }
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 600);
     }
 
     function closeUpdateModal(e) {
@@ -8405,9 +8454,9 @@
     }
 
     // ==========================================
-    // 智能抽题算法 (优先出未做题、自动顺延上次进度、单次练习严格去重)
+    // 智能抽题算法 (支持优先新题、乱序出题、自动顺延上次进度、单次练习严格去重)
     // ==========================================
-    function selectQuestionsForPractice(sub, batchSize = 15, isShuffle = false, scope = 'all') {
+    function selectQuestionsForPractice(sub, batchSize = 15, isShuffle = false, scope = 'all', preferNew = null) {
       let fullList = allSubjectsData[sub] || [];
       if (fullList.length === 0) return [];
 
@@ -8416,7 +8465,12 @@
         if (fullList.length === 0) return [];
       }
 
-      // 1. 区分未作答题目与已作答题目
+      // 判定是否优先新题 (未指定时取全局配置 appConfig.preferNew，默认为 true)
+      const shouldPreferNew = (preferNew !== null && preferNew !== undefined) 
+        ? !!preferNew 
+        : (appConfig.preferNew !== undefined ? !!appConfig.preferNew : true);
+
+      // 1. 区分未作答题目 (新题) 与已作答题目
       const unanswered = [];
       const answered = [];
 
@@ -8432,37 +8486,50 @@
 
       let candidatePool = [];
 
-      if (unanswered.length > 0) {
+      if (shouldPreferNew) {
+        // === 模式 A：优先新题 (未做题排在前，已做题在后) ===
+        let uPool = [...unanswered];
         if (isShuffle) {
-          // 乱序：在未作答题目中随机打乱
-          candidatePool = [...unanswered].sort(() => Math.random() - 0.5);
+          uPool.sort(() => Math.random() - 0.5);
         } else {
-          // 顺序模式：从上次记录的进度继续往后取
           const lastProg = userStore.progress[sub] || 0;
-          const later = unanswered.filter(i => i.originalIdx >= lastProg);
-          const earlier = unanswered.filter(i => i.originalIdx < lastProg);
+          const later = uPool.filter(i => i.originalIdx >= lastProg);
+          const earlier = uPool.filter(i => i.originalIdx < lastProg);
+          uPool = [...later, ...earlier];
+        }
+
+        let aPool = [];
+        if (batchSize === 0 || uPool.length < batchSize) {
+          let wrongList = answered.filter(i => {
+            const rec = userStore.answers[i.key];
+            return rec && !rec.isCorrect;
+          });
+          let correctList = answered.filter(i => {
+            const rec = userStore.answers[i.key];
+            return rec && rec.isCorrect;
+          });
+          if (isShuffle) {
+            wrongList.sort(() => Math.random() - 0.5);
+            correctList.sort(() => Math.random() - 0.5);
+          }
+          aPool = [...wrongList, ...correctList];
+        }
+        candidatePool = [...uPool, ...aPool];
+      } else {
+        // === 模式 B：不优先新题 (全量题池按全卷顺序或全卷随机) ===
+        const allItems = fullList.map((q, originalIdx) => ({
+          q: { ...q, _originalIdx: originalIdx },
+          originalIdx,
+          key: getQKey(q)
+        }));
+        if (isShuffle) {
+          candidatePool = [...allItems].sort(() => Math.random() - 0.5);
+        } else {
+          const lastProg = userStore.progress[sub] || 0;
+          const later = allItems.filter(i => i.originalIdx >= lastProg);
+          const earlier = allItems.filter(i => i.originalIdx < lastProg);
           candidatePool = [...later, ...earlier];
         }
-      }
-
-      // 如果未做题目不足设定题量，补足已作答题目（错题优先，防止题量不足中断）
-      if (batchSize > 0 && candidatePool.length < batchSize) {
-        let wrongList = answered.filter(i => {
-          const rec = userStore.answers[i.key];
-          return rec && !rec.isCorrect;
-        });
-        let correctList = answered.filter(i => {
-          const rec = userStore.answers[i.key];
-          return rec && rec.isCorrect;
-        });
-
-        if (isShuffle) {
-          wrongList.sort(() => Math.random() - 0.5);
-          correctList.sort(() => Math.random() - 0.5);
-        }
-        candidatePool = [...candidatePool, ...wrongList, ...correctList];
-      } else if (batchSize === 0 && candidatePool.length === 0) {
-        candidatePool = answered;
       }
 
       // 严格去重且保证单次练习内题目全局唯一
@@ -8521,7 +8588,7 @@
       }
 
       const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
-      activeQuestions = selectQuestionsForPractice(sub, batch, !!appConfig.randomShuffle);
+      activeQuestions = selectQuestionsForPractice(sub, batch, !!appConfig.randomShuffle, 'all', !!appConfig.preferNew);
 
       if (activeQuestions.length === 0) {
         alert("本科目暂无题目！");
@@ -8593,6 +8660,8 @@
 
       const shuffleChk = document.getElementById("modalRandomShuffle");
       if (shuffleChk) shuffleChk.checked = !!appConfig.randomShuffle;
+      const preferNewChk = document.getElementById("modalPreferNew");
+      if (preferNewChk) preferNewChk.checked = appConfig.preferNew !== undefined ? !!appConfig.preferNew : true;
 
       document.getElementById("startQuizModal").classList.add("open");
     }
@@ -8635,6 +8704,8 @@
       appConfig.defaultBatchSize = modalSelectedBatch;
       const shuffleChk = document.getElementById("modalRandomShuffle");
       appConfig.randomShuffle = shuffleChk ? shuffleChk.checked : false;
+      const preferNewChk = document.getElementById("modalPreferNew");
+      appConfig.preferNew = preferNewChk ? preferNewChk.checked : true;
       saveUserStore();
 
       // 2. 判定目标科目
@@ -8650,7 +8721,8 @@
         const modeDesc = (modalSelectedMode === 'exam') ? '做题模式 (交卷查看)' : '背题模式 (立见解析)';
         const batchDesc = modalSelectedBatch ? `${modalSelectedBatch} 题/组` : '不限题量';
         const shuffleDesc = appConfig.randomShuffle ? '开启' : '关闭';
-        alert(`自定义刷题偏好已成功保存！\n\n- 默认模式：${modeDesc}\n- 单次题量：${batchDesc}\n- 随机乱序：${shuffleDesc}\n\n已保存至配置，随时点击科目即可按照此设置直接练习。`);
+        const preferNewDesc = appConfig.preferNew ? '开启 (未做题优先)' : '关闭 (全池随机/顺序)';
+        alert(`自定义刷题偏好已成功保存！\n\n- 默认模式：${modeDesc}\n- 单次题量：${batchDesc}\n- 优先新题：${preferNewDesc}\n- 随机乱序：${shuffleDesc}\n\n已保存至配置，随时点击科目即可按照此设置直接练习。`);
         return;
       }
 
@@ -8666,7 +8738,7 @@
       userStore.openedSubjects[targetSub] = true;
       currentExamId = null;
 
-      activeQuestions = selectQuestionsForPractice(targetSub, modalSelectedBatch, !!appConfig.randomShuffle, modalSelectedScope);
+      activeQuestions = selectQuestionsForPractice(targetSub, modalSelectedBatch, !!appConfig.randomShuffle, modalSelectedScope, !!appConfig.preferNew);
       if (activeQuestions.length === 0) {
         if (modalSelectedScope === 'new') {
           alert(`【${targetSub}】本科目暂无标注的重点新题或答案订正题，建议选择“全量题目练习”！`);
@@ -11213,7 +11285,7 @@ ${optionsText}
         return;
       }
       const batch = appConfig.defaultBatchSize !== undefined ? appConfig.defaultBatchSize : 15;
-      const nextQuestions = selectQuestionsForPractice(currentSubject, batch, !!appConfig.randomShuffle);
+      const nextQuestions = selectQuestionsForPractice(currentSubject, batch, !!appConfig.randomShuffle, 'all', !!appConfig.preferNew);
       if (nextQuestions.length === 0) {
         alert("本科目暂无题目！");
         exitPracticeToHome();
@@ -11581,12 +11653,61 @@ ${optionsText}
       renderWrongPane('doubts');
     }
 
+    let currentWrongSubjectFilter = 'all';
+
+    function setWrongSubjectFilter(sub) {
+      currentWrongSubjectFilter = sub;
+      const activeTab = document.getElementById('btnTabEbbinghaus')?.classList.contains('active') ? 'ebbinghaus'
+                      : (document.getElementById('btnTabFavorites')?.classList.contains('active') ? 'fav'
+                      : (document.getElementById('btnTabDoubts')?.classList.contains('active') ? 'doubts' : 'all'));
+      renderWrongPane(activeTab);
+    }
+
+    function renderWrongSubjectFilterBar(wrongQsList, activeTab) {
+      const filterBar = document.getElementById("wrongSubjectFilterBar");
+      if (!filterBar) return;
+      if (activeTab === 'doubts') {
+        filterBar.style.display = 'none';
+        return;
+      }
+      filterBar.style.display = 'flex';
+
+      // 统计各科目数量
+      const subCounts = {};
+      const allSubs = Object.keys(allSubjectsData);
+      allSubs.forEach(s => { subCounts[s] = 0; });
+      (wrongQsList || []).forEach(q => {
+        const s = q.subject || '其他';
+        subCounts[s] = (subCounts[s] || 0) + 1;
+      });
+
+      const totalCount = (wrongQsList || []).length;
+      let html = `
+        <button type="button" class="count-pill ${currentWrongSubjectFilter === 'all' ? 'active' : ''}" style="white-space:nowrap;flex-shrink:0;" onclick="setWrongSubjectFilter('all')">
+          全部 (${totalCount})
+        </button>
+      `;
+
+      allSubs.forEach(s => {
+        const count = subCounts[s] || 0;
+        const isActive = (currentWrongSubjectFilter === s);
+        html += `
+          <button type="button" class="count-pill ${isActive ? 'active' : ''}" style="white-space:nowrap;flex-shrink:0;" onclick="setWrongSubjectFilter('${escapeHtml(s)}')">
+            ${escapeHtml(s)} (${count})
+          </button>
+        `;
+      });
+
+      filterBar.innerHTML = html;
+    }
+
     function renderWrongPane(tab) {
       const container = document.getElementById("wrongListContent");
       container.innerHTML = "";
 
       // 需求3: 错题板块整合疑难题库
       if (tab === 'doubts') {
+        renderWrongSubjectFilterBar([], 'doubts');
         renderDoubtsPane(container);
         return;
       }
@@ -11594,20 +11715,28 @@ ${optionsText}
       // 需求2: 错题本新增【我的收藏】一栏，支持艾宾浩斯抗遗忘记忆与做题
       if (tab === 'fav') {
         const favKeys = userStore.favorites || [];
-        if (favKeys.length === 0) {
-          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无收藏题目。答题时点击右上角星标即可收藏！</div>`;
-          return;
-        }
         let favQs = [];
         Object.values(allSubjectsData).forEach(qs => {
           qs.forEach(q => { if (favKeys.some(fk => isKeyMatched(fk, q))) favQs.push(q); });
         });
+        renderWrongSubjectFilterBar(favQs, 'fav');
+
         if (favQs.length === 0) {
-          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无可练的收藏题目！</div>`;
+          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无收藏题目。答题时点击右上角星标即可收藏！</div>`;
           return;
         }
 
-        favQs.forEach((q, idx) => {
+        let displayQs = favQs;
+        if (currentWrongSubjectFilter !== 'all') {
+          displayQs = favQs.filter(q => q.subject === currentWrongSubjectFilter);
+        }
+
+        if (displayQs.length === 0) {
+          container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">【${escapeHtml(currentWrongSubjectFilter)}】暂无收藏题目！</div>`;
+          return;
+        }
+
+        displayQs.forEach((q, idx) => {
           const qKey = getQKey(q);
           const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
           const revCnt = eb.reviewCount || 0;
@@ -11617,28 +11746,43 @@ ${optionsText}
       }
 
       const wrongKeys = Object.keys(userStore.ebbinghausWrong || {});
-      if (wrongKeys.length === 0) {
+      let allFoundWrongQs = [];
+      Object.values(allSubjectsData).forEach(qs => {
+        qs.forEach(q => { if (wrongKeys.some(wk => isKeyMatched(wk, q))) allFoundWrongQs.push(q); });
+      });
+
+      let targetPool = allFoundWrongQs;
+      if (tab === 'ebbinghaus') {
+        const now = Date.now();
+        targetPool = allFoundWrongQs.filter(q => {
+          const eb = userStore.ebbinghausWrong[getQKey(q)];
+          return eb && (now - eb.lastReviewAt) >= 12 * 3600 * 1000;
+        });
+      }
+
+      renderWrongSubjectFilterBar(targetPool, tab);
+
+      if (allFoundWrongQs.length === 0) {
         container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无错题记录，保持优秀！</div>`;
         return;
       }
-      let wrongQs = [];
-      Object.values(allSubjectsData).forEach(qs => {
-        qs.forEach(q => { if (wrongKeys.some(wk => isKeyMatched(wk, q))) wrongQs.push(q); });
-      });
 
-      if (tab === 'ebbinghaus') {
-        const now = Date.now();
-        wrongQs = wrongQs.filter(q => {
-          const eb = userStore.ebbinghausWrong[getQKey(q)];
-          return (now - eb.lastReviewAt) >= 12 * 3600 * 1000;
-        });
-        if (wrongQs.length === 0) {
-          container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--correct);font-weight:700;">今日艾宾浩斯临界错题已全部复习完毕！</div>`;
-          return;
-        }
+      if (tab === 'ebbinghaus' && targetPool.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--correct);font-weight:700;">今日艾宾浩斯临界错题已全部复习完毕！</div>`;
+        return;
       }
 
-      wrongQs.forEach((q, idx) => {
+      let displayQs = targetPool;
+      if (currentWrongSubjectFilter !== 'all') {
+        displayQs = targetPool.filter(q => q.subject === currentWrongSubjectFilter);
+      }
+
+      if (displayQs.length === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">【${escapeHtml(currentWrongSubjectFilter)}】下暂无对应错题！</div>`;
+        return;
+      }
+
+      displayQs.forEach((q, idx) => {
         const qKey = getQKey(q);
         const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
         const revCnt = eb.reviewCount || 0;
@@ -12024,25 +12168,28 @@ ${optionsText}
       openQuizView();
     }
 
-    // 全部错题一键开练（真实做题，不提前出答案）
+    // 全部错题一键开练（真实做题，不提前出答案，若选定了科目则专练该科目）
     function startAllWrongQuizDirect() {
       const wrongKeys = Object.keys(userStore.ebbinghausWrong || {});
       if (wrongKeys.length === 0) {
         showToast("错题本暂无题目！");
         return;
       }
-      const wrongQs = [];
+      let wrongQs = [];
       Object.values(allSubjectsData).forEach(qs => {
-        qs.forEach(q => { if (wrongKeys.includes(getQKey(q))) wrongQs.push(q); });
+        qs.forEach(q => { if (wrongKeys.some(wk => isKeyMatched(wk, q))) wrongQs.push(q); });
       });
+      if (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') {
+        wrongQs = wrongQs.filter(q => q.subject === currentWrongSubjectFilter);
+      }
       if (wrongQs.length === 0) {
-        showToast("暂无可练错题！");
+        showToast(currentWrongSubjectFilter !== 'all' ? `【${currentWrongSubjectFilter}】暂无可练错题！` : "暂无可练错题！");
         return;
       }
       isWrongPracticeActive = true;
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
-      currentSubject = "错题复习";
+      currentSubject = (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') ? `${currentWrongSubjectFilter}错题` : "错题复习";
       activeQuestions = wrongQs;
       currentQuizIndex = 0;
       appConfig.quizMode = 'study';
@@ -12059,16 +12206,19 @@ ${optionsText}
       }
       let favQs = [];
       Object.values(allSubjectsData).forEach(qs => {
-        qs.forEach(q => { if (favKeys.includes(getQKey(q))) favQs.push(q); });
+        qs.forEach(q => { if (favKeys.some(fk => isKeyMatched(fk, q))) favQs.push(q); });
       });
+      if (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') {
+        favQs = favQs.filter(q => q.subject === currentWrongSubjectFilter);
+      }
       if (favQs.length === 0) {
-        showToast("暂无可练收藏题目！");
+        showToast(currentWrongSubjectFilter !== 'all' ? `【${currentWrongSubjectFilter}】暂无可练收藏题目！` : "暂无可练收藏题目！");
         return;
       }
       isWrongPracticeActive = true;
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
-      currentSubject = "我的收藏";
+      currentSubject = (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') ? `${currentWrongSubjectFilter}收藏` : "我的收藏";
       activeQuestions = favQs;
       currentQuizIndex = 0;
       appConfig.quizMode = 'study';
@@ -12086,14 +12236,17 @@ ${optionsText}
           if (eb && (now - eb.lastReviewAt) >= 12 * 3600 * 1000) dueQs.push(q);
         });
       });
+      if (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') {
+        dueQs = dueQs.filter(q => q.subject === currentWrongSubjectFilter);
+      }
       if (dueQs.length === 0) {
-        alert("暂无到期的艾宾浩斯错题！");
+        alert(currentWrongSubjectFilter !== 'all' ? `【${currentWrongSubjectFilter}】暂无到期的艾宾浩斯错题！` : "暂无到期的艾宾浩斯错题！");
         return;
       }
       isWrongPracticeActive = true;
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
-      currentSubject = "错题复习";
+      currentSubject = (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') ? `${currentWrongSubjectFilter}复习` : "错题复习";
       activeQuestions = dueQs;
       currentQuizIndex = 0;
       appConfig.quizMode = 'study';
@@ -12393,7 +12546,7 @@ ${optionsText}
       <div class="modal-top-row">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="modal-main-title">发现新版本</span>
-          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.7</span>
+          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.9</span>
         </div>
         <button class="modal-close-icon" onclick="closeUpdateModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
