@@ -1,14 +1,14 @@
 {
-  "version": "1.4.9",
-  "versionCode": 25,
-  "title": "jsgsMock v1.4.9 - 优先新题、静默更新与错题分科统计",
-  "releaseDate": "2026-11-17",
+  "version": "1.5.0",
+  "versionCode": 26,
+  "title": "jsgsMock v1.5.0 - 全量题库联网校准与 App 端内一键更新",
+  "releaseDate": "2026-11-25",
   "changelog": [
-    "自定义刷题设置新增【优先新题】开关，未做题优先练习，与随机乱序出题完全独立不冲突",
-    "错题本、艾宾浩斯复习和我的收藏全面支持按学科筛选与分类统计错题数量，点击即可按科专项攻坚",
-    "新增网页端/PWA版本内自动检查与一键拉取更新能力，更新缓存更加顺畅迅速",
-    "全量题库多轮语义核查，重点修复题目与AI官方解析答案不一致问题"
+    "全量 2,200 题（2026官网新版 + 历年题库）完成逐题联网权威核验，修正 61 处解析与答案矛盾及 113 处法条引错/不全问题",
+    "针对 20 道与权威资料存在口径差异的题目保留官方标准答案并在解析末尾统一附加【存疑提示】",
+    "新增 App 联网更新推送与 Android 端内一键下载、进度条及自动调起安装器功能，同步修复 iOS 外链跳转与离线新版题库加载",
+    "支持 Web/PWA、Android、iOS 及桌面端多源实时版本检测"
   ],
-  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.4.9/jsgsMock-v1.4.9.apk",
-  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.4.9/jsgsMock-v1.4.9.apk"
+  "downloadUrl": "https://github.com/Simple53/jsgsMock/releases/download/v1.5.0/jsgsMock-v1.5.0.apk",
+  "acceleratedDownloadUrl": "https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v1.5.0/jsgsMock-v1.5.0.apk"
 }

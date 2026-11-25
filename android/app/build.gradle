@@ -10,8 +10,8 @@ android {
         applicationId "com.jsgsmock.app"
         minSdk 21
         targetSdk 34
-        versionCode 21
-        versionName "1.4.7"
+        versionCode 26
+        versionName "1.5.0"
     }
 
     buildTypes {

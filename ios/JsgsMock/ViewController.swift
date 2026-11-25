@@ -116,13 +116,26 @@ final class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate
             decisionHandler(.allow)
             return
         }
-        if navigationAction.navigationType == .linkActivated,
+        if (navigationAction.navigationType == .linkActivated || navigationAction.targetFrame == nil),
            (url.scheme == "http" || url.scheme == "https") {
             UIApplication.shared.open(url)
             decisionHandler(.cancel)
             return
         }
         decisionHandler(.allow)
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        createWebViewWith configuration: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction,
+        windowFeatures: WKWindowFeatures
+    ) -> WKWebView? {
+        if let url = navigationAction.request.url,
+           url.scheme == "http" || url.scheme == "https" {
+            UIApplication.shared.open(url)
+        }
+        return nil
     }
 
     func webView(

@@ -3551,7 +3551,7 @@
               <svg class="svg-icon" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--primary);"><use href="#icon-refresh"/></svg>
               <span>版本与客户端下载（Android / iOS）</span>
             </div>
-            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.4.9</span>
+            <span style="font-size:11.5px;color:var(--primary);font-weight:700;" id="appCurrentVersionBadge">v1.5.0</span>
           </div>
           <div style="font-size:12px;color:var(--text-muted);line-height:1.6;margin-bottom:12px;" id="appRuntimeEnvText">
             当前环境：检测中...
@@ -5386,9 +5386,12 @@
     let legacyWordQuizData = null;
 
     async function loadDefaultQuizData() {
-      // 1. 尝试载入 2026 官网全真模拟题库
-      if (typeof window.OFFICIAL_2026_QUIZ_DATA === 'object' && window.OFFICIAL_2026_QUIZ_DATA && Object.keys(window.OFFICIAL_2026_QUIZ_DATA).length > 0) {
-        official2026QuizData = window.OFFICIAL_2026_QUIZ_DATA;
+      // 1. 尝试载入 2026 官网全真模拟题库 (兼容 QUIZ_DATA_OFFICIAL_2026 / OFFICIAL_2026_QUIZ_DATA)
+      const preloadedOff = (typeof window.OFFICIAL_2026_QUIZ_DATA === 'object' && window.OFFICIAL_2026_QUIZ_DATA)
+        || (typeof window.QUIZ_DATA_OFFICIAL_2026 === 'object' && window.QUIZ_DATA_OFFICIAL_2026)
+        || null;
+      if (preloadedOff && Object.keys(preloadedOff).length > 0) {
+        official2026QuizData = preloadedOff;
       } else {
         try {
           const resp = await fetch("quiz_data_official_2026.json");
@@ -5630,35 +5633,71 @@
       // 启动时后台静默同步一次局域网历史记录
       syncWithServer(false);
 
-      // 启动后延迟检测新版本：原生客户端与网页端均探测远程更新
+      // 启动后延迟检测新版本：原生客户端与网页端均主动探测远程更新
       setTimeout(() => {
         checkAppUpdate(false);
-      }, 2500);
+      }, 2200);
+
+      // 前后台切换回来时自动静默检查更新（至少间隔 30 分钟）
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          const now = Date.now();
+          if (now - lastAutoUpdateCheckAt > 30 * 60 * 1000) {
+            checkAppUpdate(false);
+          }
+        }
+      });
     }
 
     // ==========================================
-    // APK 版本更新推送与一键下载更新系统 (无 Emoji, 纯扁平)
+    // App 联网版本更新推送与一键下载安装系统 (支持 Android / iOS / 桌面端 / Web)
     // ==========================================
-    const CURRENT_APP_VERSION = "1.4.9";
+    const CURRENT_APP_VERSION = "1.5.0";
     let latestReleaseInfo = null;
+    let lastAutoUpdateCheckAt = 0;
+
+    function isNativeAppRuntime() {
+      return !!window.AndroidApp ||
+        window.location.hostname === "appassets.androidplatform.net" ||
+        window.location.protocol === "app:" ||
+        window.location.protocol === "file:";
+    }
+
+    function getEffectiveAppVersion() {
+      try {
+        if (window.AndroidApp && typeof window.AndroidApp.getAppVersion === 'function') {
+          const nv = String(window.AndroidApp.getAppVersion() || '').replace(/^v/i, '').trim();
+          if (nv) return nv;
+        }
+      } catch (e) {}
+      return CURRENT_APP_VERSION;
+    }
 
     function detectRuntimeEnv() {
       const isAndroidApp = !!window.AndroidApp || window.location.hostname === "appassets.androidplatform.net";
+      const isIosApp = window.location.protocol === "app:";
+      const isDesktopApp = window.location.protocol === "file:";
       const envText = document.getElementById("appRuntimeEnvText");
       if (envText) {
-        envText.innerHTML = isAndroidApp
-          ? `<strong>当前运行环境：Android 原生客户端 (APK)</strong><br>内置原生离线真题引擎与防误触返回。支持直接通过下方一键检查并更新安装包。`
-          : `<strong>当前运行环境：Web / PWA 浏览器环境</strong><br>您可将网页添加到手机桌面，或点击下方【立即下载安卓 APK】安装手机原生独立应用。`;
+        if (isAndroidApp) {
+          envText.innerHTML = `<strong>当前运行环境：Android 原生客户端 (APK)</strong><br>支持联网实时检测云端新版本推送，可在 App 内一键下载最新安装包并自动调起安装。`;
+        } else if (isIosApp) {
+          envText.innerHTML = `<strong>当前运行环境：iOS 原生客户端</strong><br>支持联网实时检测云端新版本推送并跳转获取最新 IPA 安装包或在线更新。`;
+        } else if (isDesktopApp) {
+          envText.innerHTML = `<strong>当前运行环境：桌面独立客户端</strong><br>支持联网检测云端最新版本发布并一键前往下载更新安装包。`;
+        } else {
+          envText.innerHTML = `<strong>当前运行环境：Web / PWA 浏览器环境</strong><br>支持版本内自动拉取最新题库与功能更新，也可下载 Android / iOS 客户端离线使用。`;
+        }
       }
       const badge = document.getElementById("appCurrentVersionBadge");
       if (badge) {
-        badge.textContent = `v${CURRENT_APP_VERSION}`;
+        badge.textContent = `v${getEffectiveAppVersion()}`;
       }
     }
 
     function compareVersions(v1, v2) {
-      const p1 = String(v1).replace(/^v/, "").split('.').map(n => parseInt(n, 10) || 0);
-      const p2 = String(v2).replace(/^v/, "").split('.').map(n => parseInt(n, 10) || 0);
+      const p1 = String(v1).replace(/^v/i, "").split('.').map(n => parseInt(n, 10) || 0);
+      const p2 = String(v2).replace(/^v/i, "").split('.').map(n => parseInt(n, 10) || 0);
       for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
         const n1 = p1[i] || 0;
         const n2 = p2[i] || 0;
@@ -5668,75 +5707,122 @@
       return 0;
     }
 
+    async function fetchJsonWithTimeout(url, options = {}, timeoutMs = 6000) {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+      try {
+        const resp = await fetch(url, {
+          ...options,
+          cache: "no-store",
+          signal: controller ? controller.signal : undefined
+        });
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch (e) {
+        return null;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+    }
+
+    async function fetchRemoteReleaseInfo() {
+      const ts = Date.now();
+      const candidates = [];
+      // 原生壳优先直连远端实时索引，避免读取到本地打包的旧 version.json
+      if (!isNativeAppRuntime()) {
+        candidates.push(`version.json?_t=${ts}`);
+      }
+      candidates.push(
+        `https://simple53.github.io/jsgsMock/version.json?_t=${ts}`,
+        `https://raw.githubusercontent.com/Simple53/jsgsMock/main/web/version.json?_t=${ts}`
+      );
+
+      for (const u of candidates) {
+        const info = await fetchJsonWithTimeout(u, {}, 5500);
+        if (info && info.version) {
+          return info;
+        }
+      }
+
+      // 备用方式：读取 GitHub Releases API
+      const ghData = await fetchJsonWithTimeout(
+        "https://api.github.com/repos/Simple53/jsgsMock/releases/latest",
+        { headers: { "Accept": "application/vnd.github.v3+json" } },
+        6500
+      );
+      if (ghData && ghData.tag_name) {
+        const tag = String(ghData.tag_name || "").replace(/^v/i, "");
+        const assets = ghData.assets || [];
+        const apkAsset = assets.find(a => a.name && a.name.endsWith(".apk"));
+        const ipaAsset = assets.find(a => a.name && a.name.endsWith(".ipa"));
+        const dl = apkAsset
+          ? apkAsset.browser_download_url
+          : `https://github.com/Simple53/jsgsMock/releases/download/${ghData.tag_name}/jsgsMock-${ghData.tag_name}.apk`;
+        return {
+          version: tag,
+          title: ghData.name || `jsgsMock v${tag}`,
+          releaseDate: ghData.published_at ? ghData.published_at.slice(0, 10) : "",
+          changelog: (ghData.body || "").split("\n").filter(l => l.trim().length > 0).slice(0, 6),
+          downloadUrl: dl,
+          acceleratedDownloadUrl: `https://mirror.ghproxy.com/${dl}`,
+          iosDownloadUrl: ipaAsset ? ipaAsset.browser_download_url : "",
+          releasePageUrl: ghData.html_url || `https://github.com/Simple53/jsgsMock/releases/tag/${ghData.tag_name}`
+        };
+      }
+      return null;
+    }
+
     async function checkAppUpdate(isManual = false) {
+      lastAutoUpdateCheckAt = Date.now();
       const resultArea = document.getElementById("settingsUpdateResultArea");
+      const curVer = getEffectiveAppVersion();
       if (isManual && resultArea) {
         resultArea.style.display = 'block';
-        resultArea.innerHTML = `<span style="color:var(--text-muted);">正在检查最新版本...</span>`;
+        resultArea.innerHTML = `<span style="color:var(--text-muted);">正在联网检查云端最新版本（当前 v${escapeHtml(curVer)}）...</span>`;
       }
 
       try {
-        let remoteInfo = null;
-        // 1. 优先读取静态版本索引文件 (高可靠、免 API 限额)
-        try {
-          const vResp = await fetch("version.json?_t=" + Date.now(), { cache: "no-store" });
-          if (vResp.ok) {
-            remoteInfo = await vResp.json();
-          }
-        } catch (e) {}
-
-        // 2. 备用方式：读取 GitHub Releases API
-        if (!remoteInfo) {
-          const ghResp = await fetch("https://api.github.com/repos/Simple53/jsgsMock/releases/latest", {
-            headers: { "Accept": "application/vnd.github.v3+json" }
-          });
-          if (ghResp.ok) {
-            const ghData = await ghResp.json();
-            const tag = (ghData.tag_name || "").replace(/^v/, "");
-            const apkAsset = (ghData.assets || []).find(a => a.name.endsWith(".apk"));
-            const dl = apkAsset ? apkAsset.browser_download_url : `https://github.com/Simple53/jsgsMock/releases/download/${ghData.tag_name}/jsgsMock-${ghData.tag_name}.apk`;
-            remoteInfo = {
-              version: tag,
-              title: ghData.name || `jsgsMock v${tag}`,
-              releaseDate: ghData.published_at ? ghData.published_at.slice(0, 10) : "",
-              changelog: (ghData.body || "").split("\n").filter(l => l.trim().length > 0).slice(0, 6),
-              downloadUrl: dl,
-              acceleratedDownloadUrl: `https://mirror.ghproxy.com/${dl}`
-            };
-          }
-        }
-
+        const remoteInfo = await fetchRemoteReleaseInfo();
         if (!remoteInfo || !remoteInfo.version) {
           if (isManual && resultArea) {
-            resultArea.innerHTML = `<span style="color:var(--text-sub);">未能检索到远程版本信息，请确认网络连接正常。</span>`;
+            resultArea.innerHTML = `<span style="color:var(--text-sub);">未能检索到远程版本信息，请确认网络连接正常后重试。</span>`;
           }
           return;
         }
 
         latestReleaseInfo = remoteInfo;
-        const isNewer = compareVersions(remoteInfo.version, CURRENT_APP_VERSION) > 0;
+        const isNewer = compareVersions(remoteInfo.version, curVer) > 0;
 
         if (isNewer) {
-          // 在首页显示轻量更新横幅
+          // 在首页顶部显示轻量更新推送横幅
           const homeNotice = document.getElementById("homeUpdateNotice");
           const homeText = document.getElementById("homeUpdateNoticeText");
           if (homeNotice && homeText) {
-            homeText.textContent = `发现新版本 v${remoteInfo.version}，点击一键更新`;
+            homeText.textContent = `发现新版本 v${remoteInfo.version}（当前 v${curVer}），点击一键更新`;
             homeNotice.style.display = 'flex';
           }
 
           if (isManual && resultArea) {
-            const logHtml = Array.isArray(remoteInfo.changelog) ? remoteInfo.changelog.map(l => `<div>• ${escapeHtml(l)}</div>`).join('') : remoteInfo.changelog;
+            const logHtml = Array.isArray(remoteInfo.changelog)
+              ? remoteInfo.changelog.map(l => `<div>• ${escapeHtml(l)}</div>`).join('')
+              : escapeHtml(String(remoteInfo.changelog || ''));
             resultArea.innerHTML = `
-              <div style="font-weight:700;color:var(--primary);margin-bottom:6px;">发现最新版本 v${escapeHtml(remoteInfo.version)}！</div>
+              <div style="font-weight:700;color:var(--primary);margin-bottom:6px;">发现最新版本 v${escapeHtml(remoteInfo.version)}（当前 v${escapeHtml(curVer)}）！</div>
               <div style="margin-bottom:10px;color:var(--text-sub);">${logHtml}</div>
               <button class="modal-submit-btn" style="width:100%;padding:8px;font-size:12px;" onclick="openUpdateModal()">立即查看并一键更新</button>
             `;
           }
-          openUpdateModal();
+
+          let dismissedVer = "";
+          try { dismissedVer = sessionStorage.getItem("jsgsMock_dismissed_update_ver") || ""; } catch (e) {}
+          if (isManual || dismissedVer !== String(remoteInfo.version)) {
+            openUpdateModal();
+          }
         } else {
+          const homeNotice = document.getElementById("homeUpdateNotice");
+          if (homeNotice) homeNotice.style.display = 'none';
           if (isManual && resultArea) {
-            resultArea.innerHTML = `<span style="color:var(--correct);font-weight:700;">✓ 当前已是最新版本 (v${CURRENT_APP_VERSION})，无需更新。</span>`;
+            resultArea.innerHTML = `<span style="color:var(--correct);font-weight:700;">✓ 当前已是最新版本 (v${escapeHtml(curVer)})，无需更新。</span>`;
           }
         }
       } catch (err) {
@@ -5747,23 +5833,26 @@
     }
 
     function openUpdateModal() {
+      const curVer = getEffectiveAppVersion();
       if (!latestReleaseInfo) {
         latestReleaseInfo = {
-          version: CURRENT_APP_VERSION,
-          title: `jsgsMock v${CURRENT_APP_VERSION}`,
+          version: curVer,
+          title: `jsgsMock v${curVer}`,
           releaseDate: "2026-11-17",
           changelog: [
             "自定义刷题设置新增优先新题选项，与乱序出题完全独立不冲突",
-            "支持版本内自动拉取更新，网页版与离线端均可一键拉取最新数据",
-            "全量题库多轮语义核查，消解题目答案与AI解析偏差",
+            "支持版本内自动拉取更新与 App 联网推送一键更新",
+            "全量题库多轮语义核查与官网答案对齐校准",
             "错题本支持分科精准统计与按科筛选刷题"
           ],
-          downloadUrl: `https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`,
-          acceleratedDownloadUrl: `https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v${CURRENT_APP_VERSION}/jsgsMock-v${CURRENT_APP_VERSION}.apk`
+          downloadUrl: `https://github.com/Simple53/jsgsMock/releases/download/v${curVer}/jsgsMock-v${curVer}.apk`,
+          acceleratedDownloadUrl: `https://mirror.ghproxy.com/https://github.com/Simple53/jsgsMock/releases/download/v${curVer}/jsgsMock-v${curVer}.apk`
         };
       }
       const tag = document.getElementById("updateModalNewTag");
       if (tag) tag.textContent = `v${latestReleaseInfo.version}`;
+      const cmpEl = document.getElementById("updateModalVersionCompare");
+      if (cmpEl) cmpEl.textContent = `当前版本 v${curVer} → 最新版本 v${latestReleaseInfo.version}`;
       const dateEl = document.getElementById("updateModalReleaseDate");
       if (dateEl) dateEl.textContent = `发布日期：${latestReleaseInfo.releaseDate || '最新发布'}`;
       const logBox = document.getElementById("updateModalChangelog");
@@ -5771,34 +5860,64 @@
         if (Array.isArray(latestReleaseInfo.changelog)) {
           logBox.innerHTML = latestReleaseInfo.changelog.map(item => `<div style="margin-bottom:4px;">• ${escapeHtml(item)}</div>`).join('');
         } else {
-          logBox.textContent = latestReleaseInfo.changelog;
+          logBox.textContent = latestReleaseInfo.changelog || '';
         }
       }
 
-      // 如果是纯网页端/PWA环境，将更新按钮文案与行为适配为“立即自动拉取更新并重载”
-      const isNative = !!window.AndroidApp ||
-        window.location.hostname === "appassets.androidplatform.net" ||
-        window.location.protocol === "app:" ||
-        window.location.protocol === "file:";
+      // 重置进度条显示
+      const progWrap = document.getElementById("apkDownloadProgressWrap");
+      if (progWrap) progWrap.style.display = 'none';
+
+      const isAndroidApp = !!window.AndroidApp || window.location.hostname === "appassets.androidplatform.net";
+      const isIosApp = window.location.protocol === "app:";
+      const isDesktopApp = window.location.protocol === "file:";
       const btnDirect = document.getElementById("btnUpdateDirect");
       const btnAcc = document.getElementById("btnUpdateAccelerated");
-      if (!isNative && btnDirect) {
+
+      if (btnDirect) btnDirect.disabled = false;
+      if (btnAcc) btnAcc.disabled = false;
+
+      if (isAndroidApp && btnDirect) {
+        const hasInApp = !!(window.AndroidApp && typeof window.AndroidApp.downloadAndInstallApk === 'function');
+        btnDirect.textContent = hasInApp ? "App 内一键下载并安装 (官方源)" : "立即下载最新安装包 (APK)";
+        btnDirect.onclick = () => triggerApkUpdateDownload('direct');
+        if (btnAcc) {
+          btnAcc.textContent = hasInApp ? "App 内一键更新 (国内高速通道)" : "国内高速加速下载 (APK)";
+          btnAcc.onclick = () => triggerApkUpdateDownload('mirror');
+        }
+      } else if (isIosApp && btnDirect) {
+        btnDirect.textContent = "前往获取最新 iOS 安装包 (.ipa)";
+        btnDirect.onclick = () => triggerApkUpdateDownload('ios');
+        if (btnAcc) {
+          btnAcc.textContent = "打开 GitHub 发布页查看全平台版本";
+          btnAcc.onclick = () => triggerApkUpdateDownload('release');
+        }
+      } else if (isDesktopApp && btnDirect) {
+        btnDirect.textContent = "立即前往下载最新桌面客户端";
+        btnDirect.onclick = () => triggerApkUpdateDownload('release');
+        if (btnAcc) {
+          btnAcc.textContent = "国内高速通道下载 APK";
+          btnAcc.onclick = () => triggerApkUpdateDownload('mirror');
+        }
+      } else if (btnDirect) {
         btnDirect.textContent = "立即自动拉取更新并刷新 (Web/PWA)";
         btnDirect.onclick = () => reloadWebForUpdate();
         if (btnAcc) {
           btnAcc.textContent = "下载最新安卓独立客户端 (APK)";
           btnAcc.onclick = () => triggerApkUpdateDownload('direct');
         }
-      } else if (btnDirect) {
-        btnDirect.textContent = "立即一键更新安装 (官方下载)";
-        btnDirect.onclick = () => triggerApkUpdateDownload('direct');
-        if (btnAcc) {
-          btnAcc.textContent = "国内高速加速更新通道";
-          btnAcc.onclick = () => triggerApkUpdateDownload('mirror');
-        }
       }
 
       document.getElementById("appUpdateModal")?.classList.add("open");
+    }
+
+    function dismissUpdateForSession() {
+      if (latestReleaseInfo && latestReleaseInfo.version) {
+        try {
+          sessionStorage.setItem("jsgsMock_dismissed_update_ver", String(latestReleaseInfo.version));
+        } catch (e) {}
+      }
+      closeUpdateModal();
     }
 
     function reloadWebForUpdate() {
@@ -5826,10 +5945,69 @@
       document.getElementById("appUpdateModal")?.classList.remove("open");
     }
 
+    window.onApkDownloadProgress = function(percent, status) {
+      const wrap = document.getElementById("apkDownloadProgressWrap");
+      const bar = document.getElementById("apkDownloadProgressBar");
+      const pctText = document.getElementById("apkDownloadPercentText");
+      const statusText = document.getElementById("apkDownloadStatusText");
+      const btnDirect = document.getElementById("btnUpdateDirect");
+      const btnAcc = document.getElementById("btnUpdateAccelerated");
+
+      if (wrap) wrap.style.display = 'block';
+      if (statusText) statusText.textContent = status || '';
+
+      if (percent < 0) {
+        if (bar) {
+          bar.style.width = '100%';
+          bar.style.background = '#ef4444';
+        }
+        if (pctText) {
+          pctText.textContent = '失败';
+          pctText.style.color = '#ef4444';
+        }
+        if (btnDirect) btnDirect.disabled = false;
+        if (btnAcc) btnAcc.disabled = false;
+        showToast(status || "更新下载失败，请切换通道重试");
+      } else {
+        const clamped = Math.max(0, Math.min(100, Number(percent) || 0));
+        if (bar) {
+          bar.style.width = `${clamped}%`;
+          bar.style.background = clamped >= 100 ? 'var(--correct)' : 'var(--primary)';
+        }
+        if (pctText) {
+          pctText.textContent = `${clamped}%`;
+          pctText.style.color = clamped >= 100 ? 'var(--correct)' : 'var(--primary)';
+        }
+        if (clamped >= 100) {
+          if (btnDirect) btnDirect.disabled = false;
+          if (btnAcc) btnAcc.disabled = false;
+        }
+      }
+    };
+
     function triggerApkUpdateDownload(mode) {
       if (!latestReleaseInfo) return;
-      const url = mode === 'mirror' ? (latestReleaseInfo.acceleratedDownloadUrl || latestReleaseInfo.downloadUrl) : latestReleaseInfo.downloadUrl;
-      showToast("正在前往下载最新 APK 安装包...");
+      const ver = String(latestReleaseInfo.version || '').replace(/^v/i, '');
+      let url = latestReleaseInfo.downloadUrl;
+      if (mode === 'mirror') {
+        url = latestReleaseInfo.acceleratedDownloadUrl || `https://mirror.ghproxy.com/${latestReleaseInfo.downloadUrl}`;
+      } else if (mode === 'ios') {
+        url = latestReleaseInfo.iosDownloadUrl || latestReleaseInfo.releasePageUrl || `https://github.com/Simple53/jsgsMock/releases/tag/v${ver}`;
+      } else if (mode === 'release') {
+        url = latestReleaseInfo.releasePageUrl || `https://github.com/Simple53/jsgsMock/releases/latest`;
+      }
+
+      if ((mode === 'direct' || mode === 'mirror') && window.AndroidApp && typeof window.AndroidApp.downloadAndInstallApk === 'function') {
+        const btnDirect = document.getElementById("btnUpdateDirect");
+        const btnAcc = document.getElementById("btnUpdateAccelerated");
+        if (btnDirect) btnDirect.disabled = true;
+        if (btnAcc) btnAcc.disabled = true;
+        window.onApkDownloadProgress(0, "正在启动 App 内下载...");
+        window.AndroidApp.downloadAndInstallApk(url, ver);
+        return;
+      }
+
+      showToast("正在前往下载最新安装包...");
       if (window.AndroidApp && typeof window.AndroidApp.openDownloadUrl === 'function') {
         window.AndroidApp.openDownloadUrl(url);
       } else {
@@ -12546,14 +12724,24 @@ ${optionsText}
       <div class="modal-top-row">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="modal-main-title">发现新版本</span>
-          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.4.9</span>
+          <span id="updateModalNewTag" style="font-size:11px;background:var(--primary);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">v1.5.0</span>
         </div>
         <button class="modal-close-icon" onclick="closeUpdateModal()"><svg class="svg-icon" viewBox="0 0 24 24"><use href="#icon-close"/></svg></button>
       </div>
       <div style="margin-top:10px;">
-        <div style="font-size:12px;color:var(--text-muted);" id="updateModalReleaseDate">发布日期：2026-10-27</div>
+        <div style="font-size:12px;color:var(--primary);font-weight:700;margin-bottom:3px;" id="updateModalVersionCompare"></div>
+        <div style="font-size:12px;color:var(--text-muted);" id="updateModalReleaseDate">发布日期：2026-11-17</div>
         <div style="margin-top:10px;font-size:13px;font-weight:700;color:var(--text-main);">更新内容说明：</div>
         <div id="updateModalChangelog" style="margin-top:6px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:12px;line-height:1.6;max-height:180px;overflow-y:auto;color:var(--text-sub);"></div>
+      </div>
+      <div id="apkDownloadProgressWrap" style="display:none;margin-top:12px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-main);margin-bottom:6px;">
+          <span id="apkDownloadStatusText">准备下载更新包...</span>
+          <span id="apkDownloadPercentText" style="font-weight:700;color:var(--primary);">0%</span>
+        </div>
+        <div style="width:100%;height:7px;background:var(--border);border-radius:999px;overflow:hidden;">
+          <div id="apkDownloadProgressBar" style="width:0%;height:100%;background:var(--primary);border-radius:999px;transition:width 0.2s ease;"></div>
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px;">
         <button class="modal-submit-btn" id="btnUpdateDirect" style="width:100%;padding:11px;font-size:13px;" onclick="triggerApkUpdateDownload('direct')">
@@ -12561,6 +12749,9 @@ ${optionsText}
         </button>
         <button class="bottom-btn" id="btnUpdateAccelerated" style="width:100%;padding:9px;font-size:12px;" onclick="triggerApkUpdateDownload('mirror')">
           国内高速加速更新通道
+        </button>
+        <button class="bottom-btn" id="btnUpdateDismiss" style="width:100%;padding:8px;font-size:12px;color:var(--text-muted);border-color:transparent;" onclick="dismissUpdateForSession()">
+          本次稍后提醒
         </button>
       </div>
     </div>
