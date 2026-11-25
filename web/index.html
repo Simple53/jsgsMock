@@ -5633,6 +5633,11 @@
       // 启动时后台静默同步一次局域网历史记录
       syncWithServer(false);
 
+      // 若刚完成版本升级，自动弹窗提示本次更新日志
+      setTimeout(() => {
+        checkAndShowPostUpdateChangelog();
+      }, 1000);
+
       // 启动后延迟检测新版本：原生客户端与网页端均主动探测远程更新
       setTimeout(() => {
         checkAppUpdate(false);
@@ -5832,8 +5837,78 @@
       }
     }
 
+    async function checkAndShowPostUpdateChangelog() {
+      const curVer = getEffectiveAppVersion();
+      let lastSeenVer = "";
+      try { lastSeenVer = localStorage.getItem("jsgsMock_last_seen_version") || ""; } catch (e) {}
+      const hasExistingData = userStore && userStore.answers && Object.keys(userStore.answers).length > 0;
+
+      if (lastSeenVer === curVer) return;
+      try { localStorage.setItem("jsgsMock_last_seen_version", curVer); } catch (e) {}
+
+      // 仅对老版本升级用户（已有 lastSeenVer 或已有本地做题记录）弹出更新日志
+      if (!lastSeenVer && !hasExistingData) return;
+
+      let info = await fetchJsonWithTimeout(`version.json?_t=${Date.now()}`, {}, 3500);
+      if (!info || compareVersions(info.version, curVer) !== 0) {
+        info = {
+          version: curVer,
+          releaseDate: "2026-11-25",
+          changelog: [
+            "全量 2,200 题（2026官网新版 + 历年题库）完成逐题联网权威核验，修正 61 处解析与答案矛盾及 113 处法条引错/不全问题",
+            "针对 20 道与权威资料存在口径差异的题目保留官方标准答案并在解析末尾统一附加【存疑提示】",
+            "新增 App 联网更新推送与 Android 端内一键下载、进度条及自动调起安装器功能，同步修复 iOS 外链跳转与离线新版题库加载",
+            "支持 Web/PWA、Android、iOS 及桌面端多源实时版本检测"
+          ]
+        };
+      }
+      openPostUpdateChangelogModal(info);
+    }
+
+    function openPostUpdateChangelogModal(info) {
+      const curVer = getEffectiveAppVersion();
+      const modal = document.getElementById("appUpdateModal");
+      if (!modal) return;
+      const titleEl = modal.querySelector(".modal-main-title");
+      if (titleEl) titleEl.textContent = "已更新至最新版本";
+      const tag = document.getElementById("updateModalNewTag");
+      if (tag) tag.textContent = `v${curVer}`;
+      const cmpEl = document.getElementById("updateModalVersionCompare");
+      if (cmpEl) cmpEl.textContent = `当前已运行 v${curVer}，本次更新内容如下：`;
+      const dateEl = document.getElementById("updateModalReleaseDate");
+      if (dateEl) dateEl.textContent = `发布日期：${info.releaseDate || '最新发布'}`;
+      const logBox = document.getElementById("updateModalChangelog");
+      if (logBox) {
+        if (Array.isArray(info.changelog)) {
+          logBox.innerHTML = info.changelog.map(item => `<div style="margin-bottom:4px;">• ${escapeHtml(item)}</div>`).join('');
+        } else {
+          logBox.textContent = info.changelog || '';
+        }
+      }
+      const progWrap = document.getElementById("apkDownloadProgressWrap");
+      if (progWrap) progWrap.style.display = 'none';
+      const btnDirect = document.getElementById("btnUpdateDirect");
+      const btnAcc = document.getElementById("btnUpdateAccelerated");
+      const btnDismiss = document.getElementById("btnUpdateDismiss");
+      if (btnDirect) {
+        btnDirect.disabled = false;
+        btnDirect.textContent = "我知道了，开始使用";
+        btnDirect.onclick = () => closeUpdateModal();
+      }
+      if (btnAcc) btnAcc.style.display = 'none';
+      if (btnDismiss) btnDismiss.style.display = 'none';
+      modal.classList.add("open");
+    }
+
     function openUpdateModal() {
       const curVer = getEffectiveAppVersion();
+      const modal = document.getElementById("appUpdateModal");
+      const titleEl = modal ? modal.querySelector(".modal-main-title") : null;
+      if (titleEl) titleEl.textContent = "发现新版本";
+      const btnAccEl = document.getElementById("btnUpdateAccelerated");
+      if (btnAccEl) btnAccEl.style.display = '';
+      const btnDismissEl = document.getElementById("btnUpdateDismiss");
+      if (btnDismissEl) btnDismissEl.style.display = '';
       if (!latestReleaseInfo) {
         latestReleaseInfo = {
           version: curVer,
