@@ -3149,17 +3149,17 @@
           <div style="background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="font-size:14px;font-weight:800;color:var(--text-main);">全部错题实战做题</div>
-              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">真实刷题模式 · 支持记得/模糊/忘记反馈</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">按科目集中刷题 · 支持记得/模糊/忘记反馈与断点续练</div>
             </div>
-            <button class="bottom-btn primary" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;" onclick="startAllWrongQuizDirect()">开始做题</button>
+            <button class="bottom-btn primary" id="btnStartAllWrongDirect" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;" onclick="startAllWrongQuizDirect('all')">开始做题</button>
           </div>
         </div>
 
         <div id="ebbinghausBannerArea" style="display:none;margin-bottom:14px;">
           <div style="background:var(--primary-light);border:1.5px solid var(--primary-border);border-radius:12px;padding:16px;">
             <div style="font-size:15px;font-weight:800;color:var(--primary);">艾宾浩斯抗遗忘科学周期</div>
-            <div style="font-size:12px;color:var(--text-sub);margin:4px 0 10px;">依据 1/2/4/7/15 天智能筛选进入临界期的错题</div>
-            <button class="modal-submit-btn" style="padding:10px;width:100%;font-size:14px;" onclick="startEbbinghausQuizDirect()">开始今日艾宾浩斯攻坚</button>
+            <div style="font-size:12px;color:var(--text-sub);margin:4px 0 10px;">仅筛选距上次作答/复习已满 12 小时、进入临界期的错题（刚做错或 12 小时内刚复习过的暂不计入）</div>
+            <button class="modal-submit-btn" id="btnStartEbbinghausAll" style="padding:10px;width:100%;font-size:14px;" onclick="startEbbinghausQuizDirect('all')">开始今日艾宾浩斯攻坚</button>
           </div>
         </div>
 
@@ -8818,6 +8818,7 @@
       userStore.openedSubjects[sub] = true;
       currentExamId = null;
       isWrongPracticeActive = false;
+      currentWrongSessionKey = null;
 
       // 核心需求3: 优先从上次做题中断处恢复原题目组与当前题序号，绝不重新生成新题目
       if (userStore.unfinishedSessions[sub] && userStore.unfinishedSessions[sub].activeQuestions?.length > 0) {
@@ -9464,6 +9465,7 @@
         const isCorrect = (ans === q.answer);
         wrongSessionAnswers[qKey] = { chosen: ans, isCorrect, time: Date.now() };
         wrongSessionRevealed[qKey] = true;
+        saveWrongSessionProgress();
         recordDailyQuestionAnswered();
         renderCurrentQuestion();
         return;
@@ -9505,6 +9507,7 @@
         eb.reviewCount = (eb.reviewCount || 0) + 1;
         eb.lastReviewAt = now;
         saveUserStore();
+        saveWrongSessionProgress();
         showToast(`已记录【记得】，第 ${eb.reviewCount} 轮抗遗忘复习完成！`);
         setTimeout(() => {
           navigateQuestion(1);
@@ -9548,6 +9551,7 @@
       if (target >= 0 && target < total) {
         currentQuizIndex = target;
         currentMultiSelection = new Set(); // 切题重置多选暂存
+        if (isWrongPracticeActive) saveWrongSessionProgress();
 
         const curQ = activeQuestions[currentQuizIndex];
         if (currentSubject && curQ && curQ._originalIdx !== undefined) {
@@ -11916,10 +11920,49 @@ ${optionsText}
       renderWrongPane(activeTab);
     }
 
+    let currentWrongSessionKey = null;
+
+    function saveWrongSessionProgress() {
+      if (!isWrongPracticeActive || !currentWrongSessionKey || !activeQuestions || activeQuestions.length === 0) return;
+      if (!userStore.unfinishedWrongSessions) userStore.unfinishedWrongSessions = {};
+      userStore.unfinishedWrongSessions[currentWrongSessionKey] = {
+        activeQuestions,
+        currentQuizIndex,
+        timerSeconds,
+        wrongSessionAnswers,
+        wrongSessionRevealed,
+        currentSubject
+      };
+      saveUserStore();
+    }
+
+    function clearWrongSessionProgress(sessionKey) {
+      if (!sessionKey || !userStore.unfinishedWrongSessions) return;
+      delete userStore.unfinishedWrongSessions[sessionKey];
+      saveUserStore();
+    }
+
+    function resumeWrongSession(sessionKey) {
+      const sess = userStore.unfinishedWrongSessions && userStore.unfinishedWrongSessions[sessionKey];
+      if (!sess || !Array.isArray(sess.activeQuestions) || sess.activeQuestions.length === 0) return false;
+      isWrongPracticeActive = true;
+      currentWrongSessionKey = sessionKey;
+      activeQuestions = sess.activeQuestions;
+      currentQuizIndex = Math.min(sess.currentQuizIndex || 0, activeQuestions.length - 1);
+      timerSeconds = sess.timerSeconds || 0;
+      wrongSessionAnswers = sess.wrongSessionAnswers || {};
+      wrongSessionRevealed = sess.wrongSessionRevealed || {};
+      currentSubject = sess.currentSubject || "错题复习";
+      appConfig.quizMode = 'study';
+      isExamSubmitted = false;
+      openQuizView();
+      return true;
+    }
+
     function renderWrongSubjectFilterBar(wrongQsList, activeTab) {
       const filterBar = document.getElementById("wrongSubjectFilterBar");
       if (!filterBar) return;
-      if (activeTab === 'doubts') {
+      if (activeTab === 'doubts' || activeTab === 'all' || activeTab === 'ebbinghaus') {
         filterBar.style.display = 'none';
         return;
       }
@@ -12021,26 +12064,74 @@ ${optionsText}
       }
 
       if (tab === 'ebbinghaus' && targetPool.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--correct);font-weight:700;">今日艾宾浩斯临界错题已全部复习完毕！</div>`;
+        container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--correct);font-weight:700;">今日艾宾浩斯临界错题已全部复习完毕！（共有 ${allFoundWrongQs.length} 道错题未满 12 小时冷却期，可在【全部错题】中查看）</div>`;
         return;
       }
 
-      let displayQs = targetPool;
-      if (currentWrongSubjectFilter !== 'all') {
-        displayQs = targetPool.filter(q => q.subject === currentWrongSubjectFilter);
+      // 更新顶部综合按钮文案（支持继续上次）
+      const prefix = tab === 'ebbinghaus' ? 'eb__' : 'all__';
+      const allSess = userStore.unfinishedWrongSessions && userStore.unfinishedWrongSessions[prefix + 'all'];
+      const topBtn = document.getElementById(tab === 'ebbinghaus' ? 'btnStartEbbinghausAll' : 'btnStartAllWrongDirect');
+      if (topBtn) {
+        if (allSess && allSess.activeQuestions && allSess.activeQuestions.length > 0) {
+          const idx = (allSess.currentQuizIndex || 0) + 1;
+          topBtn.textContent = tab === 'ebbinghaus'
+            ? `继续今日艾宾浩斯 (${idx}/${allSess.activeQuestions.length})`
+            : `继续上次 (${idx}/${allSess.activeQuestions.length})`;
+        } else {
+          topBtn.textContent = tab === 'ebbinghaus' ? '开始今日艾宾浩斯攻坚' : '开始做题';
+        }
       }
 
-      if (displayQs.length === 0) {
-        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">【${escapeHtml(currentWrongSubjectFilter)}】下暂无对应错题！</div>`;
-        return;
-      }
+      // 按科目渲染卡片，不再列出冗长的单题列表
+      const subjects = Object.keys(allSubjectsData);
+      let renderedCards = 0;
+      subjects.forEach(sub => {
+        const subTotalWrong = allFoundWrongQs.filter(q => q.subject === sub).length;
+        const subTargetQs = targetPool.filter(q => q.subject === sub);
+        if (subTotalWrong === 0 && subTargetQs.length === 0) return;
+        renderedCards++;
 
-      displayQs.forEach((q, idx) => {
-        const qKey = getQKey(q);
-        const eb = (userStore.ebbinghausWrong && userStore.ebbinghausWrong[qKey]) || {};
-        const revCnt = eb.reviewCount || 0;
-        appendCompactQuestion(container, q, idx, revCnt, () => startSingleWrongQuiz(qKey));
+        const sessKey = prefix + sub;
+        const sess = userStore.unfinishedWrongSessions && userStore.unfinishedWrongSessions[sessKey];
+        const hasSess = !!(sess && Array.isArray(sess.activeQuestions) && sess.activeQuestions.length > 0);
+        const sessIdx = hasSess ? ((sess.currentQuizIndex || 0) + 1) : 0;
+        const sessTotal = hasSess ? sess.activeQuestions.length : 0;
+
+        const card = document.createElement('div');
+        card.style.cssText = 'background:var(--card-bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;';
+
+        const countDesc = tab === 'ebbinghaus'
+          ? `今日待复习 <strong style="color:var(--primary);">${subTargetQs.length}</strong> 题 · 累计错题 ${subTotalWrong} 题`
+          : `累计错题 <strong style="color:var(--primary);">${subTotalWrong}</strong> 题`;
+
+        const progressHint = hasSess
+          ? `<div style="font-size:11px;color:var(--primary);margin-top:3px;font-weight:600;">上次练到第 ${sessIdx}/${sessTotal} 题</div>`
+          : '';
+
+        const btnHtml = subTargetQs.length === 0
+          ? `<span style="font-size:12px;color:var(--correct);font-weight:700;white-space:nowrap;">今日已清</span>`
+          : (hasSess
+              ? `<div style="display:flex;gap:6px;flex-shrink:0;">
+                   <button class="bottom-btn" style="padding:6px 10px;font-size:12px;white-space:nowrap;" onclick="${tab === 'ebbinghaus' ? 'startEbbinghausQuizDirect' : 'startAllWrongQuizDirect'}('${escapeHtml(sub)}', true)">重练</button>
+                   <button class="bottom-btn primary" style="padding:6px 12px;font-size:12px;white-space:nowrap;" onclick="${tab === 'ebbinghaus' ? 'startEbbinghausQuizDirect' : 'startAllWrongQuizDirect'}('${escapeHtml(sub)}', false)">继续上次</button>
+                 </div>`
+              : `<button class="bottom-btn primary" style="padding:6px 14px;font-size:12.5px;white-space:nowrap;flex-shrink:0;" onclick="${tab === 'ebbinghaus' ? 'startEbbinghausQuizDirect' : 'startAllWrongQuizDirect'}('${escapeHtml(sub)}', true)">开始练习</button>`);
+
+        card.innerHTML = `
+          <div style="min-width:0;flex:1;">
+            <div style="font-size:14.5px;font-weight:800;color:var(--text-main);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(sub)}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">${countDesc}</div>
+            ${progressHint}
+          </div>
+          ${btnHtml}
+        `;
+        container.appendChild(card);
       });
+
+      if (renderedCards === 0) {
+        container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无对应错题记录！</div>`;
+      }
     }
 
     // 渲染疑难题库列表
@@ -12421,8 +12512,12 @@ ${optionsText}
       openQuizView();
     }
 
-    // 全部错题一键开练（真实做题，不提前出答案，若选定了科目则专练该科目）
-    function startAllWrongQuizDirect() {
+    // 全部错题一键开练（支持按科目、支持继续上次）
+    function startAllWrongQuizDirect(targetSub, forceRestart = false) {
+      const subFilter = targetSub || currentWrongSubjectFilter || 'all';
+      const sessKey = 'all__' + subFilter;
+      if (!forceRestart && resumeWrongSession(sessKey)) return;
+
       const wrongKeys = Object.keys(userStore.ebbinghausWrong || {});
       if (wrongKeys.length === 0) {
         showToast("错题本暂无题目！");
@@ -12432,21 +12527,24 @@ ${optionsText}
       Object.values(allSubjectsData).forEach(qs => {
         qs.forEach(q => { if (wrongKeys.some(wk => isKeyMatched(wk, q))) wrongQs.push(q); });
       });
-      if (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') {
-        wrongQs = wrongQs.filter(q => q.subject === currentWrongSubjectFilter);
+      if (subFilter !== 'all') {
+        wrongQs = wrongQs.filter(q => q.subject === subFilter);
       }
       if (wrongQs.length === 0) {
-        showToast(currentWrongSubjectFilter !== 'all' ? `【${currentWrongSubjectFilter}】暂无可练错题！` : "暂无可练错题！");
+        showToast(subFilter !== 'all' ? `【${subFilter}】暂无可练错题！` : "暂无可练错题！");
         return;
       }
       isWrongPracticeActive = true;
+      currentWrongSessionKey = sessKey;
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
-      currentSubject = (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') ? `${currentWrongSubjectFilter}错题` : "错题复习";
+      currentSubject = (subFilter !== 'all') ? `${subFilter}错题` : "错题复习";
       activeQuestions = wrongQs;
       currentQuizIndex = 0;
+      timerSeconds = 0;
       appConfig.quizMode = 'study';
       isExamSubmitted = false;
+      saveWrongSessionProgress();
       openQuizView();
     }
 
@@ -12479,8 +12577,12 @@ ${optionsText}
       openQuizView();
     }
 
-    // 艾宾浩斯攻坚（真实做题，不提前出答案）
-    function startEbbinghausQuizDirect() {
+    // 艾宾浩斯攻坚（支持按科目、支持继续上次）
+    function startEbbinghausQuizDirect(targetSub, forceRestart = false) {
+      const subFilter = targetSub || currentWrongSubjectFilter || 'all';
+      const sessKey = 'eb__' + subFilter;
+      if (!forceRestart && resumeWrongSession(sessKey)) return;
+
       const now = Date.now();
       let dueQs = [];
       Object.values(allSubjectsData).forEach(qs => {
@@ -12489,21 +12591,24 @@ ${optionsText}
           if (eb && (now - eb.lastReviewAt) >= 12 * 3600 * 1000) dueQs.push(q);
         });
       });
-      if (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') {
-        dueQs = dueQs.filter(q => q.subject === currentWrongSubjectFilter);
+      if (subFilter !== 'all') {
+        dueQs = dueQs.filter(q => q.subject === subFilter);
       }
       if (dueQs.length === 0) {
-        alert(currentWrongSubjectFilter !== 'all' ? `【${currentWrongSubjectFilter}】暂无到期的艾宾浩斯错题！` : "暂无到期的艾宾浩斯错题！");
+        alert(subFilter !== 'all' ? `【${subFilter}】暂无到期的艾宾浩斯错题！` : "暂无到期的艾宾浩斯错题！");
         return;
       }
       isWrongPracticeActive = true;
+      currentWrongSessionKey = sessKey;
       wrongSessionRevealed = {};
       wrongSessionAnswers = {};
-      currentSubject = (currentWrongSubjectFilter && currentWrongSubjectFilter !== 'all') ? `${currentWrongSubjectFilter}复习` : "错题复习";
+      currentSubject = (subFilter !== 'all') ? `${subFilter}复习` : "错题复习";
       activeQuestions = dueQs;
       currentQuizIndex = 0;
+      timerSeconds = 0;
       appConfig.quizMode = 'study';
       isExamSubmitted = false;
+      saveWrongSessionProgress();
       openQuizView();
     }
 
